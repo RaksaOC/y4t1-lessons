@@ -57,7 +57,9 @@ h1{font-size:clamp(2.8rem,8vw,5.6rem);letter-spacing:calc(.005em * var(--lk,1))}
 .lede{margin:10px 0 0;font-size:1.12rem;max-width:40rem}
 
 .subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
-@media (max-width:760px){.subjects{grid-template-columns:minmax(0,1fr)}}
+/* Always 2 by 2: tighten the cards on narrow screens instead of stacking them */
+@media (max-width:760px){.subjects{gap:12px}.subjects .head{padding:14px 14px 16px;gap:10px}.subjects .body{padding:12px 14px 14px;gap:12px}.subjects .head h2{font-size:clamp(1.35rem,4.6vw,2rem)}.subjects .head p{font-size:.92rem}.subjects .stats{grid-template-columns:minmax(0,1fr)}.subjects .stats div{display:flex;align-items:baseline;gap:6px;padding:4px 8px}.subjects .stats b{font-size:20px}.subjects .chapters a{font-size:14px}}
+@media (max-width:480px){.subjects{gap:8px}.subjects .head{padding:11px 9px 13px;gap:8px}.subjects .body{padding:10px 9px 12px;gap:10px}.subjects .head h2{font-size:1.2rem;overflow-wrap:anywhere}.subjects .head p{font-size:.8rem;line-height:1.42}.subjects .eyebrow,.subjects .go{font-size:9.5px;overflow-wrap:anywhere}.subjects .stats b{font-size:16px}.subjects .stats span{font-size:9px}.subjects .stats div{padding:3px 6px}.subjects .chapters a{font-size:12.5px;grid-template-columns:16px minmax(0,1fr);gap:4px;padding:5px 1px}.subjects .chapters a::before{font-size:14px}.subjects .chips a{font-size:12px}.subjects .body .small,.subjects .prog span{font-size:11px}}
 .subj{border:var(--bw2,2px) solid var(--box,var(--ink));display:grid;grid-template-rows:auto 1fr;min-width:0}
 .head{--pane:var(--bg);display:grid;gap:12px;padding:18px 20px 20px;color:var(--ink);background:var(--pane);text-decoration:none;border-bottom:var(--bw2,2px) solid var(--box,var(--ink));transition:background .15s,color .15s}
 .head:hover{--pane:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}
