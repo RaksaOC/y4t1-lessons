@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: three full-height subject panels side by side, in the same black-and-white slide style as the lecture pages. */
+/* Layout: four subject panels, two by two, in the same black-and-white slide style as the lecture pages. */
 :root{
   --bg:#ffffff; --surface-2:#f1f1f1; --ink:#000000; --muted:#3d3d3d; --line:#d0d0d0; --faint:#e2e2e2;
   --f-display:"Anton","Oswald","Impact","Arial Narrow",sans-serif;
@@ -28,7 +28,8 @@ h1,h2{font-family:var(--f-display);font-weight:400;text-transform:uppercase;marg
 h1{font-size:clamp(2.8rem,8vw,5.6rem);letter-spacing:.005em}
 .lede{margin:10px 0 0;font-size:1.12rem;max-width:40rem}
 
-.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px}
+.subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:760px){.subjects{grid-template-columns:minmax(0,1fr)}}
 .subj{border:2px solid var(--ink);display:grid;grid-template-rows:auto 1fr;min-width:0}
 .head{--pane:var(--bg);display:grid;gap:12px;padding:18px 20px 20px;color:var(--ink);background:var(--pane);text-decoration:none;border-bottom:2px solid var(--ink);transition:background .15s,color .15s}
 .head:hover{--pane:var(--ink);color:var(--bg)}
@@ -73,7 +74,7 @@ if(/^#(start|ch\d|c\d-|quiz\d|sheet|lab-)/.test(location.hash))location.replace(
   <div class="slidebar"><span>Year 4 study notes</span><button class="btn" id="theme-btn" type="button">Dark mode</button></div>
   <header>
     <h1>Year 4 Study Hub</h1>
-    <p class="lede">Three courses, explained from the first idea to the final formula, with demos you can run in the page. Pick one to start.</p>
+    <p class="lede">Four courses, explained from the first idea to the final formula, with demos you can run in the page. Pick one to start.</p>
   </header>
 
   <main class="subjects">
@@ -178,6 +179,44 @@ if(/^#(start|ch\d|c\d-|quiz\d|sheet|lab-)/.test(location.hash))location.replace(
           </ol></div>
         <div><p class="lbl">Jump to a demo</p>
           <div class="chips"><a href="ml.html#lab-gd">Gradient descent</a><a href="ml.html#lab-smote">Balance with SMOTE</a><a href="ml.html#lab-fit">Overfitting</a><a href="ml.html#lab-cm">Confusion matrix</a></div></div>
+      </div>
+    </article>
+    <article class="subj">
+      <a class="head" href="devops.html">
+        <span class="eyebrow">DevOps</span>
+        <h2>From Commit to Container</h2>
+        <svg class="motif" viewBox="0 0 440 104" role="img" aria-label="A pipeline: commit, lint, test and deploy boxes joined by arrows, ending in a stack of containers">
+          <g font-size="13" font-weight="600" text-anchor="middle">
+            <rect class="box" x="0" y="36" width="70" height="32"/><text x="35" y="57">commit</text>
+            <line class="w" x1="70" x2="96" y1="52" y2="52"/>
+            <rect class="box" x="96" y="36" width="62" height="32"/><text x="127" y="57">lint ✓</text>
+            <line class="w" x1="158" x2="184" y1="52" y2="52"/>
+            <rect class="box" x="184" y="36" width="62" height="32"/><text x="215" y="57">test ✓</text>
+            <line class="w" x1="246" x2="272" y1="52" y2="52"/>
+            <rect class="dot" x="272" y="36" width="72" height="32"/><text x="308" y="57" style="fill:var(--bg)">deploy</text>
+          </g>
+          <line class="w" x1="344" x2="364" y1="52" y2="52"/>
+          <rect class="box" x="364" y="8" width="74" height="26"/><rect class="box" x="364" y="39" width="74" height="26"/><rect class="box" x="364" y="70" width="74" height="26"/>
+          <rect class="dot" x="372" y="16" width="10" height="10"/><rect class="dot" x="372" y="47" width="10" height="10"/><rect class="dot" x="372" y="78" width="10" height="10"/>
+        </svg>
+        <p>Follow one change from your editor through Git, CI, tests and a Docker container, with the real commands at every step.</p>
+        <span class="go">Open DevOps →</span>
+      </a>
+      <div class="body">
+        <div class="stats"><div><b>6</b><span>Chapters</span></div><div><b>10</b><span>Live demos</span></div><div><b>30</b><span>Quiz questions</span></div></div>
+        <div class="prog" data-prog="devops"><span class="t">Not started</span><i><s></s></i></div>
+        <div><p class="lbl">Chapters</p>
+          <ol class="chapters">
+            <li><a href="devops.html#ch1">What Is DevOps?</a></li>
+            <li><a href="devops.html#ch2">Git and CI/CD</a></li>
+            <li><a href="devops.html#ch3">Testing in DevOps</a></li>
+            <li><a href="devops.html#ch4">Lab 1: A CI Pipeline with GitHub Actions</a></li>
+            <li><a href="devops.html#ch5">Virtualization and Containers</a></li>
+            <li><a href="devops.html#ch6">Docker</a></li>
+            <li><a href="devops.html#sheet">Commands and glossary</a></li>
+          </ol></div>
+        <div><p class="lbl">Jump to a demo</p>
+          <div class="chips"><a href="devops.html#lab-ci">Run a pipeline</a><a href="devops.html#lab-tdd">Red, green, refactor</a><a href="devops.html#lab-cache">Layer caching</a><a href="devops.html#lab-term">Docker terminal</a></div></div>
       </div>
     </article>
   </main>

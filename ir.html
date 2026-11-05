@@ -386,6 +386,12 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
 }
 @media (max-width:960px) and (prefers-reduced-motion: reduce){.toc,.toc-scrim{transition:none}}
 </style>
+<style>
+.dl{margin:.4rem 0 1rem}
+.dl li{margin:4px 0}
+.dl a{font-weight:600}
+.dl-st{font-weight:700}
+</style>
 <style>.toc a.hub-back{display:block;padding:6px 12px;margin-bottom:8px;border:1.5px solid var(--ink);color:var(--ink);font-weight:700;font-size:13.5px;text-decoration:none}.toc a.hub-back:hover{background:var(--ink);color:var(--bg)}</style>
 <button class="progress-pill" id="pp" type="button" tabindex="-1" aria-hidden="true" aria-controls="toc-nav" aria-expanded="false"><b id="pp-pct">0%</b><span id="pp-sec"></span><em class="pp-menu" aria-hidden="true">Menu</em><i><s id="pp-bar"></s></i></button>
 <div class="toc-scrim" id="toc-scrim"></div>
@@ -449,6 +455,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
           <li><a href="#quiz4">Check yourself</a></li>
         </ol></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
+      <li class="chap"><a href="#materials">Course materials</a></li>
     </ol>
   </details>
 </nav>
@@ -1434,6 +1441,15 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
       <tr><td><b>Qrels</b></td><td>Query relevance judgments: the human answer key of a test collection.</td></tr>
       <tr><td><b>TREC</b></td><td>NIST's long-running evaluation campaign that builds large test collections.</td></tr>
     </tbody></table></div>
+  <h3 id="materials">Course materials</h3>
+  <p>The original files this page was built from. Tap one to download it.</p>
+  <h4>Lecture decks</h4>
+  <ul class="dl">
+    <li><a href="materials/ir/introduction_to_information_web_retrival_analytics_1.pdf" download="introduction_to_information_web_retrival_analytics 1.pdf" data-dl>Lesson 1 · Introduction to information and web retrieval</a> <span class="small muted">PDF · 570 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/ir/text_preprocessing_inverted_index_boolean_retrieval.pdf" download="text_preprocessing_inverted_index_boolean_retrieval.pdf" data-dl>Lesson 2 · Text preprocessing, inverted index and Boolean retrieval</a> <span class="small muted">PDF · 242 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/ir/document_representation.pdf" download="document_representation.pdf" data-dl>Lesson 3 · Document representation and ranking</a> <span class="small muted">PDF · 341 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/ir/evaluation.pdf" download="evaluation.pdf" data-dl>Lesson 4 · Evaluation</a> <span class="small muted">PDF · 340 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
+  </ul>
   <p class="foot">Built from the four Session 1–4 lecture decks (Mr. Natt Korat, CADT) and Labs 1–4. Figures are cropped from those decks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment. Each lab has a line-by-line companion notebook in <code>Lab/explained/</code> that links back to the slides cited here.</p>
 </section>
 </main>
@@ -1974,6 +1990,22 @@ addEventListener("scroll",function(){if(!t)t=setTimeout(save,500);},{passive:tru
   nav.addEventListener("click",function(e){if(!mq.matches)return;if(e.target.closest("summary"))e.preventDefault();else if(e.target.closest("a"))setOpen(false);});
   if(mq.addEventListener)mq.addEventListener("change",sync);else mq.addListener(sync);
   sync();
+})();
+</script>
+<script>
+/* ---------- Course materials: download through the viewer when it offers saving ---------- */
+(function(){
+  var links=[].slice.call(document.querySelectorAll("a[data-dl]"));
+  if(!links.length||!window.claude||typeof claude.use!=="function")return;
+  claude.use("downloads").then(function(dl){
+    if(!dl)return;
+    links.forEach(function(a){a.addEventListener("click",function(e){
+      e.preventDefault();var st=a.parentNode.querySelector(".dl-st");st.textContent="Preparing…";
+      fetch(a.getAttribute("href")).then(function(r){if(!r.ok)throw new Error(r.status);return r.blob();})
+        .then(function(b){return dl.save({filename:a.getAttribute("download"),data:b});})
+        .then(function(){st.textContent="";},function(err){st.textContent=(err&&err.code==="declined")?"":"Couldn't download it here.";});
+    });});
+  },function(){});
 })();
 </script>
 </body></html>

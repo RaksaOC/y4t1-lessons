@@ -1,0 +1,1943 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+
+<title>From Commit to Container</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: black-and-white lecture-slide style. Condensed bold capitals for headings, thin rules, bordered boxes, sticky contents rail. */
+:root{
+  --bg:#ffffff; --surface-2:#f1f1f1; --ink:#000000; --muted:#3d3d3d; --line:#d0d0d0;
+  --neg:#9b9b9b; --dim:#bdbdbd; --faint:#e2e2e2;
+  --f-display:"Anton","Oswald","Impact","Arial Narrow",sans-serif;
+  --f-body:"Inter","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e0e; --surface-2:#1d1d1d; --ink:#f2f2f2; --muted:#b8b8b8; --line:#363636;
+    --neg:#7d7d7d; --dim:#4d4d4d; --faint:#2a2a2a; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e0e; --surface-2:#1d1d1d; --ink:#f2f2f2; --muted:#b8b8b8; --line:#363636;
+  --neg:#7d7d7d; --dim:#4d4d4d; --faint:#2a2a2a; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:56px;max-width:1180px;margin:0 auto;padding-block:32px 96px}
+@media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr);gap:16px;padding-block:16px 64px}}
+
+/* TOC */
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;max-height:calc(100vh - 40px);overflow:auto;font-size:13.5px;padding-right:4px}
+.toc summary{font-family:var(--f-display);font-size:18px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;padding:4px 0;border-bottom:2px solid var(--ink)}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc .chap{margin-top:14px}
+.toc .chap > a{font-weight:800;color:var(--ink);text-transform:uppercase;font-size:12.5px;letter-spacing:.04em}
+.toc .chap ol{margin:4px 0 0 0;padding-left:10px;border-left:1px solid var(--ink)}
+.toc a{color:var(--muted);text-decoration:none;display:block;padding:2px 6px;line-height:1.35}
+.toc a:hover{color:var(--ink);text-decoration:underline}
+.toc a.active{color:var(--bg);background:var(--ink)}
+@media (max-width:960px){.toc{position:static;max-height:none;border:2px solid var(--ink);padding:4px 14px 10px}.toc summary{border-bottom:0}}
+
+/* Type */
+main{min-width:0}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:400;text-wrap:balance;line-height:1.08;margin:0;color:var(--ink)}
+h1{font-size:clamp(2.6rem,6vw,4.4rem);text-transform:uppercase;letter-spacing:.005em}
+h2{font-size:clamp(2rem,4.4vw,3rem);text-transform:uppercase;letter-spacing:.01em}
+h3{font-size:clamp(1.5rem,2.6vw,1.9rem);margin-top:3rem;padding-bottom:6px;border-bottom:1.5px solid var(--ink);scroll-margin-top:24px;letter-spacing:.005em}
+h4{font-family:var(--f-body);font-weight:800;font-size:1.02rem;margin-top:1.6rem;text-transform:uppercase;letter-spacing:.04em}
+p,ul,ol.body{max-width:44rem}
+p{margin:.85rem 0}
+ul,ol.body{padding-left:1.3rem;margin:.6rem 0}
+li{margin:.25rem 0}
+strong,b{font-weight:700}
+a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+code{background:var(--surface-2);padding:1px 5px}
+.lede{font-size:1.12rem;max-width:42rem}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+mark{background:var(--ink);color:var(--bg);padding:0 2px}
+
+/* Hero */
+.hero{display:grid;gap:14px}
+.slidebar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);padding:6px 0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+
+/* Chapter divider */
+.chapter{scroll-margin-top:16px;padding-top:5rem}
+.chapter-head{display:grid;gap:6px;justify-items:center;text-align:center;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:30px 0 26px;margin-bottom:10px}
+.chapter-head .num{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+section.sub{scroll-margin-top:16px}
+
+/* Callouts */
+.call{max-width:44rem;padding:12px 16px;margin:1.2rem 0;border:2px solid var(--ink);background:var(--bg)}
+.call > .tag{display:inline-block;font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;padding:1px 7px;border:1.5px solid var(--ink)}
+.call p{margin:.35rem 0}
+.call ul{margin:.3rem 0}
+.call.use{background:var(--surface-2)}
+.call.warn > .tag{background:var(--ink);color:var(--bg)}
+.call.key{border-width:3px}
+.call.analogy{border-style:dashed}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border:2px solid var(--ink);background:var(--bg)}
+.chip.dash{border-style:dashed}
+.chip.fill{background:var(--surface-2)}
+.chip.inv{background:var(--ink);color:var(--bg)}
+.chip.thick{border-width:3px}
+.chip.lab{border-style:double;border-width:4px}
+.ref{display:inline-block;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;padding:1px 7px;border:1px solid var(--ink);color:var(--ink);background:var(--bg);white-space:nowrap;vertical-align:1px}
+.ref.g{background:var(--ink);color:var(--bg)}
+.refs{display:flex;flex-wrap:wrap;gap:6px;margin:.4rem 0 .2rem}
+
+/* Math */
+.math{max-width:44rem;overflow-x:auto;overflow-y:hidden;padding:6px 0;margin:.6rem 0}
+.say{max-width:44rem;font-size:.95rem;color:var(--muted);border-left:3px solid var(--ink);padding:2px 0 2px 12px;margin:.2rem 0 1rem}
+
+/* Tables */
+.tbl{max-width:100%;overflow-x:auto;margin:1rem 0;border:1.5px solid var(--ink);background:var(--bg)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;text-transform:uppercase;font-size:.78rem;letter-spacing:.05em;background:var(--ink);color:var(--bg);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td code{white-space:nowrap}
+
+/* Lab boxes: "In the lab" (from the notebook) and "Try it" (live) */
+.lab{background:var(--bg);border:2px solid var(--ink);margin:1.8rem 0;overflow:hidden}
+.lab.nb{border-style:double;border-width:5px}
+.lab-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:10px 16px;border-bottom:2px solid var(--ink)}
+.lab-head .tag{font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:2px 8px}
+.lab-head h4{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.3rem;text-transform:none;letter-spacing:.01em}
+.lab-body{padding:14px 16px 16px;display:grid;gap:12px}
+.lab-body p{margin:.2rem 0}
+pre.code{margin:0;font-family:var(--f-mono);font-size:13px;line-height:1.55;background:var(--surface-2);padding:10px 12px;overflow-x:auto;border-left:3px solid var(--ink)}
+pre.out{margin:0;font-family:var(--f-mono);font-size:12.5px;line-height:1.5;padding:8px 12px;overflow-x:auto;border:1px dashed var(--ink);color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:700px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.btn{font:inherit;font-size:13.5px;font-weight:700;padding:6px 12px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;line-height:1.3;border-radius:0}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--ink);color:var(--bg)}
+.btn.on{background:var(--ink);color:var(--bg)}
+.btn.sm{font-size:12px;padding:3px 8px}
+.btn:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+label.ctl{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:5px 8px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);max-width:100%;border-radius:0}
+input[type=text]{font-family:var(--f-mono);min-width:0;flex:1 1 220px}
+input[type=range]{accent-color:var(--ink);width:180px;max-width:100%}
+.readout{font-family:var(--f-mono);font-size:13px;background:var(--surface-2);padding:10px 12px;overflow-x:auto;line-height:1.55;white-space:pre-wrap;word-break:break-word;border-left:3px solid var(--ink)}
+.status{font-size:14px;color:var(--muted);min-height:1.3em}
+.hits{display:grid;gap:4px;font-size:14.5px}
+.hits div{padding:4px 8px;border-left:3px solid var(--line)}
+.hits div.rel{border-left-color:var(--ink)}
+.hits .id{font-family:var(--f-mono);font-weight:700;margin-right:6px}
+.toks{display:flex;flex-wrap:wrap;gap:4px}
+.toks span{font-family:var(--f-mono);font-size:13px;border:1.5px solid var(--ink);padding:1px 6px}
+.toks span.gone{border-style:dashed;color:var(--neg);text-decoration:line-through}
+.toks span.chg{background:var(--ink);color:var(--bg)}
+.stage{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px;align-items:start}
+.stage > b{font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding-top:3px}
+@media (max-width:600px){.stage{grid-template-columns:minmax(0,1fr)}}
+.plist{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.plist span{font-family:var(--f-mono);font-size:13px;border:1.5px solid var(--ink);padding:2px 6px;min-width:40px;text-align:center}
+.plist span.ptr{background:var(--ink);color:var(--bg)}
+.plist span.done{color:var(--neg);border-color:var(--neg)}
+.plist span.ans{border-width:3px}
+.plist .lbl{font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.05em;min-width:70px;border:0}
+.svgwrap{overflow-x:auto;max-width:100%}
+svg text{font-family:var(--f-mono)}
+svg.chart{width:100%;height:auto;display:block;max-width:640px}
+.c-axis{stroke:var(--ink);stroke-width:1}
+.c-grid{stroke:var(--line);stroke-width:1}
+.c-txt{fill:var(--muted);font-size:11px}
+.c-lin{fill:none;stroke:var(--neg);stroke-width:2;stroke-dasharray:6 4}
+.c-curve{fill:none;stroke:var(--ink);stroke-width:2.5}
+.c-cap{stroke:var(--ink);stroke-width:1;stroke-dasharray:2 3}
+.c-dot{fill:var(--ink)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:1rem 0;max-width:none;list-style:none;padding:0;counter-reset:bx}
+.boxes li{border:2px solid var(--ink);padding:10px 12px;margin:0;font-size:.93rem;counter-increment:bx}
+.boxes li::before{content:counter(bx) ". ";font-weight:800}
+.pipe{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:1rem 0;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+.pipe span{border:2px solid var(--ink);padding:5px 10px}
+.pipe i{font-style:normal}
+.mrow{display:grid;grid-template-columns:28px 52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow .rk{font-family:var(--f-display);font-size:20px}
+.mrow .id{font-family:var(--f-mono);font-weight:700}
+.mrow .tx{font-size:13.5px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .ct{display:flex;gap:4px;flex-wrap:wrap}
+@media (max-width:600px){.mrow{grid-template-columns:24px 46px minmax(0,1fr)}.mrow .ct{grid-column:2 / -1}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.kpi{border:2px solid var(--ink);padding:6px 10px}
+.kpi b{display:block;font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+
+/* Quiz */
+.quiz{display:grid;gap:14px}
+.q{border:2px solid var(--ink);padding:12px 14px;background:var(--bg)}
+.q p.qt{margin:0 0 8px;font-weight:800}
+.q .opts{display:grid;gap:6px}
+.q button.opt{text-align:left;font:inherit;font-size:15px;padding:7px 11px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;border-radius:0}
+.q button.opt:hover{background:var(--surface-2)}
+.q button.opt.right{background:var(--ink);color:var(--bg)}
+.q button.opt.right::after{content:"  ✓ correct";font-weight:800}
+.q button.opt.wrong{color:var(--muted);text-decoration:line-through;border-style:dashed}
+.q .why{margin-top:8px;font-size:15px;color:var(--muted)}
+
+/* Players (Run / Step / Speed) */
+.player{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.player .pos{color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.player input[type=range]{width:110px}
+.msg{font-size:14.5px;min-height:2.6em;padding:8px 12px;background:var(--surface-2);border-left:3px solid var(--ink)}
+.msg b{font-weight:800}
+
+/* Scan rows */
+.scan{position:relative;max-height:380px;overflow:auto;border:1.5px solid var(--ink);padding:4px 0}
+.srow{display:grid;grid-template-columns:62px minmax(0,1fr) 22px;gap:8px;padding:3px 10px;border-left:4px solid transparent;font-size:14px;line-height:1.45}
+.srow .id{font-family:var(--f-mono);font-weight:700}
+.srow .relb{font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ink);padding:0 3px;margin-left:4px;vertical-align:2px}
+.srow.pend{color:var(--neg)}
+.srow.miss{color:var(--muted)}
+.srow.hit{border-left-color:var(--ink)}
+.srow.cur{background:var(--surface-2);outline:2px solid var(--ink);outline-offset:-2px}
+.srow .mk{font-weight:800;text-align:center}
+
+/* Pipeline */
+.stg{display:grid;grid-template-columns:130px minmax(0,1fr);gap:10px;align-items:start;padding:8px 10px;border:1.5px solid var(--line)}
+.stg > b{font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding-top:3px}
+.stg.act{border:2px solid var(--ink)}
+.stg.wait{opacity:.35}
+@media (max-width:600px){.stg{grid-template-columns:minmax(0,1fr)}}
+.sw{background:var(--faint);border-bottom:2px dashed var(--ink);padding:0 2px}
+.numx{text-decoration:line-through;color:var(--neg)}
+.toks span.cur{outline:3px solid var(--ink);outline-offset:1px}
+.toks span.stopw{background:var(--faint);border-style:dashed}
+.toks span.pend{color:var(--neg);border-color:var(--line)}
+.toks s{color:var(--neg);text-decoration-thickness:2px}
+.toks span.chg s{color:var(--bg);opacity:.6}
+.stoplist{display:flex;flex-wrap:wrap;gap:4px}
+.stoplist span{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);padding:0 5px;color:var(--muted)}
+.stoplist span.lit{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stoplist span.now{outline:3px solid var(--ink);outline-offset:1px}
+@keyframes pop{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+.pop{animation:pop .35s ease-out}
+@media (prefers-reduced-motion: reduce){.pop{animation:none}}
+
+/* Index build */
+.ixgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:14px}
+@media (max-width:760px){.ixgrid{grid-template-columns:minmax(0,1fr)}}
+.doccard{border:2px solid var(--ink);padding:10px 12px;display:grid;gap:8px;align-content:start}
+.doccard .id{font-family:var(--f-display);font-size:24px;line-height:1}
+.ptable{display:grid;gap:3px}
+.prow{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
+.prow > b{font-family:var(--f-mono);font-weight:700;text-align:right}
+.prow.hot > b{background:var(--ink);color:var(--bg);padding:0 4px}
+.prow .plist span{font-size:12px;padding:1px 4px;min-width:34px}
+.prow .plist span.new{background:var(--ink);color:var(--bg)}
+
+/* Race bars */
+.race{display:grid;gap:2px;border:1.5px solid var(--ink);padding:6px 10px}
+.rrow{display:grid;grid-template-columns:26px 40px minmax(0,1fr) 54px;gap:6px;align-items:center;font-size:12.5px;font-family:var(--f-mono)}
+.rrow .trk{height:12px;background:var(--faint);position:relative}
+.rrow .bar{position:absolute;inset:0 auto 0 0;background:var(--ink);transition:width .3s ease}
+.rrow.cur{outline:2px solid var(--ink);outline-offset:1px}
+.rrow.z{opacity:.35}
+.rrow.wait{opacity:.5}
+.rrow .v{text-align:right;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion: reduce){.rrow .bar{transition:none}}
+.lk{font:inherit;font-family:var(--f-mono);font-weight:700;background:none;border:0;border-bottom:1.5px solid var(--ink);color:var(--ink);cursor:pointer;padding:0}
+.lk.sel{background:var(--ink);color:var(--bg)}
+.why{display:grid;gap:10px}
+.cbar{height:10px;background:var(--ink);display:block}
+
+/* Bench bars */
+.gbars{display:grid;gap:4px}
+.gb{display:grid;grid-template-columns:26px minmax(0,1fr) 64px;gap:8px;align-items:center;font-size:12.5px;font-family:var(--f-mono)}
+.gb .tr{height:16px;position:relative}
+.gb .g{position:absolute;inset:0 auto 0 0;border:1.5px solid var(--ink);background:var(--bg)}
+.gb .c{position:absolute;inset:3px auto 3px 3px;background:var(--ink)}
+.gb.wait{opacity:.3}
+.gb .v{text-align:right}
+.mrow.cur{background:var(--surface-2);outline:2px solid var(--ink);outline-offset:-2px}
+
+/* Quiz carousel */
+.qc{border:2px solid var(--ink);padding:14px 16px;display:grid;gap:12px}
+.qc .eyebrow{font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.qnav{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1.5px solid var(--ink);padding-top:10px}
+.qnav .btn{min-width:56px;font-size:18px;padding:4px 14px}
+.qnav .btn:disabled{opacity:.3;cursor:default}
+.qdots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.qdots button{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);background:var(--bg);padding:0;cursor:pointer}
+.qdots button.now{outline:2px solid var(--ink);outline-offset:2px}
+.qdots button.ok{background:var(--ink)}
+.qdots button.bad{border-style:dashed;background:var(--faint)}
+.qscore{font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}
+
+/* Recap */
+.recap{border:2px solid var(--ink);margin-top:3rem;padding:14px 18px}
+.recap h3{border-bottom:0;padding-bottom:0;margin-top:0}
+.recap ul{columns:2;column-gap:32px;max-width:none}
+.recap li{break-inside:avoid}
+@media (max-width:700px){.recap ul{columns:1}}
+.foot{margin-top:5rem;font-size:13.5px;color:var(--muted);border-top:1.5px solid var(--ink);padding-top:16px}
+
+.theme-btn{width:100%;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.theme-btn .ico{font-family:var(--f-mono);font-weight:400}
+
+.progress-pill{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 14px);right:calc(max(16px,env(safe-area-inset-right,0px)));
+  display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 10px;max-width:min(300px,calc(100vw - 32px));
+  background:var(--bg);color:var(--ink);border:2px solid var(--ink);padding:8px 12px 10px;box-shadow:4px 4px 0 var(--ink);
+  opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+.progress-pill.show{opacity:1;transform:none}
+.progress-pill b{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.progress-pill span{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.progress-pill i{grid-column:1 / -1;height:4px;background:var(--faint);display:block}
+.progress-pill s{display:block;height:100%;background:var(--ink);text-decoration:none;width:0}
+@media (prefers-reduced-motion: reduce){.progress-pill{transition:opacity .15s linear;transform:none}}
+
+html,body{overflow-x:clip}
+main > *,.lab-body > *,.grid2 > *,.call{min-width:0}
+mjx-container{max-width:100%}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;margin:.4em 0 !important}
+@media (max-width:600px){
+  body{font-size:15.5px;line-height:1.65}
+  .chapter{padding-top:3.5rem}
+  .chapter-head{padding:22px 0 18px}
+  h3{margin-top:2.4rem}
+  .lab-head{padding:9px 12px}
+  .lab-body{padding:12px}
+  .call{padding:10px 12px}
+  th,td{padding:7px 9px}
+  table{font-size:.85rem}
+  th{white-space:normal}
+  .recap{padding:12px}
+  .boxes{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:380px){.boxes{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+<script>
+try{var t=localStorage.getItem("qc-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code','svg','select','button','input']}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+
+<style>
+/* ---- Added: figures from the slides, real-world boxes ---- */
+.fig{margin:1.3rem 0;max-width:44rem;min-width:0}
+.fig .frame{display:block;background:#fff;border:1.5px solid var(--ink);padding:10px}
+.fig img{display:block;width:100%;height:auto;cursor:zoom-in}
+.fig.xs{max-width:17rem}.fig.sm{max-width:25rem}.fig.md{max-width:34rem}.fig.lg{max-width:44rem}
+.fig figcaption{font-size:.88rem;line-height:1.45;color:var(--muted);margin-top:6px}
+.fig figcaption .ref{margin-right:6px}
+.grid2 .fig{margin:.4rem 0}
+.flipnav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px}
+.flipnav .btn{min-width:52px;font-size:17px;padding:3px 12px}
+.flipnav .btn:disabled{opacity:.3;cursor:default}
+.flipnav span{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.call.real{border-left-width:10px}
+.call.real > .tag{background:var(--surface-2)}
+.chip.real{border-left-width:9px}
+dialog.zoom{border:2px solid var(--ink);background:#fff;padding:12px;max-width:min(96vw,1200px);max-height:94vh;overflow:auto}
+dialog.zoom::backdrop{background:rgba(0,0,0,.72)}
+dialog.zoom img{display:block;max-width:100%;height:auto;margin:0 auto}
+dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
+/* ---- ML page demos ---- */
+.c-err{stroke:var(--ink);stroke-width:1.2;stroke-dasharray:3 3}
+.c-x{stroke:var(--ink);stroke-width:2;fill:none}
+.c-x.big{stroke-width:3}
+.c-step{fill:none;stroke:var(--ink);stroke-width:1.5}
+.c-box{fill:none;stroke:var(--ink);stroke-width:1.5}
+.c-fence{stroke:var(--ink);stroke-width:2;stroke-dasharray:7 4}
+.c-maj{fill:var(--dim)}
+.c-new{fill:var(--bg);stroke:var(--ink);stroke-width:2}
+.c-bad{fill:none;stroke:var(--ink);stroke-width:2}
+.c-ring{fill:var(--bg);stroke:var(--ink);stroke-width:1.8}
+.c-ring.bad{fill:var(--ink)}
+.c-tri{fill:var(--bg);stroke:var(--ink);stroke-width:1.8}
+.c-tri.bad{fill:var(--ink)}
+td.hit{background:var(--ink);color:var(--bg);font-weight:700}
+tr.rowcur td{background:var(--surface-2);font-weight:700}
+.pipe span.cur{background:var(--ink);color:var(--bg)}
+.pipe span.done{border-style:dashed}
+.fdr{display:grid;grid-template-columns:58px minmax(0,1fr) 78px;gap:8px;align-items:center;font-size:12.5px;font-family:var(--f-mono);padding:2px 4px}
+.fdr.cur{outline:2px solid var(--ink)}
+.fdr.wait{opacity:.5}
+.fdr .v{text-align:right}
+.fdc{display:flex;gap:2px}
+.fdc i{flex:1;height:16px;border:1.5px solid var(--ink);display:block}
+.fdc i.t{background:var(--ink)}
+#im-vals span.ans{background:var(--ink);color:var(--bg)}
+</style>
+<style>
+/* Phones and tablets: the progress bar stays on screen and opens the menu */
+.progress-pill{font:inherit;text-align:left;border-radius:0}
+.pp-menu,.toc-close,.toc-scrim{display:none}
+.legend .chip{margin:0}
+@media (max-width:960px){
+  .shell{padding-top:calc(env(safe-area-inset-top,0px) + 66px)}
+  main [id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 66px)}
+  .progress-pill{top:0;left:0;right:0;width:100%;max-width:none;z-index:30;opacity:1;transform:none;pointer-events:auto;cursor:pointer;transition:none;
+    grid-template-columns:auto minmax(0,1fr) auto;gap:0 10px;border:0;border-bottom:2px solid var(--ink);box-shadow:none;
+    padding:calc(env(safe-area-inset-top,0px) + 8px) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));-webkit-tap-highlight-color:transparent}
+  .progress-pill b{font-size:22px}
+  .progress-pill span{-webkit-line-clamp:1;word-break:break-all}
+  .progress-pill i{position:absolute;left:0;right:0;bottom:0;height:4px}
+  .pp-menu{display:block;font-style:normal;font-weight:800;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border:1.5px solid var(--ink);padding:4px 9px}
+  .toc{position:fixed;top:0;bottom:0;left:0;z-index:40;align-self:stretch;width:min(86vw,360px);max-height:none;background:var(--bg);border:0;border-right:2px solid var(--ink);
+    padding:0 16px calc(env(safe-area-inset-bottom,0px) + 28px) max(16px,env(safe-area-inset-left,0px));
+    overflow-y:auto;overscroll-behavior:contain;
+    transform:translateX(-105%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
+  .nav-open .toc{transform:none;visibility:visible;transition:transform .22s ease}
+  .toc-scrim{display:block;position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .22s ease}
+  .nav-open .toc-scrim{opacity:1;pointer-events:auto}
+  body.nav-open{overflow:hidden}
+  .toc-close{display:block}
+  .toc-top{position:sticky;top:0;z-index:1;background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 14px) 0 12px;border-bottom:2px solid var(--ink);margin-bottom:12px}
+  .toc .toc-top a.hub-back{margin:0;align-self:stretch;display:flex;align-items:center}
+  .toc-top .theme-btn{margin:0;grid-column:1 / -1}
+  .toc summary{list-style:none;cursor:default;border-bottom:2px solid var(--ink)}
+  .toc summary::-webkit-details-marker{display:none}
+  .toc a{padding:7px 8px;font-size:14.5px}
+  .toc .chap > a{font-size:12.5px}
+  .refs .ref{max-width:100%;white-space:normal}
+}
+@media (max-width:960px) and (prefers-reduced-motion: reduce){.toc,.toc-scrim{transition:none}}
+</style>
+<style>
+.dl{margin:.4rem 0 1rem}
+.dl li{margin:4px 0}
+.dl a{font-weight:600}
+.dl-st{font-weight:700}
+</style>
+<style>
+pre,code,textarea,.mono,.readout{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+</style>
+<style>.toc a.hub-back{display:block;padding:6px 12px;margin-bottom:8px;border:1.5px solid var(--ink);color:var(--ink);font-weight:700;font-size:13.5px;text-decoration:none}.toc a.hub-back:hover{background:var(--ink);color:var(--bg)}</style>
+<button class="progress-pill" id="pp" type="button" tabindex="-1" aria-hidden="true" aria-controls="toc-nav" aria-expanded="false"><b id="pp-pct">0%</b><span id="pp-sec"></span><em class="pp-menu" aria-hidden="true">Menu</em><i><s id="pp-bar"></s></i></button>
+<div class="toc-scrim" id="toc-scrim"></div>
+<div class="shell">
+<nav class="toc" id="toc-nav" aria-label="Contents">
+  <div class="toc-top">
+  <a class="hub-back" href="index.html">← All subjects</a>
+  <button class="btn toc-close" id="toc-close" type="button" aria-label="Close menu">Close</button>
+  <button class="btn theme-btn" id="theme-btn" type="button" aria-label="Switch colour theme"><span id="theme-lbl">Dark mode</span><span class="ico" aria-hidden="true">◐</span></button>
+  </div>
+  <details id="toc-d" open>
+    <summary>Contents</summary>
+    <ol>
+      <li class="chap"><a href="#start">Before we begin</a></li>
+      <li class="chap"><a href="#ch1">1 · What is DevOps?</a>
+        <ol>
+          <li><a href="#c1-what">The definition</a></li>
+          <li><a href="#c1-hist">Where it came from</a></li>
+          <li><a href="#c1-ways">The Three Ways</a></li>
+          <li><a href="#c1-life">The lifecycle</a></li>
+          <li><a href="#c1-tools">Tools at each stage</a></li>
+          <li><a href="#quiz1">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch2">2 · Git and CI/CD</a>
+        <ol>
+          <li><a href="#c2-role">The DevOps engineer</a></li>
+          <li><a href="#c2-git">Git triggers everything</a></li>
+          <li><a href="#c2-pr">The pull request workflow</a></li>
+          <li><a href="#c2-ci">Continuous integration</a></li>
+          <li><a href="#c2-cd">Delivery vs deployment</a></li>
+          <li><a href="#c2-vs">CI/CD vs DevOps</a></li>
+          <li><a href="#quiz2">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch3">3 · Testing in DevOps</a>
+        <ol>
+          <li><a href="#c3-why">Why test, and when</a></li>
+          <li><a href="#c3-auto">Manual vs automated</a></li>
+          <li><a href="#c3-tdd">TDD and BDD</a></li>
+          <li><a href="#c3-types">Functional and non-functional</a></li>
+          <li><a href="#c3-levels">The four levels</a></li>
+          <li><a href="#c3-int">Integration techniques</a></li>
+          <li><a href="#c3-lint">Linting</a></li>
+          <li><a href="#c3-cov">Code coverage</a></li>
+          <li><a href="#quiz3">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch4">4 · Lab 1: CI with GitHub Actions</a>
+        <ol>
+          <li><a href="#c4-what">What you build</a></li>
+          <li><a href="#c4-app">The app and its test</a></li>
+          <li><a href="#c4-scripts">Lint, test, coverage</a></li>
+          <li><a href="#c4-yml">The workflow file</a></li>
+          <li><a href="#c4-run">Run the pipeline</a></li>
+          <li><a href="#c4-pr">CI on a pull request</a></li>
+          <li><a href="#quiz4">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch5">5 · Virtualization and containers</a>
+        <ol>
+          <li><a href="#c5-bare">Bare metal</a></li>
+          <li><a href="#c5-vm">Virtual machines</a></li>
+          <li><a href="#c5-ct">Containers</a></li>
+          <li><a href="#c5-cmp">Compare the stacks</a></li>
+          <li><a href="#c5-how">How a container is made</a></li>
+          <li><a href="#c5-orch">Orchestration</a></li>
+          <li><a href="#quiz5">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch6">6 · Docker</a>
+        <ol>
+          <li><a href="#c6-arch">Architecture</a></li>
+          <li><a href="#c6-img">Image vs container</a></li>
+          <li><a href="#c6-df">The Dockerfile</a></li>
+          <li><a href="#c6-cache">Layer caching</a></li>
+          <li><a href="#c6-term">Try the commands</a></li>
+          <li><a href="#quiz6">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#sheet">Commands and glossary</a></li>
+      <li class="chap"><a href="#materials">Course materials</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+<!-- ======================================================= HERO -->
+<header class="hero" id="start">
+  <div class="slidebar"><span>DevOps</span><span>Weeks 1, 2, 4 · Lab 1</span></div>
+  <h1>From Commit to Container</h1>
+  <p class="lede">Hi. Writing code is only half of shipping software. Someone has to build it, test it, put it on a server and keep it running, and for a long time that was a different team who found out about your change last. DevOps is how those two halves became one process. This page follows a single change from your editor to a running container, and stops at every tool and command along the way.</p>
+  <div class="legend" aria-label="How to read the boxes">
+    <span class="chip dash">Think of it like…</span>
+    <span class="chip real">Real world</span>
+    <span class="chip thick">Key idea</span>
+    <span class="chip inv">Careful</span>
+    <span class="chip lab">In the lab</span>
+  </div>
+  <p class="small muted"><b>Pictures come from your slides,</b> and each caption says which week and slide, so you can flip back to it. Tap any picture to see it larger. The code is the code from Lab 1 and the Week 4 deck. The demos run in your browser, so nothing here touches a real server. There's no Week 3 deck in the folder, so the page goes from testing straight to containers.</p>
+  <div class="call key"><span class="tag">The plan</span>
+    <ul>
+      <li><b>Chapter 1</b> says what DevOps is, where it came from, and the eight stages every change goes through. (Week 1)</li>
+      <li><b>Chapter 2</b> shows how a Git push starts the automation, and what CI and CD each automate. (Week 1)</li>
+      <li><b>Chapter 3</b> covers testing: the kinds, the levels, linting and coverage. (Week 2)</li>
+      <li><b>Chapter 4</b> walks through Lab 1 line by line and runs its pipeline. (Lab 1)</li>
+      <li><b>Chapter 5</b> goes from physical servers to virtual machines to containers. (Week 4)</li>
+      <li><b>Chapter 6</b> gets hands-on with Docker. (Week 4)</li>
+    </ul>
+  </div>
+</header>
+
+<!-- ======================================================= CHAPTER 1 -->
+<section class="chapter" id="ch1">
+  <div class="chapter-head">
+    <span class="num">Chapter 1</span>
+    <h2>What Is DevOps?</h2>
+  </div>
+  <div class="refs"><span class="ref">Wk 1 · s.4–22</span></div>
+
+  <section class="sub" id="c1-what">
+  <h3>1.1 The definition</h3>
+  <div class="call key"><span class="tag">Definition</span>
+    <p><b>DevOps</b> is the practice of operations and development engineers working together through the whole life of a service, from design and development to running it in production.</p>
+  </div>
+  <p>The name is the two job titles joined. <b>Dev</b> writes the features. <b>Ops</b> runs the servers. Before DevOps they usually sat in separate teams with opposite goals: developers were rewarded for shipping changes, and operations was rewarded for keeping things stable, and every change is a risk to stability. So releases were rare, large and stressful.</p>
+  <p>The slide's point is that DevOps is <b>more than tools</b>. You can install Jenkins and Docker and still have two teams throwing work over a wall. It's a way of working where the same people care about the code and about how it runs.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w1-infinity.webp" width="1200" height="565" loading="lazy" alt="The DevOps infinity loop: plan, code, build, test on the Dev side, then release, deploy, operate, monitor on the Ops side, looping back to plan"></span><figcaption><span class="ref">Wk 1 · s.13</span>The loop never ends: what you learn from monitoring goes back into planning.</figcaption></figure>
+  </section>
+
+  <section class="sub" id="c1-hist">
+  <h3>1.2 Where it came from</h3>
+  <p><b>Waterfall</b> ran each phase once, in order: requirements, design, implementation, testing, then deployment. You found out whether it worked at the very end. <b>Agile</b> cut the work into short sprints so the software is built and checked in small pieces. Agile fixed the development side, but deployment was still slow and manual. DevOps extends the same idea, small and frequent, all the way to production.</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w1-history.webp" width="1200" height="510" loading="lazy" alt="A waterfall staircase from requirements down to deployment and maintenance, with an arrow to three repeating agile sprints"></span><figcaption><span class="ref">Wk 1 · s.5</span>Waterfall runs once, top to bottom. Agile repeats short sprints.</figcaption></figure>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w1-timeline.webp" width="1200" height="653" loading="lazy" alt="A timeline: DevOps origins 2007, Agile Infrastructure talk 2008, the term DevOps 2009, the Continuous Delivery book 2010, The Phoenix Project 2013, State of DevOps report 2015, The DevOps Handbook 2016, ten years of DevOpsDays 2019"></span><figcaption><span class="ref">Wk 1 · s.6</span>The milestones on the slide.</figcaption></figure>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>The 2009 point on that timeline is a conference talk. At Velocity 2009, John Allspaw and Paul Hammond from Flickr presented <b>"10+ Deploys per Day: Dev and Ops Cooperation at Flickr"</b>, at a time when many companies released a few times a year. Patrick Debois, who had been pushing the same idea in Belgium, then organised the first <b>DevOpsDays</b> in Ghent that autumn, and the name stuck.</p>
+  </div>
+  <p>What do teams actually get from it? The slide lists four things: better collaboration, more efficiency, faster time to market, and higher quality and security. The last one surprises people, because shipping more often sounds riskier. It isn't, because each release is small and goes through the same automated checks.</p>
+  <div class="refs"><span class="ref">Wk 1 · s.4–7</span></div>
+  </section>
+
+  <section class="sub" id="c1-ways">
+  <h3>1.3 The Three Ways</h3>
+  <p>Gene Kim, author of <i>The Phoenix Project</i> and <i>The DevOps Handbook</i>, sums the principles up as three "ways".</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w1-threeways.webp" width="1200" height="515" loading="lazy" alt="Three small diagrams: an arrow from Dev to Ops for systems thinking; a loop from Ops back to Dev for feedback; a loop with many small cycles for experimentation"></span><figcaption><span class="ref">Wk 1 · s.8</span>Flow left to right, feedback right to left, and lots of small loops.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Way</th><th>What it means</th><th>In practice</th></tr></thead>
+    <tbody>
+      <tr><td><b>1. Flow / systems thinking</b></td><td>Optimise the whole path from idea to production, not one team's part of it.</td><td>Small batches, remove bottlenecks such as a manual approval that takes a week.</td></tr>
+      <tr><td><b>2. Amplify feedback loops</b></td><td>Problems should travel back to the people who caused them, quickly.</td><td>CI tells you in minutes that your commit broke a test. Monitoring alerts the team that shipped.</td></tr>
+      <tr><td><b>3. Continual experimentation and learning</b></td><td>Make it safe to try things and to fail.</td><td>Blameless post-mortems, feature flags, trying a change on 1% of users first.</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Wk 1 · s.8–12</span></div>
+  </section>
+
+  <section class="sub" id="c1-life">
+  <h3>1.4 The lifecycle</h3>
+  <p>Every change goes round the loop in eight stages. Here's one real change, "add a <code>/health</code> endpoint", going all the way round. It's the change you make at the end of Lab 1.</p>
+  <div class="lab" id="lab-life">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Follow one change round the loop</h4></div>
+    <div class="lab-body">
+      <div class="pipe" id="lf-pipe"></div>
+      <div class="player" id="lf-player"></div>
+      <div class="msg" id="lf-msg"></div>
+      <pre class="code" id="lf-code"></pre>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Wk 1 · s.13–21</span></div>
+  </section>
+
+  <section class="sub" id="c1-tools">
+  <h3>1.5 Tools at each stage</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Stage</th><th>Goal</th><th>Tools on the slides</th></tr></thead>
+    <tbody>
+      <tr><td><b>Plan</b></td><td>Everyone knows what to build</td><td>Jira, Trello, Asana, Azure DevOps</td></tr>
+      <tr><td><b>Code</b></td><td>Write and review code together</td><td>Git, GitHub, GitLab, Bitbucket</td></tr>
+      <tr><td><b>Build</b></td><td>Package the code into something runnable</td><td>Maven, Gradle, npm, Docker</td></tr>
+      <tr><td><b>Test</b></td><td>Catch bugs before users do</td><td>Selenium, JUnit, TestNG, Postman, Cypress</td></tr>
+      <tr><td><b>Release</b></td><td>Version, tag and approve</td><td>Jenkins, GitLab CI, Bamboo</td></tr>
+      <tr><td><b>Deploy</b></td><td>Put it on servers reliably</td><td>Docker, Kubernetes, Ansible, Terraform, AWS/GCP/Azure</td></tr>
+      <tr><td><b>Operate</b></td><td>Keep it available and scaled</td><td>Prometheus, Grafana, Nagios, ELK</td></tr>
+      <tr><td><b>Monitor</b></td><td>Notice problems, collect feedback</td><td>Prometheus, Grafana, ELK, New Relic, Datadog</td></tr>
+    </tbody></table></div>
+  <p>Don't memorise the whole wheel below. Learn one tool per stage well. The ones this course actually uses are Git, GitHub Actions and Docker.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w1-wheel.webp" width="1200" height="1201" loading="lazy" alt="The DevOps tools stack wheel: dozens of tool logos arranged around the plan, code, build, test, release, deploy, operate and monitor segments"></span><figcaption><span class="ref">Wk 1 · s.22</span>The tools wheel. Tap to zoom in.</figcaption></figure>
+  <div class="refs"><span class="ref">Wk 1 · s.14–22</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 1 recap</h3>
+    <ul>
+      <li>DevOps: developers and operations own the whole life of the service together.</li>
+      <li>It's a culture first. Tools support it.</li>
+      <li>Waterfall: once, in order. Agile: short sprints. DevOps: small changes all the way to production.</li>
+      <li>Three Ways: flow, feedback, experimentation.</li>
+      <li>Lifecycle: plan, code, build, test, release, deploy, operate, monitor, and back to plan.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz1">Check yourself: Chapter 1</h3>
+  <div class="quiz" data-quiz="1"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 2 -->
+<section class="chapter" id="ch2">
+  <div class="chapter-head">
+    <span class="num">Chapter 2</span>
+    <h2>Git and CI/CD</h2>
+  </div>
+  <div class="refs"><span class="ref">Wk 1 · s.23–37</span></div>
+
+  <section class="sub" id="c2-role">
+  <h3>2.1 The DevOps engineer</h3>
+  <p>The roadmap on the slide is the skill list for the job, in roughly the order you learn it: Linux and networking, then Git, CI/CD pipelines, containers and Kubernetes, infrastructure as code, cloud, then security, monitoring and reliability engineering. This course covers the middle of it: Git, CI/CD and containers.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w1-roadmap.webp" width="1200" height="1231" loading="lazy" alt="A nine-step DevOps roadmap: fundamentals, version control with Git, CI/CD pipelines, containers and Kubernetes, infrastructure as code, cloud computing, security, observability and monitoring, site reliability engineering"></span><figcaption><span class="ref">Wk 1 · s.25</span>The DevOps roadmap. Tap to zoom in.</figcaption></figure>
+  </section>
+
+  <section class="sub" id="c2-git">
+  <h3>2.2 Git triggers everything</h3>
+  <p>In DevOps, Git is the <b>single source of truth</b>. If it isn't committed, it doesn't exist: the code, the tests, the pipeline file and even the server configuration all live in the repository. That matters because Git events are what <b>start the automation</b>.</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w1-git.webp" width="1200" height="500" loading="lazy" alt="GitHub at the centre: fork, clone, commit, push and pull request arrows between a developer&#x27;s copy and the repository, with a GitHub Workflow badge"></span><figcaption><span class="ref">Wk 1 · s.27</span>Each arrow is a Git event that can start a workflow.</figcaption></figure>
+  <p>The four events on the slide are <code>push</code>, <code>pull_request</code>, <code>merge</code> and <code>tag</code>. A workflow file chooses which ones it listens to with its <code>on:</code> block. This is the one from Lab 1:</p>
+<pre class="code">on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]</pre>
+  <div class="lab" id="lab-events">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Does this event start the workflow?</h4></div>
+    <div class="lab-body">
+      <div class="tabs" id="ev-btns" role="group" aria-label="Git events"></div>
+      <div class="msg" id="ev-msg"></div>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>GitHub has no separate <code>merge</code> event. Merging a pull request into <code>main</code> creates a commit on <code>main</code>, so it arrives as a <code>push</code> to <code>main</code>. That's why Lab 1's workflow runs twice for one feature: once on the pull request, and once after you merge it.</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c2-pr">
+  <h3>2.3 The pull request workflow</h3>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w1-pr.webp" width="1200" height="467" loading="lazy" alt="The master branch runs along the top; a feature branch splits off, takes commits, becomes a pull request with a template, gets reviewed, and merges back, with CI running tests at the pull request and at the merge"></span><figcaption><span class="ref">Wk 1 · s.28</span>CI runs twice: when the pull request opens, and when it merges.</figcaption></figure>
+  <ol>
+    <li>Create a feature branch from <code>main</code>: <code>git checkout -b feature/health-route</code>.</li>
+    <li>Commit your changes on that branch and push it.</li>
+    <li>Open a <b>pull request</b> (PR). CI runs the tests on it automatically.</li>
+    <li>A teammate reviews the code. The PR can't merge while CI is red, if the repository is set up that way.</li>
+    <li>Merge into <code>main</code>. CI runs again on the merged code.</li>
+  </ol>
+  <p>The point of the branch is that <code>main</code> always works. Nobody's half-finished code lands there, and nothing lands there untested.</p>
+  </section>
+
+  <section class="sub" id="c2-ci">
+  <h3>2.4 Continuous integration</h3>
+  <div class="call key"><span class="tag">Definition</span>
+    <p><b>Continuous integration (CI)</b> means merging everyone's changes into the shared repository often, and automatically building and testing each change, usually with unit and integration tests, to prove it hasn't broken the app.</p>
+  </div>
+  <p>"Integration" is the hard part it's named after. If five people each work alone for a month and then merge, you get a month of conflicts at once. If they merge every day, each merge is small, and when the build breaks you know it was today's change.</p>
+  <p>The slide's five steps to set it up:</p>
+  <ol class="boxes">
+    <li>Write tests for the critical parts of your code.</li>
+    <li>Get a CI service to run them on every push.</li>
+    <li>Integrate your changes every day.</li>
+    <li>Fix the build as soon as it breaks.</li>
+    <li>Write tests for every new feature.</li>
+  </ol>
+  <p>Step 4 is the cultural one. A red build that everyone ignores is worse than no CI at all, because people stop trusting the signal.</p>
+  <div class="refs"><span class="ref">Wk 1 · s.29–31</span></div>
+  </section>
+
+  <section class="sub" id="c2-cd">
+  <h3>2.5 Continuous delivery vs continuous deployment</h3>
+  <p>CD has two meanings, and the difference is one step.</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w1-cicd.webp" width="1200" height="229" loading="lazy" alt="Three boxes: continuous integration is build, test, merge; continuous delivery automatically releases to a repository; continuous deployment automatically deploys to production"></span><figcaption><span class="ref">Wk 1 · s.33</span>The same pipeline. The only difference is the last box.</figcaption></figure>
+  <ul>
+    <li><b>Continuous delivery</b>: every change that passes is automatically packaged and released to a repository, ready to deploy. A person presses the button to put it in production.</li>
+    <li><b>Continuous deployment</b>: no button. If it passes, it goes to production automatically.</li>
+  </ul>
+  <div class="lab" id="lab-cd">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Delivery or deployment?</h4></div>
+    <div class="lab-body">
+      <div class="tabs" role="group" aria-label="Mode"><button class="btn on" type="button" data-cd="delivery">Continuous delivery</button><button class="btn" type="button" data-cd="deploy">Continuous deployment</button></div>
+      <div id="cd-stages" style="display:grid;gap:6px"></div>
+      <div class="row"><button class="btn primary" type="button" id="cd-run">▶ Push a commit</button><button class="btn" type="button" id="cd-ok" hidden>Approve release</button></div>
+      <div class="msg" id="cd-msg"></div>
+    </div>
+  </div>
+  <p>Why would anyone keep the button? Some releases need a human decision: a marketing launch date, an app store review, a bank's change approval. Continuous deployment needs a lot of trust in your tests, because nothing stands between them and your users.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>On 1 August 2012, Knight Capital, a US trading firm, deployed new code to its eight trading servers by hand. A technician missed one server. That server still had old, retired code on it, which the new release accidentally switched back on, and it sent millions of unintended orders. The firm lost over $400 million in about 45 minutes. An automated deploy does the same thing on every server every time, and that is the whole reason the Deploy stage is automated.</p>
+  </div>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w1-workflow.webp" width="1200" height="1218" loading="lazy" alt="A detailed CI/CD workflow: source code management, build tools, quality analysis, unit testing, deploy to test environment, integration testing, acceptance testing, packaging, and deploy to production, with example tools at each stop"></span><figcaption><span class="ref">Wk 1 · s.34</span>A fuller pipeline with real tool names. Tap to zoom in.</figcaption></figure>
+  <p>The benefits on the slide follow from automation: fewer bugs reach users, less manual work, faster and less risky releases, and quicker user feedback.</p>
+  <div class="refs"><span class="ref">Wk 1 · s.32–35</span></div>
+  </section>
+
+  <section class="sub" id="c2-vs">
+  <h3>2.6 CI/CD vs DevOps</h3>
+  <p>CI/CD is a <b>part</b> of DevOps. CI/CD covers getting code from a commit to a release: version control, integration, testing and deployment. DevOps covers the whole loop, including planning, running the service and monitoring it, plus the culture around all of it.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w1-tools.webp" width="1200" height="733" loading="lazy" alt="A board of CI/CD tool logos: GitHub Actions, GitLab CI/CD, Jenkins, Argo, Bamboo, CircleCI, Axify, Buddy, Spinnaker, TeamCity, Azure and Concourse"></span><figcaption><span class="ref">Wk 1 · s.36</span>CI/CD tools. Lab 1 uses GitHub Actions.</figcaption></figure>
+  <div class="refs"><span class="ref">Wk 1 · s.36–37</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 2 recap</h3>
+    <ul>
+      <li>Git is the source of truth, and Git events start the automation.</li>
+      <li>Work on a branch, open a PR, let CI test it, review, merge.</li>
+      <li>CI: integrate often, and build and test every change automatically.</li>
+      <li>Continuous delivery stops at a release button. Continuous deployment goes straight to production.</li>
+      <li>CI/CD is one part of DevOps.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz2">Check yourself: Chapter 2</h3>
+  <div class="quiz" data-quiz="2"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 3 -->
+<section class="chapter" id="ch3">
+  <div class="chapter-head">
+    <span class="num">Chapter 3</span>
+    <h2>Testing in DevOps</h2>
+  </div>
+  <div class="refs"><span class="ref">Wk 2 · s.2–43</span></div>
+
+  <section class="sub" id="c3-why">
+  <h3>3.1 Why test, and when</h3>
+  <div class="call key"><span class="tag">Definition</span>
+    <p><b>Software testing</b> checks that software works correctly, securely and efficiently against its requirements.</p>
+  </div>
+  <p>The big change in DevOps is <b>when</b> testing happens. It used to be a phase at the end. Now it runs through the whole lifecycle, which is called <b>continuous testing</b>. Two phrases on the slides describe the direction:</p>
+  <ul>
+    <li><b>Shift left</b>: test earlier, while you write the code. A bug found by a unit test on your laptop costs you a minute. The same bug found in production costs an incident.</li>
+    <li><b>Shift right</b>: keep checking after release, by monitoring real use in production.</li>
+  </ul>
+  <p>The slide's example of a costly defect is Delta Air Lines in 2024: a faulty update crashed systems worldwide and cost Delta about $500 million.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>That update wasn't Delta's own code. On 19 July 2024 the security company CrowdStrike pushed a faulty content update to its Falcon software, and Microsoft estimated that about 8.5 million Windows machines crashed and couldn't restart: airlines, banks and hospitals at once. Delta cancelled thousands of flights over several days. Part of the lesson is shift right: roll an update out to a small group first and watch it, instead of to every machine at the same moment.</p>
+  </div>
+  <div class="refs"><span class="ref">Wk 2 · s.2–7</span></div>
+  </section>
+
+  <section class="sub" id="c3-auto">
+  <h3>3.2 Manual vs automated</h3>
+<figure class="fig xs"><span class="frame"><img src="assets/dv/w2-manual.webp" width="923" height="642" loading="lazy" alt="A person labelled manual testing versus a robot labelled automated testing"></span><figcaption><span class="ref">Wk 2 · s.8</span>The two broad categories.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Manual</th><th>Automated</th></tr></thead>
+    <tbody>
+      <tr><td><b>How</b></td><td>A person clicks through the app or calls the API</td><td>Scripts and tools run the tests</td></tr>
+      <tr><td><b>Cost</b></td><td>Expensive every single time</td><td>Costs effort to write once, then nearly free to rerun</td></tr>
+      <tr><td><b>Errors</b></td><td>Typos and skipped steps</td><td>Does the same thing every time</td></tr>
+      <tr><td><b>Good for</b></td><td>Exploring, usability, one-off checks</td><td>Anything you'll run again, which in CI is every commit</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Wk 2 · s.8–10</span></div>
+  </section>
+
+  <section class="sub" id="c3-tdd">
+  <h3>3.3 TDD and BDD</h3>
+  <p><b>Test-driven development (TDD)</b> writes the test before the code, in a short loop: <b>red</b> (write a test, watch it fail), <b>green</b> (write just enough code to pass), <b>refactor</b> (tidy the code while the test keeps you safe).</p>
+<figure class="fig xs"><span class="frame"><img src="assets/dv/w2-tdd.webp" width="792" height="784" loading="lazy" alt="A cycle of three arrows: write a failing test, make the test pass, refactor"></span><figcaption><span class="ref">Wk 2 · s.12</span>The TDD loop.</figcaption></figure>
+  <p>Try the loop. The tests below are already written, and the function is an empty stub, so every test starts red. Write the code until they're all green.</p>
+  <div class="lab" id="lab-tdd">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Red, green, refactor</h4></div>
+    <div class="lab-body">
+<pre class="code" id="td-tests"></pre>
+      <label class="ctl" for="td-code">Your code (JavaScript)</label>
+      <textarea id="td-code" spellcheck="false" rows="9" style="width:100%;font-family:var(--f-mono);font-size:13px;line-height:1.55;padding:10px 12px;border:2px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:0;resize:vertical"></textarea>
+      <div class="row"><button class="btn primary" type="button" id="td-run">Run tests</button><button class="btn" type="button" id="td-reset">Back to the stub</button><button class="btn" type="button" id="td-show">Show one answer</button></div>
+      <pre class="out" id="td-out"></pre>
+      <div class="msg" id="td-msg"></div>
+    </div>
+  </div>
+  <p><b>Behaviour-driven development (BDD)</b> writes the expected behaviour in plain language first, so non-programmers on the team can read and agree on it. It uses <b>Given / When / Then</b>:</p>
+<pre class="code">Given the user has entered a valid username and password,
+When the user clicks the "Login" button,
+Then the system should display a "Login Successful" message.</pre>
+  <p>Tools like Cucumber turn each of those lines into an automated step. So BDD is TDD where the test is written as a sentence.</p>
+  <div class="refs"><span class="ref">Wk 2 · s.11–13</span></div>
+  </section>
+
+  <section class="sub" id="c3-types">
+  <h3>3.4 Functional and non-functional testing</h3>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w2-funcnon.webp" width="1110" height="623" loading="lazy" alt="Two arrows: functional testing asks is it working as expected, for example unit, system and regression testing; non-functional testing asks how well is it working, for example load, performance and security testing"></span><figcaption><span class="ref">Wk 2 · s.14</span>The question each one asks.</figcaption></figure>
+  <div class="grid2">
+    <div style="min-width:0">
+      <h4>Functional: does it work?</h4>
+      <ul>
+        <li><b>White-box</b>: you can see the code.</li>
+        <li><b>Black-box</b>: you can't, only inputs and outputs.</li>
+        <li><b>API</b>: the interfaces between components.</li>
+        <li><b>Regression</b>: new changes didn't break old features.</li>
+        <li><b>Smoke</b>: the basics work, so the build is worth testing further.</li>
+        <li><b>Sanity</b>: one area works, when there's no time for a full run.</li>
+        <li><b>Ad hoc / exploratory</b>: try to break it without a script.</li>
+        <li><b>UAT</b>: real users confirm it meets their needs.</li>
+      </ul>
+    </div>
+    <div style="min-width:0">
+      <h4>Non-functional: how well?</h4>
+      <ul>
+        <li><b>Performance</b>: speed under a given workload.</li>
+        <li><b>Load</b>: performance under realistic traffic.</li>
+        <li><b>Stress</b>: how much it takes before it fails.</li>
+        <li><b>Recovery</b>: does it come back cleanly after a crash?</li>
+        <li><b>Security</b>: can an attacker get in?</li>
+        <li><b>Usability</b>: can a user finish the task easily?</li>
+        <li><b>Compatibility</b>: other browsers, devices, operating systems.</li>
+      </ul>
+    </div>
+  </div>
+  <p>The functional checks follow six steps: identify the functions, create input data, work out the expected outputs, run the test cases, compare actual with expected, and decide whether it passes.</p>
+  <div class="refs"><span class="ref">Wk 2 · s.14–20</span></div>
+  </section>
+
+  <section class="sub" id="c3-levels">
+  <h3>3.5 The four levels</h3>
+  <div class="grid2">
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/dv/w2-levels.webp" width="1200" height="947" loading="lazy" alt="Four circles: 01 unit testing of individual components, 02 integration testing of component groups, 03 system testing of the integrated system, 04 acceptance testing of the final system"></span><figcaption><span class="ref">Wk 2 · s.21</span>Each level tests a bigger piece.</figcaption></figure>
+    </div>
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/dv/w2-levelstbl.webp" width="1008" height="772" loading="lazy" alt="A table: unit testing is done by developers, integration and system testing by testers, acceptance testing by end users"></span><figcaption><span class="ref">Wk 2 · s.22</span>Who usually does each level.</figcaption></figure>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Level</th><th>What it tests</th><th>Example</th><th>Speed and cost</th></tr></thead>
+    <tbody>
+      <tr><td><b>Unit</b></td><td>One function, method or class, on its own</td><td><code>add(2, 3)</code> returns 5</td><td>Milliseconds. Run thousands.</td></tr>
+      <tr><td><b>Integration</b></td><td>Modules or services working together</td><td>The API really saves to the database</td><td>Slower: needs several parts running</td></tr>
+      <tr><td><b>System</b></td><td>The whole app, as a black box, like production</td><td>Sign up, log in, place an order</td><td>Slow</td></tr>
+      <tr><td><b>Acceptance</b></td><td>Does it meet the business need? Users or the client decide</td><td>The shop owner checks the checkout flow</td><td>Slowest, partly manual</td></tr>
+    </tbody></table></div>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w2-unit.webp" width="1200" height="457" loading="lazy" alt="What is unit testing: input goes into a function and actual is compared with expected; an annotated JUnit test; and Jest output reporting one passed test"></span><figcaption><span class="ref">Wk 2 · s.23</span>A unit test, and what a passing run prints.</figcaption></figure>
+  <p>The five steps of unit testing on the slide: identify the unit, pick manual or a framework, set up the environment (test data, dependencies and <b>mock objects</b> that stand in for the real database), write the test cases, then debug and rerun. The frameworks listed: Jest and Mocha for JavaScript, JUnit for Java, NUnit for .NET, pytest for Python. Lab 1 uses Mocha.</p>
+  <p>Acceptance testing comes in several kinds: user (UAT), business (BAT), contract (CAT, against the agreed terms), regulation (RAT, such as health-data law), operational (OAT, is it ready to run), plus <b>alpha</b> testing in-house and <b>beta</b> testing by outside users before release.</p>
+  <div class="lab" id="lab-kind">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Which kind of test is this?</h4></div>
+    <div class="lab-body">
+      <div class="msg" id="kd-q"></div>
+      <div class="tabs" id="kd-btn" role="group" aria-label="Kind of test"></div>
+      <div class="msg" id="kd-why"></div>
+      <div class="qnav"><button class="btn" type="button" id="kd-prev" aria-label="Previous">←</button><span class="qscore" id="kd-score"></span><button class="btn" type="button" id="kd-next" aria-label="Next">→</button></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Wk 2 · s.21–37</span></div>
+  </section>
+
+  <section class="sub" id="c3-int">
+  <h3>3.6 Integration techniques</h3>
+  <p>If you're testing how parts fit together, which parts do you put together first?</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Technique</th><th>Order</th><th>Missing parts are replaced by</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td><b>Top-down</b></td><td>Main module first, then the modules below it</td><td><b>Stubs</b>: fake lower modules that return canned answers</td><td>Can start early</td></tr>
+      <tr><td><b>Bottom-up</b></td><td>Low-level modules first, then upward</td><td><b>Drivers</b>: fake higher modules that call the real low ones</td><td>The basics are proven first</td></tr>
+      <tr><td><b>Sandwich (mixed)</b></td><td>Both ends at once</td><td>Stubs and drivers</td><td>No forced order</td></tr>
+      <tr><td><b>Big bang</b></td><td>Everything together at one time</td><td>Nothing</td><td>Quick answer, but when it fails you can't tell which part broke</td></tr>
+    </tbody></table></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>A stub is a cardboard cut-out of a module: it stands where the real one will go and gives fixed replies. A driver is the opposite: a fake caller that pokes the real module to see what it does.</p>
+  </div>
+  <p>Tools on the slides: Postman for API tests, Katalon (built on Selenium), SoapUI, and Citrus for Java.</p>
+  <div class="refs"><span class="ref">Wk 2 · s.26–32</span></div>
+  </section>
+
+  <section class="sub" id="c3-lint">
+  <h3>3.7 Linting</h3>
+  <p>A <b>linter</b> reads your code without running it (static analysis) and flags mistakes and style problems: an unused variable, a misspelled name, <code>==</code> where you meant <code>===</code>, inconsistent formatting. It runs in two places:</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w2-lint.webp" width="1200" height="458" loading="lazy" alt="Working directory, git add to staging, git commit runs a pre-commit check including secret scanning and linting, then the local repo, then git push to the remote repo"></span><figcaption><span class="ref">Wk 2 · s.39</span>A pre-commit hook lints before the commit is even created.</figcaption></figure>
+  <ul>
+    <li><b>Before committing</b>, as a pre-commit hook, so bad code never reaches the repository.</li>
+    <li><b>In the CI pipeline</b>, so nobody can skip it. Lab 1 does this with <code>yarn lint</code>.</li>
+  </ul>
+<pre class="code">// ESLint would flag both of these:
+const unused = 42;          // 'unused' is assigned a value but never used
+if (user = admin) { … }     // assignment where a comparison was meant</pre>
+  <div class="refs"><span class="ref">Wk 2 · s.38–39</span></div>
+  </section>
+
+  <section class="sub" id="c3-cov">
+  <h3>3.8 Code coverage</h3>
+  <p><b>Code coverage</b> measures how much of your code ran while the tests ran. Tools report it four or five ways:</p>
+  <ul>
+    <li><b>Function</b>: % of functions called.</li>
+    <li><b>Statement</b>: % of statements executed.</li>
+    <li><b>Branch</b>: % of the paths through each <code>if</code>/<code>else</code> taken.</li>
+    <li><b>Condition</b>: % of boolean conditions seen both true and false.</li>
+    <li><b>Line</b>: % of lines executed.</li>
+  </ul>
+  <p>Pick which tests to run and watch the numbers.</p>
+  <div class="lab" id="lab-cov">
+    <div class="lab-head"><span class="tag">Try it</span><h4>What did the tests touch?</h4></div>
+    <div class="lab-body">
+      <div id="cv-tests" style="display:grid;gap:4px"></div>
+      <pre class="code" id="cv-code"></pre>
+      <div class="kpis" id="cv-kpis"></div>
+      <div class="msg" id="cv-msg"></div>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful: 100% isn't "bug-free"</span>
+    <p>Coverage only says the code <i>ran</i>. A test that calls <code>shippingFee(80, false)</code> and never checks the answer still counts. Lab 1 says the same: full coverage means the measured code was exercised, not that every behaviour was tested.</p>
+  </div>
+  <div class="refs"><span class="ref">Wk 2 · s.40–42</span><span class="ref">Lab 1 · Step 10</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 3 recap</h3>
+    <ul>
+      <li>Continuous testing: shift left to catch bugs early, shift right to watch production.</li>
+      <li>Automate anything you'll run more than once.</li>
+      <li>TDD: red, green, refactor. BDD: Given, When, Then.</li>
+      <li>Functional asks "does it work?" Non-functional asks "how well?"</li>
+      <li>Levels: unit, integration, system, acceptance.</li>
+      <li>Stubs replace lower modules, drivers replace upper ones.</li>
+      <li>Lint before commit and in CI. Coverage shows what ran, not what's correct.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz3">Check yourself: Chapter 3</h3>
+  <div class="quiz" data-quiz="3"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 4 -->
+<section class="chapter" id="ch4">
+  <div class="chapter-head">
+    <span class="num">Chapter 4</span>
+    <h2>Lab 1: A CI Pipeline with GitHub Actions</h2>
+  </div>
+  <div class="refs"><span class="ref">Lab 1 · Steps 1–14</span></div>
+
+  <section class="sub" id="c4-what">
+  <h3>4.1 What you build</h3>
+  <p>A tiny Node.js web app whose only page says <code>Hello, GitHub Actions!</code>, plus a pipeline that lints, tests and measures coverage on every push and pull request. The app is deliberately boring. The pipeline is the point.</p>
+<pre class="code">ci-cd-lab/
+├── .github/
+│   └── workflows/
+│       └── ci.yml          ← the pipeline
+├── test/
+│   └── test.js             ← the tests
+├── .gitignore
+├── .yarnrc.yml
+├── app.js                  ← the Express app
+├── eslint.config.js        ← lint rules
+├── package.json            ← dependencies and scripts
+├── README.md
+└── server.js               ← starts the app</pre>
+  <p>The stack: Node.js 24, Yarn 4, Express 5, Mocha and Chai for tests, Supertest to call the app over HTTP, ESLint for linting, and c8 for coverage.</p>
+  </section>
+
+  <section class="sub" id="c4-app">
+  <h3>4.2 The app and its test</h3>
+  <p>The app is split over two files on purpose. <code>app.js</code> <b>defines</b> the app and exports it:</p>
+<pre class="code">import express from 'express';
+
+const app = express();
+
+app.get('/', (req, res) => {
+  res.status(200).send('Hello, GitHub Actions!');
+});
+
+export default app;</pre>
+  <p><code>server.js</code> <b>starts</b> it on a port:</p>
+<pre class="code">import app from './app.js';
+
+const port = process.env.PORT ?? 3000;
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});</pre>
+  <div class="call key"><span class="tag">Why two files?</span>
+    <p>The test imports <code>app.js</code> and calls it directly with Supertest. No server has to be running, no port can clash, and the test runs the same way on your laptop and on GitHub's machine. If <code>app.js</code> called <code>listen()</code> itself, every test run would try to open port 3000.</p>
+  </div>
+<pre class="code">import { expect } from 'chai';
+import request from 'supertest';
+import app from '../app.js';
+
+describe('GET /', () => {
+  it('returns HTTP 200', async () => {
+    const response = await request(app).get('/');
+    expect(response.status).to.equal(200);
+  });
+
+  it('returns the expected greeting', async () => {
+    const response = await request(app).get('/');
+    expect(response.text).to.equal('Hello, GitHub Actions!');
+  });
+});</pre>
+  <p><code>describe</code> and <code>it</code> come from Mocha, <code>expect</code> from Chai, and <code>request(app)</code> from Supertest. Both tests are unit-sized, but because they go through HTTP they're also a small integration test of Express and your route.</p>
+  </section>
+
+  <section class="sub" id="c4-scripts">
+  <h3>4.3 Lint, test, coverage</h3>
+  <p><code>package.json</code> names the commands, so everybody and CI run exactly the same thing:</p>
+<pre class="code">"type": "module",
+"packageManager": "yarn@4.18.1",
+"scripts": {
+  "start": "node server.js",
+  "test": "mocha",
+  "lint": "eslint .",
+  "coverage": "c8 mocha"
+}</pre>
+  <ul>
+    <li><code>"type": "module"</code> turns on <code>import</code>/<code>export</code> (ES modules).</li>
+    <li><code>"packageManager"</code> pins the Yarn version, so everyone installs the same way.</li>
+    <li><code>c8 mocha</code> runs the same tests while recording which lines ran, then prints the table and writes an HTML report to <code>coverage/</code>.</li>
+  </ul>
+<pre class="code">yarn install      # creates yarn.lock: commit it
+yarn start        # open http://localhost:3000/
+yarn lint
+yarn test         # 2 passing
+yarn coverage</pre>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Step 9 · break it on purpose</h4></div>
+    <div class="lab-body">
+      <p>Change the greeting in <code>app.js</code> and run <code>yarn test</code>. The first test still passes, because the status is still 200. The second fails and shows you both strings:</p>
+<pre class="out">  GET /
+    ✔ returns HTTP 200
+    1) returns the expected greeting
+
+  1 passing (24ms)
+  1 failing
+
+  1) GET /
+       returns the expected greeting:
+     AssertionError: expected 'Hello, GitHub!' to equal 'Hello, GitHub Actions!'</pre>
+      <p>Put the greeting back before you commit. The pipeline in 4.5 shows what would happen if you didn't.</p>
+    </div>
+  </div>
+  </section>
+
+  <section class="sub" id="c4-yml">
+  <h3>4.4 The workflow file</h3>
+  <p><code>.github/workflows/ci.yml</code> is the pipeline. GitHub finds any YAML file in that folder and runs it on the events in <code>on:</code>.</p>
+<pre class="code">name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run ESLint
+        run: yarn lint
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Generate code coverage
+        run: yarn coverage
+
+      - name: Upload coverage HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage/
+          if-no-files-found: ignore</pre>
+  <div class="tbl"><table>
+    <thead><tr><th>Line</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>runs-on: ubuntu-latest</code></td><td>GitHub starts a fresh Linux virtual machine for every run. Nothing from your laptop is on it.</td></tr>
+      <tr><td><code>uses:</code></td><td>Runs a ready-made action. <code>checkout</code> copies your repository onto the machine. <code>setup-node</code> installs Node 24 and caches Yarn's downloads between runs.</td></tr>
+      <tr><td><code>run:</code></td><td>Runs a shell command, the same one you'd type locally.</td></tr>
+      <tr><td><code>--immutable</code></td><td>Fails if <code>yarn.lock</code> would have to change. CI installs exactly what you tested with, or nothing.</td></tr>
+      <tr><td><code>if: always()</code></td><td>Steps normally stop after the first failure. This one runs anyway, so you still get whatever report exists.</td></tr>
+    </tbody></table></div>
+  <div class="call warn"><span class="tag">Careful: Yarn 4 on GitHub's machines</span>
+    <p>GitHub's Ubuntu machines come with the old Yarn 1. The lab's hint "keep the packageManager field and CI activation command aligned" refers to activating the newer Yarn with <b>Corepack</b>, but the workflow as printed has no such step. If your Install or Set up Node step fails with a message about <code>packageManager</code> or Corepack, add this step before "Set up Node.js":</p>
+<pre class="code">      - name: Enable Corepack
+        run: corepack enable</pre>
+  </div>
+  </section>
+
+  <section class="sub" id="c4-run">
+  <h3>4.5 Run the pipeline</h3>
+  <p>Pick what your commit did, then run it. Each step's log is shortened but follows what GitHub prints.</p>
+  <div class="lab" id="lab-ci">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Push a commit to main</h4></div>
+    <div class="lab-body">
+      <div class="tabs" id="ci-btns" role="group" aria-label="What the commit changed"></div>
+      <div class="player" id="ci-player"></div>
+      <div id="ci-steps" style="display:grid;gap:6px"></div>
+      <pre class="out" id="ci-log"></pre>
+      <div class="msg" id="ci-msg"></div>
+    </div>
+  </div>
+  <p>When a step fails, open its log on GitHub, fix the problem locally, run <code>yarn lint</code>, <code>yarn test</code> and <code>yarn coverage</code> yourself, then commit and push again. The run after a fix is just another push.</p>
+  </section>
+
+  <section class="sub" id="c4-pr">
+  <h3>4.6 CI on a pull request</h3>
+  <p>Step 14 proves the pull request half of <code>on:</code>. Make a branch, add a <code>/health</code> route and its test, and open a PR:</p>
+<pre class="code">git checkout -b feature/health-route
+# edit app.js and test/test.js
+yarn lint &amp;&amp; yarn test &amp;&amp; yarn coverage
+git add app.js test/test.js
+git commit -m "Add health endpoint and test"
+git push -u origin feature/health-route</pre>
+  <p>One way to write it, so that the new test really checks the response:</p>
+<pre class="code">// app.js
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+// test/test.js
+describe('GET /health', () => {
+  it('reports ok', async () => {
+    const response = await request(app).get('/health');
+    expect(response.status).to.equal(200);
+    expect(response.body).to.deep.equal({ status: 'ok' });
+  });
+});</pre>
+  <p>Open the pull request on GitHub. The CI checks appear on it, and merging it triggers one more run on <code>main</code>.</p>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>Never commit credentials or secrets, even in a lab. A repository can be public, and Git keeps everything in its history even after you delete the file. Use GitHub's encrypted <i>Secrets</i> settings for anything a workflow needs.</p>
+  </div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 4 recap</h3>
+    <ul>
+      <li>Split defining the app from starting it, so tests can import it.</li>
+      <li>Scripts in <code>package.json</code> make local and CI runs identical.</li>
+      <li><code>ci.yml</code>: when to run (<code>on</code>), where (<code>runs-on</code>), what (<code>steps</code>).</li>
+      <li><code>--immutable</code> installs exactly the locked versions. Commit <code>yarn.lock</code>.</li>
+      <li>A failed step stops the job, except steps marked <code>if: always()</code>.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz4">Check yourself: Chapter 4</h3>
+  <div class="quiz" data-quiz="4"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 5 -->
+<section class="chapter" id="ch5">
+  <div class="chapter-head">
+    <span class="num">Chapter 5</span>
+    <h2>Virtualization and Containers</h2>
+  </div>
+  <div class="refs"><span class="ref">Wk 4 · s.2–20</span></div>
+
+  <section class="sub" id="c5-bare">
+  <h3>5.1 Bare metal</h3>
+  <p>A <b>bare-metal</b> server is a physical computer with the operating system installed straight onto the hardware. Nothing sits in between. Each server usually did one job: one for the database, one for the website, one for email.</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w4-baremetal.webp" width="1121" height="583" loading="lazy" alt="Left, a traditional environment: one application on one operating system on physical servers. Right, a virtualized environment: several applications, each on its own operating system, on a virtualization layer over the servers"></span><figcaption><span class="ref">Wk 4 · s.3</span>Traditional (left) and virtualized (right).</figcaption></figure>
+  <div class="grid2">
+    <div class="call key" style="margin:0"><span class="tag">The good: simple</span><p>One server, one job. Easy to reason about, and the app gets the hardware's full performance.</p></div>
+    <div class="call warn" style="margin:0"><span class="tag">The bad: cost</span><p>Every new system needs a new machine, with its space and power. Most servers sat mostly idle.</p></div>
+  </div>
+  <div class="refs"><span class="ref">Wk 4 · s.3–4</span></div>
+  </section>
+
+  <section class="sub" id="c5-vm">
+  <h3>5.2 Virtual machines</h3>
+  <p><b>Virtualization</b> adds a layer, the <b>hypervisor</b>, between the hardware and the operating systems. It splits one physical machine into several isolated <b>virtual machines (VMs)</b>, each with its own full operating system, and hands out the CPU, memory and storage between them. The technology dates from the 1960s, took off in the 2000s, and is what cloud computing is built on: an EC2 instance is a VM.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w4-hyper.webp" width="1176" height="526" loading="lazy" alt="Left: apps on guest operating systems on a type 1 hypervisor directly on hardware. Right: apps on guest operating systems on a type 2 hypervisor on top of a host operating system"></span><figcaption><span class="ref">Wk 4 · s.6</span>Type 1 sits on the hardware. Type 2 sits on an OS.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Type 1 (bare-metal)</th><th>Type 2 (hosted)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Runs on</b></td><td>The hardware directly</td><td>A normal OS like Windows or macOS</td></tr>
+      <tr><td><b>Overhead</b></td><td>Smaller, more efficient</td><td>Larger</td></tr>
+      <tr><td><b>Setup</b></td><td>Harder</td><td>Install it like an app</td></tr>
+      <tr><td><b>Examples</b></td><td>VMware ESXi, Microsoft Hyper-V, Citrix XenServer</td><td>VMware Workstation, Oracle VirtualBox</td></tr>
+      <tr><td><b>Used for</b></td><td>Data centres and clouds</td><td>Your laptop</td></tr>
+    </tbody></table></div>
+  <p><b>Benefits:</b> cost savings, better use of hardware, VMs you can create, destroy and move between hosts, easier scaling and simpler disaster recovery. <b>Drawbacks:</b> the extra layer costs performance, the up-front investment is high, and there are now two things to manage, the physical hosts and every VM on them.</p>
+  <div class="refs"><span class="ref">Wk 4 · s.5–10</span></div>
+  </section>
+
+  <section class="sub" id="c5-ct">
+  <h3>5.3 Containers</h3>
+  <div class="call key"><span class="tag">Definition</span>
+    <p><b>Containerization</b> packages the code with only the OS libraries and dependencies it needs into one lightweight executable, a <b>container</b>, that runs the same on any infrastructure.</p>
+  </div>
+  <p>The key word is <i>only</i>. A VM carries a whole guest operating system. A container carries just your app and its libraries, and shares the host's <b>kernel</b> (the core of the OS). That's why containers start in about a second instead of booting, and are megabytes instead of gigabytes.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w4-container.webp" width="1077" height="522" loading="lazy" alt="Applications 1 to n on top of a container engine, on one operating system, on the infrastructure"></span><figcaption><span class="ref">Wk 4 · s.11</span>One OS, one container engine, many apps.</figcaption></figure>
+  <p>The architecture has four layers, bottom to top: the <b>infrastructure</b> (a laptop or a server), the <b>host operating system</b>, the <b>container engine</b> such as Docker Engine, and the <b>containerized applications</b>.</p>
+  <p>Benefits on the slide:</p>
+  <ul>
+    <li><b>Portability</b>: build once, run anywhere. It ends "it works on my machine", because your machine's setup ships inside the container.</li>
+    <li><b>Speed</b>: no guest OS to boot.</li>
+    <li><b>Isolation</b>: each container has its own processes, network and file system view.</li>
+    <li><b>Simpler operations</b>: you manage standard containers, not hand-configured servers.</li>
+    <li><b>Fast scaling</b>: a traffic spike? Start more copies in seconds.</li>
+  </ul>
+  <p>Process isolation is decades old. What changed things was <b>Docker</b> in 2013, which gave developers simple tools and one standard package format.</p>
+  <div class="refs"><span class="ref">Wk 4 · s.11–14</span></div>
+  </section>
+
+  <section class="sub" id="c5-cmp">
+  <h3>5.4 Compare the stacks</h3>
+  <div class="lab" id="lab-stack">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Run three apps on one machine</h4></div>
+    <div class="lab-body">
+      <div class="tabs" role="group" aria-label="Approach"><button class="btn on" type="button" data-st="bare">Bare metal</button><button class="btn" type="button" data-st="vm">Virtual machines</button><button class="btn" type="button" data-st="ct">Containers</button></div>
+      <div id="st-stack"></div>
+      <div class="kpis" id="st-kpis"></div>
+      <div class="msg" id="st-msg"></div>
+    </div>
+  </div>
+  </section>
+
+  <section class="sub" id="c5-how">
+  <h3>5.5 How a container is made</h3>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w4-imgflow.webp" width="902" height="258" loading="lazy" alt="A Dockerfile, an arrow labelled build to a Docker image, an arrow labelled run to a Docker container"></span><figcaption><span class="ref">Wk 4 · s.25</span>Dockerfile, build, image, run, container.</figcaption></figure>
+  <ol class="boxes">
+    <li><b>Define</b> the environment in a <b>Dockerfile</b>: base image, copy the code, install dependencies, the start command.</li>
+    <li><b>Build</b> an <b>image</b>: a read-only, layered package of the app and everything it needs. <code>docker build</code></li>
+    <li><b>Store</b> it in a <b>registry</b> such as Docker Hub, AWS ECR, GCP Artifact Registry or Azure Container Registry. <code>docker push</code></li>
+    <li><b>Run</b> it: the engine creates a container from the image. <code>docker run</code></li>
+  </ol>
+  <p>Step 4 is where the isolation comes from. The engine asks the host's kernel for:</p>
+  <ul>
+    <li><b>Namespaces</b>: give the container its own process list, network stack and file system view, so it believes it's alone on the machine. Inside, your app is process 1.</li>
+    <li><b>Resource limits</b> (Linux calls them cgroups): cap its CPU and memory so one container can't starve the rest.</li>
+  </ul>
+  <p>Tool types: a <b>container engine</b> runs containers (Docker Engine), an <b>image builder</b> makes images (<code>docker build</code>), a <b>registry</b> stores them, and an <b>orchestrator</b> runs them at scale.</p>
+  <div class="refs"><span class="ref">Wk 4 · s.15–18</span></div>
+  </section>
+
+  <section class="sub" id="c5-orch">
+  <h3>5.6 Orchestration</h3>
+  <p>A company can run hundreds or thousands of containers. Nobody starts those by hand. A <b>container orchestration</b> platform does it: it schedules containers onto machines, restarts the ones that crash, balances traffic between copies, and scales the number of copies up and down.</p>
+  <p><b>Kubernetes</b> is the standard. Google open-sourced it, based on its internal system <b>Borg</b>. It works with any engine that follows the Open Container Initiative (OCI) standards. Alternatives: Docker Swarm for small clusters, Apache Mesos, Nomad, and managed services such as Amazon ECS/EKS, Google GKE and Azure AKS.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Google ran containers long before Docker made them popular. In 2014 it said that everything at Google, Search and Gmail included, runs in containers, and that it starts over two billion of them a week. You can't do that by hand, so Borg did the scheduling. Kubernetes, announced the same year, is Google's attempt to give everyone else a Borg.</p>
+  </div>
+  <div class="refs"><span class="ref">Wk 4 · s.18–19</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 5 recap</h3>
+    <ul>
+      <li>Bare metal: OS on the hardware. Simple, but expensive and mostly idle.</li>
+      <li>VM: a hypervisor splits one machine into many, each with a full guest OS.</li>
+      <li>Type 1 hypervisors run on hardware, type 2 on an OS.</li>
+      <li>Container: app plus libraries, sharing the host kernel. Light and fast.</li>
+      <li>Dockerfile, build an image, push to a registry, run a container.</li>
+      <li>Kubernetes orchestrates containers at scale.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz5">Check yourself: Chapter 5</h3>
+  <div class="quiz" data-quiz="5"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 6 -->
+<section class="chapter" id="ch6">
+  <div class="chapter-head">
+    <span class="num">Chapter 6</span>
+    <h2>Docker</h2>
+  </div>
+  <div class="refs"><span class="ref">Wk 4 · s.21–27</span></div>
+
+  <section class="sub" id="c6-arch">
+  <h3>6.1 Architecture</h3>
+  <p><b>Docker</b> is a platform for building, shipping and running applications in containers. It uses a <b>client-server</b> design.</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w4-dockerarch.webp" width="1200" height="607" loading="lazy" alt="Client with docker run, docker build and docker pull; the Docker host with the daemon, images and containers; and a registry of images"></span><figcaption><span class="ref">Wk 4 · s.23</span>Client, host and registry.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Part</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><b>Client</b> (<code>docker</code>)</td><td>The command you type. It sends each command to the daemon.</td></tr>
+      <tr><td><b>Daemon</b> (<code>dockerd</code>)</td><td>Does the real work: builds images, runs containers, manages networks and volumes.</td></tr>
+      <tr><td><b>Registry</b></td><td>Stores images. Docker Hub is the default public one.</td></tr>
+      <tr><td><b>Image</b></td><td>A read-only template for a container.</td></tr>
+      <tr><td><b>Container</b></td><td>A running (or stopped) instance of an image.</td></tr>
+    </tbody></table></div>
+  <p>Client and daemon talk over a REST API, through a UNIX socket on the same machine or over the network, so your <code>docker</code> command can control a daemon on another server. <b>Docker Compose</b> is another client, for apps made of several containers, such as a web app plus its database.</p>
+  <div class="refs"><span class="ref">Wk 4 · s.22–24</span></div>
+  </section>
+
+  <section class="sub" id="c6-img">
+  <h3>6.2 Image vs container</h3>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>The slide's own comparison: an image is a <b>class</b>, and a container is an <b>object</b>. You write the class once and create as many instances as you like. Each container has its own state, but they all start from the same read-only image.</p>
+  </div>
+  <p>An image holds everything the app needs: a base OS such as Ubuntu or Alpine, the code, the dependencies, and configuration like environment variables and the start command. A <b>Dockerfile</b> is the text file of instructions that builds it.</p>
+  </section>
+
+  <section class="sub" id="c6-df">
+  <h3>6.3 The Dockerfile</h3>
+  <p>This is the Dockerfile on the slide, for a Node app:</p>
+<pre class="code">FROM node:22-alpine
+WORKDIR /app
+COPY . .
+RUN yarn install --production
+CMD ["node", "./src/index.js"]</pre>
+  <div class="tbl"><table>
+    <thead><tr><th>Instruction</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>FROM node:22-alpine</code></td><td>Start from an image that already has Node 22 on Alpine Linux, a very small distribution.</td></tr>
+      <tr><td><code>WORKDIR /app</code></td><td>Work in <code>/app</code> inside the image, creating it if needed.</td></tr>
+      <tr><td><code>COPY . .</code></td><td>Copy the project folder from your machine into <code>/app</code>.</td></tr>
+      <tr><td><code>RUN yarn install --production</code></td><td>Run a command at <b>build</b> time: install dependencies, without the dev-only ones.</td></tr>
+      <tr><td><code>CMD [...]</code></td><td>The command to run when a <b>container starts</b>. It isn't run during the build.</td></tr>
+    </tbody></table></div>
+<pre class="code">docker build -t my-app .            # build an image called my-app from ./Dockerfile
+docker run -d -p 3000:3000 my-app    # start a container, map port 3000 to the host</pre>
+  <div class="refs"><span class="ref">Wk 4 · s.25–26</span></div>
+  </section>
+
+  <section class="sub" id="c6-cache">
+  <h3>6.4 Layer caching</h3>
+  <p>Each instruction makes one <b>layer</b>, and Docker reuses a layer from the last build if nothing it depends on has changed. Once one layer changes, every layer after it is rebuilt. So the order of the lines decides how fast your rebuilds are.</p>
+  <div class="lab" id="lab-cache">
+    <div class="lab-head"><span class="tag">Try it</span><h4>What gets rebuilt?</h4></div>
+    <div class="lab-body">
+      <div class="tabs" role="group" aria-label="Dockerfile"><button class="btn on" type="button" data-df="slide">The slide's Dockerfile</button><button class="btn" type="button" data-df="better">Dependencies first</button></div>
+      <div class="row" id="ca-btns" role="group" aria-label="What changed"></div>
+      <div id="ca-out" style="display:grid;gap:6px"></div>
+      <div class="kpis" id="ca-kpis"></div>
+      <div class="msg" id="ca-msg"></div>
+    </div>
+  </div>
+  <p>That's why most real Dockerfiles copy <code>package.json</code> and the lockfile first, install, and only then copy the rest of the code. You change your code all day, and your dependencies rarely.</p>
+  </section>
+
+  <section class="sub" id="c6-term">
+  <h3>6.5 Try the commands</h3>
+  <p>The slides end with KodeKloud's free <code>docker run</code> lab. Here's a safe practice terminal with the same commands. Click a command, or type one.</p>
+  <div class="lab" id="lab-term">
+    <div class="lab-head"><span class="tag">Try it</span><h4>A practice Docker terminal</h4></div>
+    <div class="lab-body">
+      <div class="row" id="tm-btns" role="group" aria-label="Commands"></div>
+      <pre class="out" id="tm-out" style="max-height:320px;overflow:auto;color:var(--ink)" aria-live="polite"></pre>
+      <div class="row"><label class="ctl" for="tm-in">$</label><input type="text" id="tm-in" class="mono" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:0" placeholder="docker ps"><button class="btn" type="button" id="tm-go">Run</button><button class="btn" type="button" id="tm-clear">Reset</button></div>
+      <div class="msg" id="tm-msg"></div>
+    </div>
+  </div>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>KodeKloud · docker run</h4></div>
+    <div class="lab-body">
+      <p>The real lab is at <a href="https://kodekloud.com/free-labs/docker/docker-run" target="_blank" rel="noopener">kodekloud.com/free-labs/docker/docker-run</a>. It starts by asking how many containers are running on the host: that's <code>docker ps</code>, which only lists running ones. Add <code>-a</code> to see stopped containers too.</p>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Wk 4 · s.27</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 6 recap</h3>
+    <ul>
+      <li>The <code>docker</code> client sends commands to the <code>dockerd</code> daemon over a REST API.</li>
+      <li>Image: read-only template. Container: a running instance of it.</li>
+      <li><code>RUN</code> happens at build time, <code>CMD</code> when the container starts.</li>
+      <li>One instruction, one layer. A change rebuilds that layer and everything after it.</li>
+      <li>Copy dependency files and install before copying the code.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz6">Check yourself: Chapter 6</h3>
+  <div class="quiz" data-quiz="6"></div>
+</section>
+
+<!-- ======================================================= SHEET -->
+<section class="chapter" id="sheet">
+  <div class="chapter-head">
+    <span class="num">Reference</span>
+    <h2>Commands and Glossary</h2>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>git checkout -b feature/x</code></td><td>Create a branch and switch to it</td></tr>
+      <tr><td><code>git add . &amp;&amp; git commit -m "…"</code></td><td>Stage and commit changes</td></tr>
+      <tr><td><code>git push -u origin feature/x</code></td><td>Push the branch and track it</td></tr>
+      <tr><td><code>yarn install --immutable</code></td><td>Install exactly what <code>yarn.lock</code> says, or fail</td></tr>
+      <tr><td><code>yarn lint</code> / <code>yarn test</code> / <code>yarn coverage</code></td><td>Lab 1's three checks</td></tr>
+      <tr><td><code>docker build -t name .</code></td><td>Build an image from the Dockerfile in this folder</td></tr>
+      <tr><td><code>docker run -d -p 8080:80 --name web img</code></td><td>Start a container in the background, host port 8080 to container port 80</td></tr>
+      <tr><td><code>docker ps</code> / <code>docker ps -a</code></td><td>Running containers / all containers</td></tr>
+      <tr><td><code>docker images</code></td><td>Local images</td></tr>
+      <tr><td><code>docker stop web</code> / <code>docker rm web</code></td><td>Stop a container / delete it</td></tr>
+      <tr><td><code>docker pull img</code> / <code>docker push img</code></td><td>Download from / upload to a registry</td></tr>
+    </tbody></table></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><b>CI</b></td><td>Merge often, and build and test every change automatically.</td></tr>
+      <tr><td><b>Continuous delivery / deployment</b></td><td>Auto-release to a repository and a person deploys / auto-deploy to production.</td></tr>
+      <tr><td><b>Pipeline / workflow</b></td><td>The automated sequence of steps. GitHub calls its file a workflow.</td></tr>
+      <tr><td><b>Shift left / right</b></td><td>Test earlier in development / keep validating in production.</td></tr>
+      <tr><td><b>Regression test</b></td><td>Checks that new changes didn't break existing features.</td></tr>
+      <tr><td><b>Smoke test</b></td><td>Quick check that the basics work before deeper testing.</td></tr>
+      <tr><td><b>Stub / driver</b></td><td>Fake lower module / fake higher module in integration testing.</td></tr>
+      <tr><td><b>Linter</b></td><td>Static analyser for mistakes and style.</td></tr>
+      <tr><td><b>Coverage</b></td><td>How much of the code ran during the tests.</td></tr>
+      <tr><td><b>Hypervisor</b></td><td>Software that runs virtual machines. Type 1 on hardware, type 2 on an OS.</td></tr>
+      <tr><td><b>Image / container</b></td><td>Read-only template / running instance of it.</td></tr>
+      <tr><td><b>Registry</b></td><td>Where images are stored, such as Docker Hub.</td></tr>
+      <tr><td><b>Namespace</b></td><td>Kernel feature that gives a container its own view of processes, network and files.</td></tr>
+      <tr><td><b>Orchestration</b></td><td>Scheduling, scaling and healing many containers automatically, as Kubernetes does.</td></tr>
+    </tbody></table></div>
+  <h3 id="materials">Course materials</h3>
+  <p>The original files this page was built from. Tap one to download it.</p>
+  <h4>Lecture decks</h4>
+  <ul class="dl">
+    <li><a href="materials/dv/Wk_1_-_Intro_to_DevOps.pdf" download="Wk 1 - Intro to DevOps.pdf" data-dl>Week 1 · Introduction to DevOps and DevOps in practice</a> <span class="small muted">PDF · 11.8 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/dv/Wk_2_-_Testing_in_DevOps.pdf" download="Wk 2 - Testing in DevOps.pdf" data-dl>Week 2 · Testing in DevOps</a> <span class="small muted">PDF · 5.3 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/dv/W4_-_Containerization.pdf" download="W4 - Containerization.pdf" data-dl>Week 4 · Containerization and Docker</a> <span class="small muted">PDF · 1.5 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+  </ul>
+  <h4>Lab</h4>
+  <ul class="dl">
+    <li><a href="materials/dv/Lab_1_-_CI_CD.pdf" download="Lab 1 - CI_CD.pdf" data-dl>Lab 1 · Building a CI/CD pipeline with GitHub Actions</a> <span class="small muted">PDF · 141 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
+  </ul>
+  <p class="foot">Built from the DevOps decks for Weeks 1, 2 and 4 and the Lab 1 handout (Chandara Chea, CADT). Figures are cropped from those slides, as credited under each one. The demos are simulations: nothing runs on GitHub or Docker. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
+</section>
+</main>
+</div>
+
+<script>
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function f2(x){return isNaN(x)?"n/a":x.toFixed(2);}
+function f3(x){return x.toFixed(3);}
+var STOPLIST="a an the is are was were be been being of to in on at for with and or not this that these those it its as by from into over under about than then so if but".split(" ");
+
+/* ---------- Generic Run / Step / Speed player ---------- */
+function player(el,o){
+  el.innerHTML='<button class="btn primary" type="button" data-a="run">▶ Run</button>'+
+    '<button class="btn" type="button" data-a="step">Step ›</button>'+
+    '<button class="btn" type="button" data-a="end">Skip to end</button>'+
+    '<button class="btn" type="button" data-a="reset">Reset</button>'+
+    '<label class="ctl">Speed <input type="range" min="1" max="5" value="3" aria-label="Animation speed"></label>'+
+    '<span class="pos mono small"></span>';
+  var run=el.querySelector('[data-a="run"]'),rng=el.querySelector("input"),pos=el.querySelector(".pos");
+  var i=0,n=1,t=null,mult=[0,2.4,1.5,1,0.45,0.12];
+  function wait(){return (o.interval||500)*mult[+rng.value];}
+  function show(){pos.textContent="step "+i+" / "+(n-1);o.render(i);}
+  function stop(){if(t){clearTimeout(t);t=null;}run.textContent="▶ Run";}
+  function tick(){if(i>=n-1){stop();return;}i++;show();if(i>=n-1){stop();return;}t=setTimeout(tick,wait());}
+  el.addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;var a=b.dataset.a;
+    if(a==="run"){if(t){stop();return;}if(i>=n-1){i=0;show();}run.textContent="❚❚ Pause";t=setTimeout(tick,wait());}
+    else if(a==="step"){stop();i=i>=n-1?0:i+1;show();}
+    else if(a==="end"){stop();i=n-1;show();}
+    else if(a==="reset"){stop();i=0;show();}
+  });
+  return{refresh:function(atStart){stop();n=Math.max(1,o.count());i=atStart?0:n-1;show();}};
+}
+function scrollInto(box,el){if(!el)return;var top=el.offsetTop;if(top<box.scrollTop+10||top>box.scrollTop+box.clientHeight-40)box.scrollTop=Math.max(0,top-box.clientHeight/2);}
+
+/* ---------- Theme ---------- */
+(function(){
+  var btn=$("theme-btn"),lbl=$("theme-lbl"),root=document.documentElement;
+  function isDark(){var a=root.getAttribute("data-theme");if(a)return a==="dark";return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;}
+  function paint(){lbl.textContent=isDark()?"Light mode":"Dark mode";}
+  btn.addEventListener("click",function(){var n=isDark()?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("qc-theme",n);}catch(e){}paint();});
+  paint();
+})();
+
+/* ---------- TOC + progress ---------- */
+(function(){
+  var links=[].slice.call(document.querySelectorAll(".toc a[href^='#']"));
+  var targets=links.map(function(a){return document.getElementById(a.getAttribute("href").slice(1));});
+  var pp=$("pp"),pct=$("pp-pct"),sec=$("pp-sec"),bar=$("pp-bar");
+  if(window.matchMedia&&matchMedia("(max-width:960px)").matches)$("toc-d").open=false;
+  function onScroll(){
+    var y=window.scrollY,h=document.documentElement.scrollHeight-innerHeight,p=h>0?Math.min(100,Math.round(y/h*100)):0;
+    var cur=-1;for(var i=0;i<targets.length;i++){if(targets[i]&&targets[i].getBoundingClientRect().top<120)cur=i;}
+    links.forEach(function(a,i){a.classList.toggle("active",i===cur);});
+    pct.textContent=p+"%";bar.style.width=p+"%";sec.textContent=cur>=0?links[cur].textContent:"Contents";
+    pp.classList.toggle("show",y>500);
+  }
+  addEventListener("scroll",onScroll,{passive:true});onScroll();
+})();
+
+/* ---------- Shared helpers ---------- */
+function kpis(el,arr){el.innerHTML=arr.map(function(k){return'<div class="kpi"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>';}).join("");}
+function tabs(sel,fn){var bs=document.querySelectorAll(sel);bs.forEach(function(b){b.addEventListener("click",function(){bs.forEach(function(x){x.classList.toggle("on",x===b);});fn(b);});});}
+function sorter(pre,O,P){
+  var at=0,picks=P.map(function(){return null;});
+  $(pre+"-btn").innerHTML=O.map(function(o,i){return'<button class="btn" type="button" data-o="'+i+'">'+o+'</button>';}).join("");
+  function draw(){
+    var p=P[at],k=picks[at];
+    $(pre+"-q").innerHTML="<b>"+(at+1)+" of "+P.length+".</b> "+p[0];
+    $(pre+"-btn").querySelectorAll("button").forEach(function(b,i){b.classList.toggle("on",k!==null&&i===p[1]);b.style.textDecoration=(k===i&&k!==p[1])?"line-through":"";});
+    $(pre+"-why").innerHTML=k===null?"Pick one.":(k===p[1]?"<b>Yes.</b> ":"<b>It's "+O[p[1]].toLowerCase()+".</b> ")+p[2];
+    $(pre+"-prev").disabled=at===0;$(pre+"-next").disabled=at===P.length-1;
+    var ok=picks.filter(function(v,i){return v===P[i][1];}).length,ans=picks.filter(function(v){return v!==null;}).length;
+    $(pre+"-score").textContent=ok+" correct · "+ans+" of "+P.length+" answered";
+  }
+  $(pre+"-btn").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;picks[at]=+b.dataset.o;draw();});
+  $(pre+"-prev").addEventListener("click",function(){if(at>0){at--;draw();}});
+  $(pre+"-next").addEventListener("click",function(){if(at<P.length-1){at++;draw();}});
+  draw();
+}
+
+/* ---------- 1.4 Lifecycle ---------- */
+(function(){
+  var S=[
+    ["Plan","A ticket is written and put in the sprint: the load balancer needs a way to check that the app is alive, so add a <code>GET /health</code> route.","Jira DEV-42  ·  Add GET /health returning {\"status\":\"ok\"}"],
+    ["Code","Make a branch, write the route and its test, commit and push.","git checkout -b feature/health-route\n# edit app.js and test/test.js\ngit commit -m \"Add health endpoint and test\"\ngit push -u origin feature/health-route"],
+    ["Build","Install the exact locked dependencies and package the app. For a container, that's an image.","yarn install --immutable\ndocker build -t ci-cd-lab:1.1.0 ."],
+    ["Test","CI lints and tests the pull request automatically. A red result blocks the merge.","yarn lint\nyarn test        # 3 passing\nyarn coverage"],
+    ["Release","Review, merge, and give the version a name so you can find it or roll back to it.","git checkout main && git pull\ngit tag v1.1.0\ngit push origin v1.1.0"],
+    ["Deploy","Put the new version on the servers with a script, the same way every time.","docker push registry.example.com/ci-cd-lab:1.1.0\n# the deploy tool then starts the new containers"],
+    ["Operate","Keep it running: scale up for traffic, apply patches, handle incidents.","docker ps          # are the containers up?\n# scale to 4 copies for the sale weekend"],
+    ["Monitor","Watch error rates and response times. Your new route becomes a monitoring check itself, and whatever you learn becomes the next ticket. Back to Plan.","every 10 s:  GET /health  →  200 {\"status\":\"ok\"}"]
+  ];
+  $("lf-pipe").innerHTML=S.map(function(s,i){return'<span data-i="'+i+'">'+s[0]+'</span>'+(i<S.length-1?'<i>→</i>':'<i>↺</i>');}).join("");
+  var spans=$("lf-pipe").querySelectorAll("span");
+  player($("lf-player"),{count:function(){return S.length+1;},interval:1800,render:function(i){
+    spans.forEach(function(sp,j){sp.classList.toggle("cur",j===i-1);sp.classList.toggle("done",j<i-1);});
+    $("lf-msg").innerHTML=i===0?"Press <b>Run</b>, or <b>Step</b> through one stage at a time.":"<b>"+S[i-1][0]+".</b> "+S[i-1][1];
+    $("lf-code").textContent=i===0?"# the commands for each stage appear here":S[i-1][2];
+  }}).refresh(true);
+})();
+
+/* ---------- 2.2 Which events trigger the workflow ---------- */
+(function(){
+  var E=[
+    ["push to main",1,"<code>push</code> with <code>branches: [main]</code> matches."],
+    ["push to feature/health-route",0,"<code>push</code> only listens to <code>main</code>. Commits on your branch get checked once you open a pull request."],
+    ["open a PR: feature/health-route → main",1,"<code>pull_request</code> with <code>branches: [main]</code> means pull requests whose <b>target</b> is <code>main</code>."],
+    ["push one more commit to that PR",1,"Every new commit on an open pull request reruns the checks, so reviewers always see the result for the latest code."],
+    ["merge the PR into main",1,"A merge makes a new commit on <code>main</code>, so it arrives as a <code>push</code> to <code>main</code>."],
+    ["open a PR into develop",0,"The target branch is <code>develop</code>, and the filter only allows <code>main</code>."],
+    ["push the tag v1.1.0",0,"Tags aren't in this <code>on:</code> block. To run on version tags you'd add <code>tags: ['v*']</code> under <code>push</code>."]
+  ];
+  $("ev-btns").innerHTML=E.map(function(e,i){return'<button class="btn sm mono" type="button" data-i="'+i+'">'+esc(e[0])+'</button>';}).join("");
+  $("ev-msg").innerHTML="Pick an event.";
+  $("ev-btns").addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;var e=E[+b.dataset.i];
+    $("ev-btns").querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b);});
+    $("ev-msg").innerHTML=(e[1]?"<b>✓ The CI workflow runs.</b> ":"<b>✗ Nothing runs.</b> ")+e[2];});
+})();
+
+/* ---------- 2.5 Delivery vs deployment ---------- */
+(function(){
+  var ST=["Build","Test","Merge","Release to repository","Deploy to production"],mode="delivery",at=-1,t=null,waiting=false;
+  function draw(){
+    $("cd-stages").innerHTML=ST.map(function(s,i){
+      var st=i<at?"✓ done":i===at?(waiting&&i===4?"⏸ waiting for approval":"● running"):"";
+      var gate=(i===4&&mode==="delivery")?' <span class="small muted">(a person presses the button)</span>':(i===4?' <span class="small muted">(automatic)</span>':"");
+      return'<div class="stg '+(i===at?"act":(i>at?"wait":""))+'"><b>'+s+'</b><div>'+(st||'<span class="small muted">waiting…</span>')+gate+'</div></div>';}).join("");
+    $("cd-ok").hidden=!waiting;
+  }
+  function step(){
+    t=null;
+    if(at===3&&mode==="delivery"){at=4;waiting=true;draw();$("cd-msg").innerHTML="Every check passed and the release is in the repository, <b>ready</b> to deploy. In continuous delivery, a person decides when it goes live.";return;}
+    at++;draw();
+    if(at>=ST.length){at=ST.length;draw();$("cd-msg").innerHTML=mode==="delivery"?"<b>Live.</b> Approved by a person, then deployed by the pipeline.":"<b>Live.</b> No person was involved: it passed the tests, so it went straight to users.";$("cd-run").disabled=false;return;}
+    $("cd-msg").innerHTML="Running <b>"+ST[at]+"</b>…";
+    t=setTimeout(step,650);
+  }
+  function reset(){if(t)clearTimeout(t);t=null;at=-1;waiting=false;$("cd-run").disabled=false;draw();$("cd-msg").innerHTML=mode==="delivery"?"Continuous delivery: automatic up to the release. Press <b>Push a commit</b>.":"Continuous deployment: automatic all the way. Press <b>Push a commit</b>.";}
+  $("cd-run").addEventListener("click",function(){reset();$("cd-run").disabled=true;step();});
+  $("cd-ok").addEventListener("click",function(){waiting=false;$("cd-msg").innerHTML="Approved. Deploying…";t=setTimeout(function(){at=ST.length;draw();$("cd-msg").innerHTML="<b>Live.</b> Approved by a person, then deployed by the pipeline.";$("cd-run").disabled=false;},650);draw();});
+  tabs("[data-cd]",function(b){mode=b.dataset.cd;reset();});
+  reset();
+})();
+
+/* ---------- 3.3 TDD ---------- */
+(function(){
+  var T=[[95,"A"],[90,"A"],[89,"B"],[75,"B"],[74,"C"],[50,"C"],[49,"F"],[0,"F"]];
+  var STUB="function grade(score) {\n  // 90 and above: 'A', 75 to 89: 'B', 50 to 74: 'C', below 50: 'F'\n}";
+  var ANS="function grade(score) {\n  if (score >= 90) return 'A';\n  if (score >= 75) return 'B';\n  if (score >= 50) return 'C';\n  return 'F';\n}";
+  $("td-tests").textContent="describe('grade(score)', () => {\n"+T.map(function(t){return"  it(\"grade("+t[0]+") is '"+t[1]+"'\", () => expect(grade("+t[0]+")).to.equal('"+t[1]+"'));";}).join("\n")+"\n});";
+  function run(){
+    var out=["  grade(score)"],pass=0,fails=[],fn=null;
+    try{fn=new Function($("td-code").value+"\n;return typeof grade==='function'?grade:null;")();}catch(e){$("td-out").textContent="SyntaxError: "+e.message;$("td-msg").innerHTML="The code doesn't parse yet, so no test can even run. Check the brackets and quotes.";return;}
+    if(!fn){$("td-out").textContent="ReferenceError: grade is not defined";$("td-msg").innerHTML="Keep the function's name as <code>grade</code>, because that's what the tests call.";return;}
+    T.forEach(function(t){var got,err=null;try{got=fn(t[0]);}catch(e){err=e;}
+      if(!err&&got===t[1]){pass++;out.push("    ✔ grade("+t[0]+") is '"+t[1]+"'");}
+      else{fails.push([t,err,got]);out.push("    "+fails.length+") grade("+t[0]+") is '"+t[1]+"'");}});
+    out.push("","  "+pass+" passing");
+    if(fails.length){out.push("  "+fails.length+" failing","");fails.forEach(function(f,i){out.push("  "+(i+1)+") grade("+f[0][0]+"): "+(f[1]?f[1].name+": "+f[1].message:"AssertionError: expected "+(f[2]===undefined?"undefined":JSON.stringify(f[2]).replace(/"/g,"'"))+" to equal '"+f[0][1]+"'"));});}
+    $("td-out").textContent=out.join("\n");
+    $("td-msg").innerHTML=pass===0?"<b>Red.</b> Every test fails, and that's where TDD starts: the tests describe what you want before any code exists.":pass<T.length?"<b>"+pass+" of "+T.length+" green.</b> Read the first failure: it tells you the input, what you returned and what was expected. Look closely at the boundaries, like 90 and 89.":"<b>All green.</b> Now refactor if you want, and rerun after every change. The tests tell you straight away if you broke something.";
+  }
+  $("td-run").addEventListener("click",run);
+  $("td-reset").addEventListener("click",function(){$("td-code").value=STUB;run();});
+  $("td-show").addEventListener("click",function(){$("td-code").value=ANS;run();});
+  $("td-code").value=STUB;run();
+})();
+
+/* ---------- 3.5 Which kind of test ---------- */
+sorter("kd",["Unit","Integration","System","Acceptance","Regression","Smoke","Load","Security"],[
+  ["Check that <code>calculateTax(100)</code> returns 10, with nothing else running.",0,"One function on its own, with no database or network."],
+  ["Check that the sign-up API really writes the new user into the PostgreSQL database.",1,"Two parts working together: your code and the database."],
+  ["A new build arrives. Before the full suite, quickly confirm the home page loads and login works.",5,"A fast check that the build is worth testing further."],
+  ["You added discount codes. Rerun all the old checkout tests to make sure normal checkout still works.",4,"Checking that a new change didn't break something that used to work."],
+  ["Simulate 5,000 people buying concert tickets in the same minute.",6,"Performance under a realistic heavy load."],
+  ["Type <code>' OR 1=1 --</code> into the login box to see whether you can get in without a password.",7,"Looking for a way an attacker could get in. That one is a classic SQL injection attempt."],
+  ["The shop owner orders, pays and gets a receipt, to confirm the app does what they asked for.",3,"The client or end user decides whether it meets the business need."],
+  ["Test the whole deployed app from the browser, from sign-up to order confirmation, without looking at the code.",2,"The complete system as a black box, in a production-like environment."],
+  ["Check that the payment service and the order service agree on the total when they're called together.",1,"Two services talking to each other."]
+]);
+
+/* ---------- 3.8 Coverage ---------- */
+(function(){
+  var L=[
+    ["function shippingFee(total, isMember) {",null],["  if (total >= 50) {","s1"],["    return 0;","s2"],["  }",null],["  if (isMember) {","s3"],["    return 2;","s4"],["  }",null],["  return 5;","s5"],["}",null],["",null],["function giftWrap() {",null],["  return 3;","s6"],["}",null]];
+  var T=[
+    ["shippingFee(80, false)","expect 0",["s1","s2"],["b1t"],["fA"]],
+    ["shippingFee(20, true)","expect 2",["s1","s3","s4"],["b1f","b2t"],["fA"]],
+    ["shippingFee(20, false)","expect 5",["s1","s3","s5"],["b1f","b2f"],["fA"]],
+    ["giftWrap()","expect 3",["s6"],[],["fB"]]];
+  var on=[true,false,false,false];
+  $("cv-tests").innerHTML=T.map(function(t,i){return'<label class="ctl" style="font-weight:600"><input type="checkbox" data-i="'+i+'"'+(on[i]?" checked":"")+'> <code>'+t[0]+'</code> <span class="small muted">'+t[1]+'</span></label>';}).join("");
+  function draw(){
+    var S={},B={},F={};T.forEach(function(t,i){if(!on[i])return;t[2].forEach(function(x){S[x]=1;});t[3].forEach(function(x){B[x]=1;});t[4].forEach(function(x){F[x]=1;});});
+    var br={s1:["b1t","b1f"],s3:["b2t","b2f"]};
+    $("cv-code").innerHTML=L.map(function(l){var id=l[1],txt=esc(l[0]);
+      if(!id)return'  '+txt;
+      var hit=!!S[id],note="";
+      if(br[id])note='   <span class="muted">// true '+(B[br[id][0]]?"✓":"✗")+'  false '+(B[br[id][1]]?"✓":"✗")+'</span>';
+      return hit?'<b>● '+txt+'</b>'+note:'<span class="muted">○ '+txt+'</span>'+note;}).join("\n");
+    var s=Object.keys(S).length,b=Object.keys(B).length,f=Object.keys(F).length;
+    function pc(a,n){return Math.round(a/n*100)+"%";}
+    kpis($("cv-kpis"),[[pc(s,6),"Statements "+s+"/6"],[pc(b,4),"Branches "+b+"/4"],[pc(f,2),"Functions "+f+"/2"],[pc(s,6),"Lines "+s+"/6"]]);
+    var miss=[];if(!B.b1t)miss.push("a total of 50 or more");if(!B.b1f)miss.push("a total under 50");if(B.b1f&&!B.b2t)miss.push("a member with a small order");if(B.b1f&&!B.b2f)miss.push("a non-member with a small order");if(!F.fB)miss.push("anything that calls <code>giftWrap</code>");
+    $("cv-msg").innerHTML=!on.some(Boolean)?"No tests, so nothing ran: 0% everywhere.":miss.length?"<b>●</b> ran, <b>○</b> never ran. Not tested yet: "+miss.join(", ")+".":"<b>100% on every measure.</b> Each line ran and both sides of each <code>if</code> were taken. Here each statement sits on its own line, so statement and line coverage are the same number.";
+  }
+  $("cv-tests").addEventListener("change",function(e){var i=e.target.dataset.i;if(i==null)return;on[+i]=e.target.checked;draw();});
+  draw();
+})();
+
+/* ---------- 4.5 Run the pipeline ---------- */
+(function(){
+  var STEPS=["Check out repository","Set up Node.js","Install dependencies","Run ESLint","Run tests","Generate code coverage","Upload coverage HTML report"];
+  var LOG={
+    co:"Syncing repository: you/ci-cd-lab\nFetching the repository\nHEAD is now at 3f2a9c1 Update README",
+    node:"Found in cache @ /opt/hostedtoolcache/node/24/x64\nnode: v24\nyarn cache is restored from the previous run",
+    inst:"➤ YN0000: · Yarn 4.18.1\n➤ YN0000: ┌ Resolution step\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Fetch step\n➤ YN0000: └ Completed\n➤ YN0000: ┌ Link step\n➤ YN0000: └ Completed\n➤ YN0000: · Done in 3s",
+    instBad:"➤ YN0000: · Yarn 4.18.1\n➤ YN0000: ┌ Resolution step\n➤ YN0085: │ + dayjs@npm:1.11.13\n➤ YN0000: └ Completed\n➤ YN0028: The lockfile would have been modified by this install, which is explicitly forbidden.\n➤ YN0000: · Failed with errors in 1s\nError: Process completed with exit code 1.",
+    lint:"$ eslint .\n(no output: no problems found)",
+    lintBad:"$ eslint .\n\n/home/runner/work/ci-cd-lab/ci-cd-lab/app.js\n  3:7  error  'unused' is assigned a value but never used  no-unused-vars\n\n✖ 1 problem (1 error, 0 warnings)\n\nError: Process completed with exit code 1.",
+    test:"$ mocha\n\n  GET /\n    ✔ returns HTTP 200\n    ✔ returns the expected greeting\n\n  2 passing (31ms)",
+    testBad:"$ mocha\n\n  GET /\n    ✔ returns HTTP 200\n    1) returns the expected greeting\n\n  1 passing (29ms)\n  1 failing\n\n  1) GET /\n       returns the expected greeting:\n     AssertionError: expected 'Hello, GitHub!' to equal 'Hello, GitHub Actions!'\n\nError: Process completed with exit code 1.",
+    cov:"$ c8 mocha\n  2 passing (33ms)\n----------|---------|----------|---------|---------|\nFile      | % Stmts | % Branch | % Funcs | % Lines |\n----------|---------|----------|---------|---------|\nAll files |     100 |      100 |     100 |     100 |\n app.js   |     100 |      100 |     100 |     100 |\n----------|---------|----------|---------|---------|",
+    up:"With the provided path, there will be 1 directory uploaded\nArtifact code-coverage-report has been successfully uploaded!",
+    upNone:"No files were found with the provided path: coverage/. No artifacts will be uploaded."
+  };
+  var SC=[
+    ["Clean change",-1,"<b>✓ All checks have passed.</b> The commit gets a green tick on GitHub, and the coverage report is waiting as an artifact on the run page."],
+    ["Changed the greeting",4,"<b>✗ Run tests failed</b>, so the commit gets a red X. Coverage was skipped, and the upload step still ran because of <code>if: always()</code>, but there was no <code>coverage/</code> folder to upload. Fix: put the greeting back, or update the test if the change was intended."],
+    ["Left an unused variable",3,"<b>✗ Run ESLint failed</b>, and everything after it was skipped, so the tests never even ran. Lint goes first because it's the fastest check. Fix: delete the variable, run <code>yarn lint</code>, push again."],
+    ["Added a package, forgot yarn.lock",2,"<b>✗ Install failed</b> because of <code>--immutable</code>: <code>package.json</code> asks for a package that <code>yarn.lock</code> doesn't have. Fix: run <code>yarn install</code> locally and commit the updated <code>yarn.lock</code>."]
+  ];
+  var sc=0;
+  $("ci-btns").innerHTML=SC.map(function(s,i){return'<button class="btn'+(i===0?" on":"")+'" type="button" data-i="'+i+'">'+s[0]+'</button>';}).join("");
+  function status(k){var f=SC[sc][1];if(k===6)return f>=0?"warn":"ok";if(f<0)return"ok";return k<f?"ok":k===f?"fail":"skip";}
+  function logOf(k){var f=SC[sc][1],s=status(k);if(s==="skip")return"This step was skipped because an earlier step failed.";
+    return k===0?LOG.co:k===1?LOG.node:k===2?(f===2?LOG.instBad:LOG.inst):k===3?(f===3?LOG.lintBad:LOG.lint):k===4?(f===4?LOG.testBad:LOG.test):k===5?LOG.cov:(f>=0?LOG.upNone:LOG.up);}
+  var pl=player($("ci-player"),{count:function(){return STEPS.length+1;},interval:1100,render:function(i){
+    $("ci-steps").innerHTML=STEPS.map(function(s,k){var shown=k<i,st=status(k),ic={ok:"✓",fail:"✗",skip:"⊘ skipped",warn:"✓ ran (if: always)"}[st];
+      return'<div class="stg '+(k===i-1?"act":(k>=i?"wait":""))+'"><b>'+s+'</b><div>'+(shown?(st==="fail"?"<b>✗ failed</b>":ic):'<span class="small muted">queued</span>')+'</div></div>';}).join("");
+    $("ci-log").textContent=i===0?"Press Run to start the job on ubuntu-latest.":logOf(i-1);
+    $("ci-msg").innerHTML=i<STEPS.length?(i===0?"The workflow is triggered by your push to <code>main</code>.":"Step "+i+" of "+STEPS.length+": <b>"+STEPS[i-1]+"</b>."):SC[sc][2];
+  }});
+  pl.refresh(true);
+  $("ci-btns").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;sc=+b.dataset.i;$("ci-btns").querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b);});pl.refresh(true);});
+})();
+
+/* ---------- 5.4 Compare the stacks ---------- */
+(function(){
+  function box(t,cls){return'<div style="border:2px solid var(--ink);padding:6px 8px;text-align:center;font-weight:700;font-size:13px;'+(cls==="hw"?"background:var(--ink);color:var(--bg)":cls==="os"?"background:var(--surface-2)":cls==="dash"?"border-style:dashed":"")+'">'+t+'</div>';}
+  function row(items){return'<div style="display:grid;grid-template-columns:repeat('+items.length+',minmax(0,1fr));gap:6px">'+items.join("")+'</div>';}
+  var M={
+    bare:{html:'<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">'+["Website","Database","Email"].map(function(a){return'<div style="display:grid;gap:4px">'+box(a)+box("OS","os")+box("Server","hw")+'</div>';}).join("")+'</div>',
+      k:[["3","Machines"],["3","OS copies"],["Minutes","Boot time"],["Low","Hardware use"]],
+      m:"One app per physical server. Each box has its own OS and sits mostly idle, and the slide's \"high cost\" is three of everything: hardware, space and power."},
+    vm:{html:'<div style="display:grid;gap:4px">'+row([box("Website"),box("Database"),box("Email")])+row([box("Guest OS","os"),box("Guest OS","os"),box("Guest OS","os")])+box("Hypervisor (type 1)","dash")+box("One server","hw")+'</div>',
+      k:[["1","Machine"],["3","Guest OS copies"],["~1 min","Boot a VM"],["GBs","Size each"]],
+      m:"One machine, so much better use of the hardware. But each VM still carries a whole operating system, which costs memory, disk and boot time."},
+    ct:{html:'<div style="display:grid;gap:4px">'+row([box("Website"),box("Database"),box("Email")])+box("Container engine (Docker)","dash")+box("Host OS (one kernel, shared)","os")+box("One server","hw")+'</div>',
+      k:[["1","Machine"],["1","OS"],["~1 s","Start a container"],["MBs","Size each"]],
+      m:"The containers share the host's kernel, so there's no guest OS to store or boot. Each still has its own processes, network and files. The trade-off: they all need the same kind of kernel, so a Linux container needs a Linux host."}
+  };
+  function draw(k){var o=M[k];$("st-stack").innerHTML=o.html;kpis($("st-kpis"),o.k);$("st-msg").innerHTML=o.m;}
+  tabs("[data-st]",function(b){draw(b.dataset.st);});
+  draw("bare");
+})();
+
+/* ---------- 6.4 Layer caching ---------- */
+(function(){
+  var D={
+    slide:[["FROM node:22-alpine",["base"],8],["WORKDIR /app",[],0.1],["COPY . .",["code","pkg"],0.4],["RUN yarn install --production",[],24],["CMD [\"node\", \"./src/index.js\"]",[],0]],
+    better:[["FROM node:22-alpine",["base"],8],["WORKDIR /app",[],0.1],["COPY package.json yarn.lock ./",["pkg"],0.1],["RUN yarn install --production",[],24],["COPY . .",["code","pkg"],0.4],["CMD [\"node\", \"./src/index.js\"]",[],0]]
+  };
+  var C=[["none","Nothing changed"],["code","Edited src/index.js"],["pkg","Added a package"],["base","Base image → node:24-alpine"]];
+  var df="slide",ch="code";
+  $("ca-btns").innerHTML=C.map(function(c){return'<button class="btn sm'+(c[0]===ch?" on":"")+'" type="button" data-c="'+c[0]+'">'+c[1]+'</button>';}).join("");
+  function draw(){
+    var L=D[df],broken=false,total=0,rebuilt=0;
+    if(ch==="base")L=L.map(function(l,i){return i===0?["FROM node:24-alpine",l[1],l[2]]:l;});
+    $("ca-out").innerHTML=L.map(function(l,i){
+      if(l[1].indexOf(ch)>=0)broken=true;
+      var re=broken&&l[2]>0,meta=l[2]===0;
+      if(re){total+=l[2];rebuilt++;}
+      return'<div class="stg '+(re?"act":"")+'"><b class="mono" style="font-weight:600;text-transform:none;letter-spacing:0">'+esc(l[0])+'</b><div>'+(meta?'<span class="small muted">settings only, no layer</span>':re?"<b>rebuilt</b> · "+l[2]+" s":'<span class="muted">CACHED</span>')+'</div></div>';}).join("");
+    kpis($("ca-kpis"),[[rebuilt+"","Layers rebuilt"],[(Math.round(total*10)/10)+" s","Build time"]]);
+    var slow=total>=24;
+    $("ca-msg").innerHTML=ch==="none"?"Nothing changed, so every layer comes from the cache. The build takes well under a second.":
+      ch==="base"?"The first layer changed, so everything after it rebuilds. That's expected and rare.":
+      ch==="pkg"?"New dependencies have to be installed in either order. This is the one case where the slow install is fair.":
+      slow?"You changed one line of code and waited for a full <code>yarn install</code>, because <code>COPY . .</code> comes before it. The copied files changed, so every layer after the copy is invalid. Try <b>Dependencies first</b>.":"Only the final <code>COPY . .</code> reran. The install layer came from the cache, because <code>package.json</code> and <code>yarn.lock</code> didn't change.";
+  }
+  $("ca-btns").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;ch=b.dataset.c;$("ca-btns").querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b);});draw();});
+  tabs("[data-df]",function(b){df=b.dataset.df;draw();});
+  draw();
+})();
+
+/* ---------- 6.5 Practice terminal ---------- */
+(function(){
+  var out=$("tm-out"),inp=$("tm-in"),images,ctrs,seq;
+  var B=["docker images","docker pull nginx:alpine","docker run -d --name web -p 8080:80 nginx:alpine","docker ps","curl localhost:8080","docker logs web","docker stop web","docker ps -a","docker rm web","docker run hello-world"];
+  $("tm-btns").innerHTML=B.map(function(c){return'<button class="btn sm mono" type="button">'+esc(c)+'</button>';}).join("");
+  var SIZE={"nginx:alpine":"48MB","hello-world:latest":"10kB","node:22-alpine":"160MB"};
+  function hex(n){var s="";for(var i=0;i<n;i++)s+="0123456789abcdef"[Math.floor(Math.random()*16)];return s;}
+  function norm(img){return img.indexOf(":")<0?img+":latest":img;}
+  function pad(s,n){s=String(s);while(s.length<n)s+=" ";return s;}
+  function reset(){images=[];ctrs=[];seq=0;out.textContent="Practice terminal. Nothing here is real Docker, and nothing is installed.\n";$("tm-msg").innerHTML="Start with <code>docker images</code>: the machine is empty.";}
+  function pull(img){var ex=images.filter(function(i){return i.name===img;})[0];
+    if(ex)return"Status: Image is up to date for "+img;
+    images.push({name:img,id:hex(12)});var t=img.split(":");
+    return t[1]+": Pulling from library/"+t[0]+"\n"+hex(12)+": Pull complete\n"+hex(12)+": Pull complete\nDigest: sha256:"+hex(64)+"\nStatus: Downloaded newer image for "+img+"\ndocker.io/library/"+img;}
+  function find(n){return ctrs.filter(function(c){return c.name===n||c.id.indexOf(n)===0;})[0];}
+  function ps(all){var r=pad("CONTAINER ID",15)+pad("IMAGE",20)+pad("STATUS",22)+pad("PORTS",24)+"NAMES";
+    ctrs.forEach(function(c){if(!all&&!c.up)return;r+="\n"+pad(c.id.slice(0,12),15)+pad(c.image,20)+pad(c.up?"Up "+c.age+" seconds":"Exited (0) "+c.age+" seconds ago",22)+pad(c.up&&c.port?"0.0.0.0:"+c.port+"->80/tcp":"",24)+c.name;});return r;}
+  var NAMES=["eager_turing","brave_hopper","quirky_lovelace","jolly_ritchie"];
+  function exec(cmd){
+    var a=cmd.trim().split(/\s+/),msg="";
+    if(!a[0])return["",""];
+    ctrs.forEach(function(c){c.age+=7;});
+    if(a[0]==="curl"){
+      var m=/(\d+)/.exec(a.slice(1).join(" ")),port=m?m[1]:"80",c=ctrs.filter(function(x){return x.up&&x.port===port;})[0];
+      return c?["<!DOCTYPE html>\n<html>\n<head>\n<title>Welcome to nginx!</title>\n…\n<h1>Welcome to nginx!</h1>\n…","The web server inside the container answered on your machine's port "+port+". The <code>-p "+port+":80</code> flag connected the two."]:
+        ["curl: (7) Failed to connect to localhost port "+port+" after 0 ms: Couldn't connect to server","Nothing is listening on port "+port+". Is a container running with <code>-p "+port+":80</code>? Check with <code>docker ps</code>."];
+    }
+    if(a[0]!=="docker")return["zsh: command not found: "+a[0],"Commands here start with <code>docker</code> (plus <code>curl</code>)."];
+    var sub=a[1];
+    if(sub==="images"){var r=pad("REPOSITORY",16)+pad("TAG",10)+pad("IMAGE ID",15)+"SIZE";images.forEach(function(i){var t=i.name.split(":");r+="\n"+pad(t[0],16)+pad(t[1],10)+pad(i.id,15)+(SIZE[i.name]||"120MB");});
+      return[r,images.length?"Images are the templates stored on this machine. Running or deleting containers doesn't remove them.":"No images yet. Pull one, or <code>docker run</code> will pull it for you."];}
+    if(sub==="pull"&&a[2])return[pull(norm(a[2])),"Downloaded from Docker Hub, the default registry. It's an image now, not a container: nothing is running yet."];
+    if(sub==="ps")return[ps(a[2]==="-a"),a[2]==="-a"?"<code>-a</code> shows stopped containers too. A stopped container still exists until you <code>docker rm</code> it.":"Only <b>running</b> containers. Add <code>-a</code> to include stopped ones."];
+    if(sub==="run"){
+      var d=false,name=null,port=null,img=null;
+      for(var i=2;i<a.length;i++){if(a[i]==="-d")d=true;else if(a[i]==="--name")name=a[++i];else if(a[i]==="-p"){var p=a[++i]||"";port=p.split(":")[0];}else if(a[i][0]!=="-")img=a[i];}
+      if(!img)return['"docker run" requires at least 1 argument.',"Give it an image name, like <code>nginx:alpine</code>."];
+      img=norm(img);
+      if(name&&find(name)){var o=find(name);return['docker: Error response from daemon: Conflict. The container name "/'+name+'" is already in use by container "'+o.id+'". You have to remove (or rename) that container to be able to reuse that name.',"Names must be unique, even for stopped containers. <code>docker rm "+name+"</code> first."];}
+      if(port&&ctrs.some(function(c){return c.up&&c.port===port;}))return["docker: Error response from daemon: driver failed programming external connectivity: Bind for 0.0.0.0:"+port+" failed: port is already allocated.","Another running container already has host port "+port+"."];
+      var pre="",had=images.some(function(x){return x.name===img;});
+      if(!had)pre="Unable to find image '"+img+"' locally\n"+pull(img)+"\n";
+      var c={id:hex(64),name:name||NAMES[seq++%NAMES.length],image:img,up:true,port:port,age:1};
+      if(img==="hello-world:latest"){c.up=false;ctrs.push(c);return[pre+"\nHello from Docker!\nThis message shows that your installation appears to be working correctly.\n…","It printed its message and exited, so <code>docker ps</code> won't show it. Try <code>docker ps -a</code>."+(had?"":" Notice it pulled the image first, because it wasn't on the machine.")];}
+      ctrs.push(c);
+      return[pre+(d?c.id:"/docker-entrypoint.sh: Configuration complete; ready for start up"),(had?"":"Docker didn't have the image, so it pulled it first. ")+(d?"<code>-d</code> runs it in the background and prints the container's ID.":"Without <code>-d</code> it would hold your terminal.")+(port?" Try <code>curl localhost:"+port+"</code>.":"")];
+    }
+    if(sub==="stop"||sub==="start"||sub==="rm"||sub==="logs"){
+      var force=false;if(a[2]==="-f"&&sub==="rm"){force=true;a.splice(2,1);}
+      if(!a[2])return['"docker '+sub+'" requires at least 1 argument.',""];
+      var c=find(a[2]);if(!c)return["Error response from daemon: No such container: "+a[2],"Check the name with <code>docker ps -a</code>."];
+      if(sub==="logs")return[c.image.indexOf("nginx")===0?"/docker-entrypoint.sh: Configuration complete; ready for start up\n2026/11/05 10:12:01 [notice] 1#1: nginx started\n172.17.0.1 - - \"GET / HTTP/1.1\" 200 615 \"-\" \"curl/8.7.1\"":"Hello from Docker!","Whatever the app printed. The app is process 1 inside the container."];
+      if(sub==="stop"){c.up=false;c.age=0;return[a[2],"Stopped, but not deleted. It's still in <code>docker ps -a</code>."];}
+      if(sub==="start"){if(c.port&&ctrs.some(function(x){return x!==c&&x.up&&x.port===c.port;}))return["Error response from daemon: port is already allocated",""];c.up=true;c.age=0;return[a[2],"Started again, with the same settings it was created with."];}
+      if(c.up&&!force)return['Error response from daemon: cannot remove container "/'+c.name+'": container is running: stop the container before removing or force remove',"Stop it first, or use <code>docker rm -f</code>."];
+      ctrs.splice(ctrs.indexOf(c),1);return[a[2],(force?"<code>-f</code> stopped it and deleted it in one go. ":"Deleted. ")+"The image is still there: check <code>docker images</code>."];
+    }
+    if(sub==="rmi"&&a[2]){var img=norm(a[2]),im=images.filter(function(x){return x.name===img;})[0];if(!im)return["Error response from daemon: No such image: "+img,""];
+      var u=ctrs.filter(function(c){return c.image===img;})[0];if(u)return['Error response from daemon: conflict: unable to remove repository reference "'+img+'" (must force) - container '+u.id.slice(0,12)+" is using its referenced image","Remove the containers made from it first."];
+      images.splice(images.indexOf(im),1);return["Untagged: "+img+"\nDeleted: sha256:"+hex(64),"The image is gone from this machine. It's still on Docker Hub."];}
+    return["docker: '"+(sub||"")+"' is not a docker command in this practice terminal.","Try one of the buttons: images, pull, run, ps, logs, stop, start, rm, rmi."];
+  }
+  function go(cmd){var r=exec(cmd);if(!cmd.trim())return;out.textContent+="\n$ "+cmd.trim()+"\n"+r[0]+"\n";out.scrollTop=out.scrollHeight;$("tm-msg").innerHTML=r[1]||"&nbsp;";}
+  $("tm-btns").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;go(b.textContent);});
+  $("tm-go").addEventListener("click",function(){go(inp.value);inp.value="";});
+  inp.addEventListener("keydown",function(e){if(e.key==="Enter"){go(inp.value);inp.value="";}});
+  $("tm-clear").addEventListener("click",reset);
+  reset();
+})();
+
+/* ---------- Quiz bank ---------- */
+var QB={
+  1:[
+    ["What does the slide say DevOps is, above all?",["A set of tools such as Jenkins and Docker","A mindset and culture where dev and ops share the whole lifecycle","A new job title for system administrators"],1,"Tools support it, but two teams with new tools and the same wall between them isn't DevOps."],
+    ["Which came first?",["Agile","Waterfall","DevOps"],1,"Waterfall, then Agile's sprints, then DevOps carrying small batches all the way to production."],
+    ["\"Problems should travel back quickly to the people who caused them\" is which of the Three Ways?",["Flow","Amplify feedback loops","Experimentation and learning"],1,"CI results and monitoring alerts are both feedback loops."],
+    ["In the lifecycle, which stage comes straight after Build?",["Release","Test","Deploy"],1,"Plan, code, build, test, release, deploy, operate, monitor."],
+    ["Prometheus and Grafana belong mainly to which stages?",["Plan and code","Build and test","Operate and monitor"],2,"They collect and display metrics from running services."]
+  ],
+  2:[
+    ["Which Git event does Lab 1's workflow NOT listen to?",["A push to main","A pull request into main","A pushed tag"],2,"Its on: block lists push and pull_request on main only."],
+    ["Merging a pull request into main triggers the workflow because…",["GitHub has a merge event","The merge creates a commit on main, which is a push to main","Merges always run every workflow"],1,"There's no separate merge event."],
+    ["The difference between continuous delivery and continuous deployment is…",["Delivery skips the tests","Deployment goes to production with no manual approval","Delivery doesn't use Git"],1,"Delivery stops at a release that a person deploys."],
+    ["CI step 4 says to fix the build as soon as it breaks. Why?",["It's slow otherwise","People stop trusting a build that's always red","GitHub charges for red builds"],1,"A signal everyone ignores is worth nothing."],
+    ["Knight Capital's 2012 failure is mainly a lesson about…",["Manual deployments being inconsistent","Writing too many tests","Using Git branches"],0,"One of eight servers was missed by hand."]
+  ],
+  3:[
+    ["\"Shift left\" means…",["Test earlier, during development","Test only in production","Move testers to another team"],0,"Shift right is the production side."],
+    ["In TDD you first…",["Write the code","Write a failing test","Refactor"],1,"Red, green, refactor."],
+    ["Checking that new discount codes didn't break normal checkout is…",["Smoke testing","Regression testing","Load testing"],1,"Regression means re-checking existing features after a change."],
+    ["In top-down integration testing, missing lower-level modules are replaced by…",["Drivers","Stubs","Mocks of the user"],1,"Drivers stand in for higher modules in bottom-up testing."],
+    ["A test calls a function but never checks its result. Coverage…",["Counts it as covered","Ignores it","Fails it"],0,"Coverage measures what ran, not what was verified."]
+  ],
+  4:[
+    ["Why is the app split into app.js and server.js?",["Node requires two files","Tests can import the app without starting a server on a port","ESLint needs it"],1,"Supertest calls the exported app directly."],
+    ["What does yarn install --immutable do in CI?",["Installs the latest versions","Fails if yarn.lock would change","Deletes node_modules"],1,"CI installs exactly the locked versions, or nothing."],
+    ["ESLint fails in the workflow. What happens to Run tests?",["It still runs","It's skipped","It runs twice"],1,"A failed step stops the job, except steps with if: always()."],
+    ["Why does the upload step have if: always()?",["To upload even when an earlier step failed","To run before every step","To retry failed steps"],0,"You still get whatever report exists."],
+    ["Where does GitHub run the job?",["On your laptop","On a fresh ubuntu-latest virtual machine","Inside your Docker image"],1,"runs-on: ubuntu-latest."]
+  ],
+  5:[
+    ["What sits between the hardware and the guest operating systems in virtualization?",["A container engine","A hypervisor","A registry"],1,"Also called a virtual machine monitor."],
+    ["VirtualBox on your laptop is…",["A type 1 hypervisor","A type 2 hypervisor","A container engine"],1,"Type 2 runs on top of a host OS."],
+    ["Why do containers start faster than VMs?",["They share the host's kernel, with no guest OS to boot","They use faster disks","They skip the network"],0,"A VM boots a whole operating system."],
+    ["The kernel feature that gives a container its own view of processes and network is…",["Namespaces","Registries","Hypervisors"],0,"Resource limits (cgroups) cap CPU and memory."],
+    ["Kubernetes is based on Google's internal system called…",["Borg","Swarm","Mesos"],0,"Google open-sourced Kubernetes in 2014."]
+  ],
+  6:[
+    ["The docker command you type is the…",["Daemon","Client","Registry"],1,"It sends requests to dockerd over a REST API."],
+    ["The slide compares an image and a container to…",["A class and an object","A file and a folder","A server and a client"],0,"One template, many running instances."],
+    ["When does CMD run?",["During docker build","When a container starts","When you push the image"],1,"RUN happens at build time."],
+    ["With the slide's Dockerfile, you edit one line of code. Why is the rebuild slow?",["COPY . . comes before yarn install, so the install layer is invalidated","Alpine is slow","CMD always rebuilds"],0,"Copy the dependency files and install first."],
+    ["docker ps shows nothing, but you ran hello-world a minute ago. Why?",["It failed","It exited, and docker ps only lists running containers","It was deleted automatically"],1,"docker ps -a shows it."]
+  ]
+};
+(function(){var Q=QB;
+  document.querySelectorAll(".quiz").forEach(function(box){
+    var qs=Q[box.dataset.quiz],at=0,picks=qs.map(function(){return null;});
+    box.innerHTML='<div class="qc" tabindex="-1"><div class="qbody"></div><div class="qnav"><button class="btn" type="button" data-n="-1" aria-label="Previous question">←</button><div class="qdots"></div><button class="btn" type="button" data-n="1" aria-label="Next question">→</button></div><div class="qscore"></div></div>';
+    var body=box.querySelector(".qbody"),dots=box.querySelector(".qdots"),score=box.querySelector(".qscore"),prev=box.querySelector('[data-n="-1"]'),next=box.querySelector('[data-n="1"]');
+    function draw(){
+      var q=qs[at],pk=picks[at];
+      body.innerHTML='<div class="eyebrow">Question '+(at+1)+' of '+qs.length+'</div><div class="q" style="border:0;padding:0"><p class="qt">'+esc(q[0])+'</p><div class="opts">'+q[1].map(function(o,j){
+        var c=pk===null?"":(j===q[2]?(pk===j?"right":""):(pk===j?"wrong":""));return'<button class="opt '+c+'" type="button" data-j="'+j+'">'+esc(o)+'</button>';}).join("")+'</div>'+
+        (pk!==null?'<div class="why">'+(pk===q[2]?"Yes. ":"Not quite. ")+esc(q[3])+'</div>':'')+'</div>';
+      dots.innerHTML=qs.map(function(x,i){var c=picks[i]===null?"":(picks[i]===x[2]?"ok":"bad");return'<button type="button" class="'+c+(i===at?" now":"")+'" data-go="'+i+'" aria-label="Go to question '+(i+1)+'"></button>';}).join("");
+      prev.disabled=at===0;next.disabled=at===qs.length-1;next.classList.toggle("primary",pk!==null&&at<qs.length-1);
+      var ans=picks.filter(function(p){return p!==null;}).length,ok=picks.filter(function(p,i){return p===qs[i][2];}).length;
+      score.textContent=ans===qs.length?"Finished: "+ok+" of "+qs.length+" correct":ok+" correct · "+ans+" of "+qs.length+" answered";
+    }
+    box.addEventListener("click",function(e){
+      var b=e.target.closest("button");if(!b)return;
+      if(b.dataset.j!=null){picks[at]=+b.dataset.j;draw();}
+      else if(b.dataset.n){at=Math.max(0,Math.min(qs.length-1,at+(+b.dataset.n)));draw();}
+      else if(b.dataset.go!=null){at=+b.dataset.go;draw();}
+    });
+    box.addEventListener("keydown",function(e){if(e.key==="ArrowRight"&&at<qs.length-1){at++;draw();}else if(e.key==="ArrowLeft"&&at>0){at--;draw();}});
+    draw();
+  });
+})();
+/* ---------- Figures: tap to enlarge, flip through slide sequences ---------- */
+(function(){
+  var d=document.createElement("dialog");d.className="zoom";d.innerHTML='<img alt=""><button class="btn" type="button">Close</button>';document.body.appendChild(d);
+  var big=d.querySelector("img");
+  function open(i){if(!d.showModal)return;big.src=i.currentSrc||i.src;big.alt=i.alt;d.showModal();}
+  document.addEventListener("click",function(e){var i=e.target.closest&&e.target.closest(".fig img");if(i)open(i);});
+  document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.matches&&e.target.matches(".fig img"))open(e.target);});
+  d.addEventListener("click",function(){d.close();});
+  document.querySelectorAll(".fig img").forEach(function(i){i.tabIndex=0;i.setAttribute("role","button");});
+  document.querySelectorAll("[data-flip]").forEach(function(f){
+    var im=[].slice.call(f.querySelectorAll("img")),caps=f.dataset.caps.split("||"),at=0,cap=f.querySelector("[data-cap]"),pos=f.querySelector(".flipnav span"),pv=f.querySelector("[data-d='-1']"),nx=f.querySelector("[data-d='1']");
+    function draw(){im.forEach(function(x,k){x.hidden=k!==at;});cap.innerHTML=caps[at]||"";pos.textContent="Slide "+(at+1)+" of "+im.length;pv.disabled=at===0;nx.disabled=at===im.length-1;}
+    f.addEventListener("click",function(e){var b=e.target.closest("button[data-d]");if(!b)return;at=Math.max(0,Math.min(im.length-1,at+(+b.dataset.d)));draw();});
+    draw();
+  });
+})();
+</script>
+<script>
+(function(){var K="hub-progress-devops",best=0,t=null;try{best=parseInt(localStorage.getItem(K),10)||0;}catch(e){}
+function save(){t=null;var h=document.documentElement.scrollHeight-innerHeight,p=h>0?Math.min(100,Math.round(scrollY/h*100)):0;if(p>best){best=p;try{localStorage.setItem(K,String(p));}catch(e){}}}
+addEventListener("scroll",function(){if(!t)t=setTimeout(save,500);},{passive:true});})();
+</script>
+<script>
+/* ---------- Phones and tablets: tap the progress bar for the menu ---------- */
+(function(){
+  var mq=matchMedia("(max-width:960px)"),body=document.body,pill=document.getElementById("pp"),nav=document.getElementById("toc-nav"),scrim=document.getElementById("toc-scrim"),closeBtn=document.getElementById("toc-close"),d=document.getElementById("toc-d");
+  function isOpen(){return body.classList.contains("nav-open");}
+  function setOpen(o,refocus){
+    body.classList.toggle("nav-open",o);pill.setAttribute("aria-expanded",o?"true":"false");
+    if(o){
+      var a=nav.querySelector("a.active");
+      if(a){var r=a.getBoundingClientRect(),n=nav.getBoundingClientRect();nav.scrollTop+=r.top-n.top-(n.height+110)/2;}else nav.scrollTop=0;
+      closeBtn.focus({preventScroll:true});
+    }else if(refocus)pill.focus({preventScroll:true});
+  }
+  function sync(){
+    if(mq.matches){pill.removeAttribute("tabindex");pill.removeAttribute("aria-hidden");pill.setAttribute("aria-label","Open menu: contents, dark mode and all subjects");d.open=true;}
+    else{pill.tabIndex=-1;pill.setAttribute("aria-hidden","true");pill.removeAttribute("aria-label");setOpen(false);}
+  }
+  pill.addEventListener("click",function(){if(mq.matches)setOpen(!isOpen());});
+  closeBtn.addEventListener("click",function(){setOpen(false,true);});
+  scrim.addEventListener("click",function(){setOpen(false,true);});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&isOpen())setOpen(false,true);});
+  nav.addEventListener("click",function(e){if(!mq.matches)return;if(e.target.closest("summary"))e.preventDefault();else if(e.target.closest("a"))setOpen(false);});
+  if(mq.addEventListener)mq.addEventListener("change",sync);else mq.addListener(sync);
+  sync();
+})();
+</script>
+<script>
+/* ---------- Course materials: download through the viewer when it offers saving ---------- */
+(function(){
+  var links=[].slice.call(document.querySelectorAll("a[data-dl]"));
+  if(!links.length||!window.claude||typeof claude.use!=="function")return;
+  claude.use("downloads").then(function(dl){
+    if(!dl)return;
+    links.forEach(function(a){a.addEventListener("click",function(e){
+      e.preventDefault();var st=a.parentNode.querySelector(".dl-st");st.textContent="Preparing…";
+      fetch(a.getAttribute("href")).then(function(r){if(!r.ok)throw new Error(r.status);return r.blob();})
+        .then(function(b){return dl.save({filename:a.getAttribute("download"),data:b});})
+        .then(function(){st.textContent="";},function(err){st.textContent=(err&&err.code==="declined")?"":"Couldn't download it here.";});
+    });});
+  },function(){});
+})();
+</script>

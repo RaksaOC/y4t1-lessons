@@ -73,7 +73,7 @@ code{background:var(--surface-2);padding:1px 5px}
 .slidebar span b{font-weight:400}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 
-/* Chapter divider, like Group 4's section slides */
+/* Chapter divider */
 .chapter{scroll-margin-top:16px;padding-top:5rem}
 .chapter-head{display:grid;gap:6px;justify-items:center;text-align:center;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:30px 0 26px;margin-bottom:10px}
 .chapter-head .num{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
@@ -325,6 +325,12 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
 }
 @media (max-width:960px) and (prefers-reduced-motion: reduce){.toc,.toc-scrim{transition:none}}
 </style>
+<style>
+.dl{margin:.4rem 0 1rem}
+.dl li{margin:4px 0}
+.dl a{font-weight:600}
+.dl-st{font-weight:700}
+</style>
 <style>.toc a.hub-back{display:block;padding:6px 12px;margin-bottom:8px;border:1.5px solid var(--ink);color:var(--ink);font-weight:700;font-size:13.5px;text-decoration:none}.toc a.hub-back:hover{background:var(--ink);color:var(--bg)}</style>
 <button class="progress-pill" id="pp" type="button" tabindex="-1" aria-hidden="true" aria-controls="toc-nav" aria-expanded="false"><b id="pp-pct">0%</b><span id="pp-sec"></span><em class="pp-menu" aria-hidden="true">Menu</em><i><s id="pp-bar"></s></i></button>
 <div class="toc-scrim" id="toc-scrim"></div>
@@ -400,6 +406,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
           <li><a href="#quiz4">Check yourself</a></li>
         </ol></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
+      <li class="chap"><a href="#materials">Course materials</a></li>
     </ol>
   </details>
 </nav>
@@ -434,7 +441,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <span class="num">Chapter 1</span>
     <h2>Introduction to Quantum Computing</h2>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.1–41</span><span class="ref">Team 3 · Intro deck</span><span class="ref">Team 5 · Intro deck</span><span class="ref">Team 1 · Intro</span><span class="ref">Team 2 · Intro</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.1–41</span></div>
 
   <section class="sub" id="c1-history">
   <h3>1.1 Where this all came from</h3>
@@ -446,7 +453,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <li><b>1985, David Deutsch</b> (English physicist) wrote down the theory of a <b>universal quantum computer</b>: a Turing machine whose tape and head obey quantum physics.</li>
   </ul>
   <figure class="fig md"><span class="frame"><img src="assets/qc/c1-history.webp" width="1200" height="499" loading="lazy" alt="A timeline: David Hilbert in 1928, Alan Turing and the Turing machine in 1936, David Deutsch and quantum theory in 1985, leading to the quantum computer"></span><figcaption><span class="ref">Teacher Ch1 · s.4</span>The chain of questions that led here.</figcaption></figure>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.4–5</span><span class="ref">Team 5 · s.03 (history timeline)</span><span class="ref">Team 2 · s.13 (Feynman 1982)</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.4–5</span></div>
   <div class="call analogy"><span class="tag">Think of it like…</span>
     <p>Turing defined the "rules of cooking": any recipe can be written as step-by-step instructions. Deutsch asked: what if the kitchen itself followed different physics, where an ingredient can be in two bowls at once? You get recipes that are impossible in a normal kitchen.</p>
   </div>
@@ -461,7 +468,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <p>Two things in that sentence matter. First, it's a different <i>model</i>, not a faster version of the same thing. Second, the speedups apply to <i>specific</i> problems. A quantum computer will not make Word open faster.</p>
   <p>That's why, in practice, there are no standalone quantum computers. We have a <b>QPU</b> (quantum processing unit) that sits beside normal hardware, the same way a GPU does. Your CPU runs the program, hands the hard quantum-shaped part to the QPU, gets the answer back and continues.</p>
   <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-ibmq.webp" width="1200" height="311" loading="lazy" alt="A quantum chip, the gold chandelier of a quantum computer, and a comparison table of CPU, GPU, TPU and FPGA"></span><figcaption><span class="ref">Teacher Ch1 · s.6</span>The hardware you've seen in photos, next to the accelerators a QPU sits beside. The chandelier is mostly cooling and wiring. The chip sits at the bottom.</figcaption></figure>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.6</span><span class="ref">Team 5 · s.02 (CPU / GPU / QPU picture)</span><span class="ref">Team 3 · s.03</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.6</span></div>
   <div class="call analogy"><span class="tag">Think of it like…</span>
     <p>A restaurant kitchen. The head chef (CPU) does most of the work. There's a pastry specialist (GPU) for one kind of job, and now a new specialist (QPU) who is unbelievably good at a few very particular dishes and useless at frying an egg. You call the QPU only when one of those dishes is on the order.</p>
   </div>
@@ -488,7 +495,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call warn"><span class="tag">Careful</span>
     <p>BQP is believed to contain factoring, which is outside P as far as anyone knows. It is <b>not</b> believed to contain the NP-complete problems. Quantum computers are not magic NP solvers. They are very good at problems with hidden <i>structure</i>, such as periods and symmetries.</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.7–11</span><span class="ref">Team 5 · s.04</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.7–11</span></div>
   <p>Two examples of how fast things explode:</p>
   <ul>
     <li>Seating <b>10 people</b> around a round table: \((10-1)! = 9! = 362{,}880\) arrangements.</li>
@@ -521,7 +528,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
 
   <h4>Reason 3: nature itself is quantum</h4>
   <p>Here's the clearest way to see it. To describe <i>n</i> qubits exactly, a classical computer must store \(2^n\) numbers (called amplitudes; you'll meet them in Chapter 2). Each extra qubit <b>doubles</b> the memory.</p>
-  <div class="refs"><span class="ref">Team 3 · s.04 "Why classical computing is not enough"</span></div>
 
   <div class="lab" id="lab-memory">
     <div class="lab-head"><span class="tag">Try it</span><h4>Memory needed to simulate n qubits</h4></div>
@@ -556,7 +562,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td><b>Best at</b></td><td>Everyday tasks: cheap, reliable</td><td>Simulation, optimisation, structured math problems</td></tr>
     </tbody></table></div>
   <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-bitqubit.webp" width="1200" height="363" loading="lazy" alt="Classical logic gates and a bit that is either 0 or 1, beside a qubit drawn as a sphere with quantum gates"></span><figcaption><span class="ref">Teacher Ch1 · s.12</span>A bit is a choice of two points. A qubit is a point anywhere on a sphere.</figcaption></figure>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.12</span><span class="ref">Team 3 · s.05–06</span><span class="ref">Team 5 · s.05</span><span class="ref">Team 1 · s.5</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.12</span></div>
   <p>In one line: <i>"Quantum is not a faster classical computer. It is a different tool for specific problems."</i></p>
 
   <h4>Three myths to unlearn</h4>
@@ -567,7 +573,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td>"It will replace your laptop."</td><td>It targets certain hard problems. Today's machines are small and noisy.</td></tr>
       <tr><td>"Encryption is already broken."</td><td>A <i>future</i> large, error-corrected machine is the threat. That's why NIST published the first post-quantum encryption standards in August 2024.</td></tr>
     </tbody></table></div>
-  <div class="refs"><span class="ref">Team 2 · s.11</span></div>
   </section>
 
   <section class="sub" id="c1-coin">
@@ -589,7 +594,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <p>You can also make a biased quantum coin by choosing an angle θ:</p>
   <div class="math">\[ |\psi\rangle = \cos\theta\,|0\rangle + \sin\theta\,|1\rangle, \qquad P(0)=\cos^2\theta,\quad P(1)=\sin^2\theta \]</div>
   <p>With θ = 30°, \(\cos^2 30^\circ = 0.75\), so P(0) = 0.75 and P(1) = 0.25.</p>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.13–15</span><span class="ref">Team 2 Ch2 · p.7</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.13–15</span></div>
 
   <div class="lab" id="lab-coin">
     <div class="lab-head"><span class="tag">Try it</span><h4>PRNG coin vs quantum coin</h4></div>
@@ -643,7 +648,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       </ul>
     </div>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.17–22</span><span class="ref">Team 3 · s.12 (decoherence, scaling, QEC overhead)</span><span class="ref">Team 5 · s.06–07</span><span class="ref">Team 1 · s.9–10</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.17–22</span></div>
   <div class="call analogy"><span class="tag">Think of it like…</span>
     <p>Error correction: imagine whispering a message across a noisy room. To be sure it arrives, you get many people to whisper the same thing and take a majority vote. Quantum error correction does a cleverer version of this (you can't simply copy qubits), which is why one "good" qubit costs hundreds or thousands of "raw" ones.</p>
   </div>
@@ -678,7 +683,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   </div>
   </div>
   <p>Key areas to watch: cryptography, optimisation, drug discovery, climate modelling.</p>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.23–26</span><span class="ref">Team 5 · s.08 (NISQ and advantage)</span><span class="ref">Team 3 · s.14 (future outlook)</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.23–26</span></div>
   </section>
 
   <section class="sub" id="c1-hw">
@@ -695,7 +700,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td><b>Topological</b></td><td>Exotic quasiparticles (anyons) in 2D materials; information stored in how they braid</td><td>Microsoft (research stage)</td><td>Naturally protected from noise, still experimental</td></tr>
     </tbody></table></div>
   <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-cryo.webp" width="1200" height="491" loading="lazy" alt="A layered diagram from room-temperature control down to the quantum plane, and a person standing beside a large cryogenic system"></span><figcaption><span class="ref">Teacher Ch1 · s.22</span>Why it's the size of a wardrobe: the chip is tiny, and everything else is cooling and control down to 20–100 millikelvin.</figcaption></figure>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.27–32</span><span class="ref">Team 3 · s.13 (hardware types)</span><span class="ref">Team 5 · s.09 (leading technologies)</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.27–32</span></div>
   </section>
 
   <section class="sub" id="c1-apps">
@@ -763,7 +768,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
         <li>QAOA for school scheduling; VQE for chemistry classes.</li></ul></div>
     </div>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.33–39</span><span class="ref">Team 3 · s.11</span><span class="ref">Team 5 · s.10</span><span class="ref">Team 2 · s.10 (outlook per field)</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.33–39</span></div>
   <div class="call warn"><span class="tag">Careful</span>
     <p>An honest outlook per field: chemistry and materials is "most promising", cryptography "drives new standards", optimisation is "early research", machine learning is "mostly unproven". Keep that in mind when you read headlines.</p>
   </div>
@@ -778,7 +783,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   </ul>
   <p>The developer workflow has four steps: <b>Code</b> (Qiskit / Cirq), <b>Translate</b> the algorithm into a quantum circuit, <b>Choose</b> real hardware or a simulator, <b>Execute</b> (measure, iterate). Inside every run: <b>Initialize</b> qubits, <b>Apply gates</b>, let <b>interference</b> shape the outcomes, <b>Measure</b> to get a classical result.</p>
   <figure class="fig lg"><span class="frame"><img src="assets/qc/c2-land.webp" width="1200" height="625" loading="lazy" alt="The Quantum Land interface annotated step by step: drag gates, set qubits, send to the server, read the histogram"></span><figcaption><span class="ref">Teacher Ch2 · s.12</span>The Quantum Land, the simulator used in class, annotated.</figcaption></figure>
-  <div class="refs"><span class="ref">Teacher Ch1 · s.40</span><span class="ref">Team 5 · s.11 (tools and ecosystem)</span><span class="ref">Team 3 · s.10 (workflow)</span></div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.40</span></div>
   </section>
 
   <div class="recap">
@@ -806,13 +811,13 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <span class="num">Chapter 2</span>
     <h2>Basics of Quantum Mechanics</h2>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.1–30</span><span class="ref">Team 2 · Ch2 deck</span><span class="ref">Team 1 · Ch2 deck</span><span class="ref">Team 3 · s.07–09</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.1–30</span></div>
   <p>This is the chapter where we learn the rules of the game. Take it slowly. Everything in Chapters 3 and 4 is just these rules used cleverly.</p>
 
   <section class="sub" id="c2-qm">
   <h3>2.1 What quantum mechanics says</h3>
   <p><b>Quantum mechanics</b> is the physics of very small things: atoms, electrons, photons (particles of light). Before it existed, classical physics (Newton's laws) explained footballs and planets perfectly, but it could not explain why atoms only emit certain colours of light, or how light and matter exchange energy.</p>
-  <p>Three ideas from Teams 1 and 2 are all you need to start:</p>
+  <p>Three ideas are all you need to start:</p>
   <ul>
     <li><b>Quantised:</b> energy comes in fixed packets. An electron in an atom can only sit on certain energy levels, like a ladder with no half-steps. That's why neon signs glow in specific colours.</li>
     <li><b>Wave–particle duality:</b> light and electrons arrive at a detector as single dots (like particles), but spread out and interfere (like waves).</li>
@@ -827,7 +832,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td>Effect of observing</td><td>None</td><td>Measurement changes the state (collapse)</td></tr>
       <tr><td>Examples</td><td>Throwing a football, Earth's orbit, car engines</td><td>Solar panels, microwaves, X-rays, lasers</td></tr>
     </tbody></table></div>
-  <div class="refs"><span class="ref">Team 1 Ch2 · p.4–8</span><span class="ref">Team 2 Ch2 · p.1</span></div>
   <div class="call use"><span class="tag">Where it's used (already, today)</span>
     <ul>
       <li><b>Transistors and semiconductors:</b> every chip in your phone works because quantum mechanics explains how electrons move in silicon.</li>
@@ -835,7 +839,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <li><b>GPS:</b> satellites carry <b>atomic clocks</b> that tick using atomic energy transitions. Your phone's position depends on timing accurate to billionths of a second.</li>
       <li><b>MRI scanners:</b> use the quantum spin of hydrogen nuclei in your body. <b>Electron microscopes</b> use the wave nature of electrons to see tiny structures.</li>
     </ul>
-    <div class="refs"><span class="ref">Team 1 Ch2 · p.12–15</span></div>
   </div>
   </section>
 
@@ -862,7 +865,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call key"><span class="tag">Key idea</span>
     <p>Two paths leading to the same spot can <b>add up</b> (bright stripe) or <b>cancel</b> (dark stripe). Quantum algorithms are designed so that the paths to wrong answers cancel and the paths to the right answer add up.</p>
   </div>
-  <div class="refs"><span class="ref">Team 1 Ch2 · p.9–11</span><span class="ref">Team 2 Ch2 · p.2–3</span><span class="ref">Teacher Ch2 · s.18</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.18</span></div>
   </section>
 
   <section class="sub" id="c2-toolkit">
@@ -907,7 +910,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call warn"><span class="tag">Careful</span>
     <p>The quantum coin in Chapter 1 used cos θ|0⟩ + sin θ|1⟩. On the Bloch sphere, the angle is <b>doubled</b> (θ/2 inside). So the coin's θ = 45° is the Bloch θ = 90°, the equator. Same physics, different bookkeeping.</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.4, s.9 (Bloch simulators)</span><span class="ref">Team 2 Ch2 · p.4–6</span><span class="ref">Team 3 · s.08 (superposition and measurement)</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.4, s.9 (Bloch simulators)</span></div>
   </section>
 
   <section class="sub" id="c2-gates1">
@@ -930,7 +933,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td><b>P(λ)</b> (phase)</td><td>\(\begin{pmatrix}1&0\\0&e^{i\lambda}\end{pmatrix}\)</td><td>Adds phase λ to |1⟩. Equals R<sub>z</sub>(λ) up to a global phase. The QFT is built from these.</td></tr>
       <tr><td><b>U(θ,φ,λ)</b></td><td>\(\begin{pmatrix}\cos\frac\theta2&-e^{i\lambda}\sin\frac\theta2\\e^{i\varphi}\sin\frac\theta2&e^{i(\varphi+\lambda)}\cos\frac\theta2\end{pmatrix}\)</td><td>The general one-qubit gate: any rotation at all.</td></tr>
     </tbody></table></div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.5–6, s.10</span><span class="ref">Team 2 Ch2 · p.8</span><span class="ref">Team 3 · s.09</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.5–6, s.10</span></div>
   <p>Gate tables often include a <b>"Native?"</b> column. Native gates are the ones the hardware can do directly (on IBM chips: X, √X, R<sub>z</sub> and a two-qubit gate). Everything else, including H, is <b>compiled</b> into native gates by the <b>transpiler</b> before running. That's the "compilation / transpilation" step you'll see in Chapter 3.</p>
 
   <div class="lab" id="lab-bloch">
@@ -983,7 +986,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call use"><span class="tag">Where it's used</span>
     <p>CNOT is how we create <b>entanglement</b> (next section). Toffoli is a reversible AND gate: with the target starting at 0, it computes target = a AND b. That proves a quantum computer can do anything a classical one can, so arithmetic inside Shor's algorithm is built from gates like these.</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.7–8, s.11</span><span class="ref">Team 2 Ch2 · p.8</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.7–8, s.11</span></div>
   </section>
 
   <section class="sub" id="c2-super">
@@ -1005,7 +1008,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <figure class="fig "><span class="frame"><img src="assets/qc/c1-cat.webp" width="1152" height="668" loading="lazy" alt="Schrödinger&#x27;s cat in a box with a radioactive source, a hammer and a vial of poison, drawn both alive and dead"></span><figcaption><span class="ref">Teacher Ch1 · s.16</span>Schrödinger's 1935 thought experiment. He meant it to show how strange this gets if you scale it up to a cat.</figcaption></figure>
   </div>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.13–14</span><span class="ref">Team 2 Ch2 · p.5</span><span class="ref">Team 3 · s.07</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.13–14</span></div>
   </section>
 
   <section class="sub" id="c2-ent">
@@ -1034,7 +1037,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call real"><span class="tag">Real world</span>
     <p>Einstein called this "spooky action at a distance" and suspected the particles had secretly agreed on their answers in advance, like the magic dice being rigged. John Bell worked out in 1964 that this could be tested, and experiments kept showing no such hidden agreement. The 2022 Nobel Prize in Physics went to Aspect, Clauser and Zeilinger for those experiments. So the circuit you're about to run is built on an effect that took a Nobel to confirm.</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.15–16</span><span class="ref">Team 2 Ch2 · p.9–10</span><span class="ref">Team 3 · s.07</span><span class="ref">Team 3 Ch3 · s.12</span><span class="ref">Team 5 Ch3 · s.5–6</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.15–16</span></div>
 
   <div class="lab" id="lab-circuit">
     <div class="lab-head"><span class="tag">Try it</span><h4>Mini circuit simulator</h4></div>
@@ -1101,7 +1104,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <p><b>Noise-cancelling headphones.</b> The headphones play a sound wave that is the exact opposite (phase-shifted by 180°) of the noise. Peak meets trough, and they cancel into silence. Quantum algorithms do this to wrong answers.</p>
   </div>
   <p><b>Algorithmic role:</b> the Quantum Fourier Transform uses interference to isolate frequencies, and Grover's algorithm amplifies the right answer by constructive interference.</p>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.17–19</span><span class="ref">Team 2 Ch2 · p.11 (worked example)</span><span class="ref">Team 3 · s.07</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.17–19</span></div>
   </section>
 
   <section class="sub" id="c2-clone">
@@ -1118,7 +1121,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call use"><span class="tag">Where it's used</span>
     <p><b>Quantum Key Distribution.</b> An eavesdropper on a quantum channel can't copy the qubits passing by. Any attempt to measure them disturbs them and introduces detectable errors. This also blocks counterfeiting in "quantum money".</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.20–21</span><span class="ref">Team 2 Ch2 · p.13</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.20–21</span></div>
   </section>
 
   <section class="sub" id="c2-rand">
@@ -1133,7 +1136,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call real"><span class="tag">Real world</span>
     <p>Encryption keys are only as good as their randomness, and computers are bad at producing it. So Cloudflare films a wall of lava lamps at its San Francisco office and feeds the footage in as a source of unpredictability. A quantum generator gets there from physics directly. It's small enough now that a phone can have one: Samsung's Galaxy A Quantum (2020) shipped with a quantum random number chip.</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.22</span><span class="ref">Team 2 Ch2 · p.7</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.22</span></div>
   </section>
 
   <section class="sub" id="c2-tele">
@@ -1182,7 +1185,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <li><b>Why it's useful:</b> it's the basic "send-a-qubit" tool for quantum networks and distributed quantum computing (linking several QPUs).</li>
     </ul>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.23–24</span><span class="ref">Team 2 Ch2 · p.14</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.23–24</span></div>
   </section>
 
   <section class="sub" id="c2-sdc">
@@ -1215,7 +1218,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td>Why it's cool</td><td>Moves a qubit state safely</td><td>Doubles the info per qubit sent</td></tr>
     </tbody></table></div>
   <p>They are <i>mirror images</i>. Each trades one resource for the other, and both only work because entanglement was shared in advance. Without that pre-shared pair, one qubit can carry at most one classical bit (Holevo's bound).</p>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.25–27</span><span class="ref">Team 2 Ch2 · p.15–16</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.25–27</span></div>
   </section>
 
   <section class="sub" id="c2-lab">
@@ -1242,7 +1245,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call warn"><span class="tag">Careful: bit order in the tools</span>
     <p>The Quantum Land and Qiskit label bits as q[3] q[2] q[1] q[0], with q0 on the right. For symmetric results like 00/11 it doesn't matter, but for 01 vs 10 it does. The Grover lab code even reverses its strings with <code>k[::-1]</code> to fix this.</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch2 · s.12, s.29</span><span class="ref">Team 7 Ch3 · s.18–19 (same lab)</span></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.12, s.29</span></div>
   </section>
 
   <div class="recap">
@@ -1270,7 +1273,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <span class="num">Chapter 3</span>
     <h2>Quantum Algorithms</h2>
   </div>
-  <div class="refs"><span class="ref">Group 4 · Ch3</span><span class="ref">Team 3 · Ch3 deck</span><span class="ref">Team 5 · Ch3 deck</span><span class="ref">Team 1 · Ch3 deck</span><span class="ref">Team 7 · Ch3 deck</span><span class="ref">Teacher Ch4 · s.4–5, s.26–33</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.4–5, s.26–33</span></div>
 
   <section class="sub" id="c3-what">
   <h3>3.1 What is a quantum algorithm?</h3>
@@ -1282,7 +1285,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <li><b>Measure the qubits:</b> get classical results (0s and 1s) and interpret them.</li>
   </ol>
   <p>A point that's easy to miss: <i>the circuit is only one part of the algorithm.</i> The full cycle is Initialize → Operate → Measure → <b>Interpret</b>. Classical set-up before the circuit and classical post-processing after it (like the gcd step in Shor) can matter just as much.</p>
-  <div class="refs"><span class="ref">Group 4 · Page 01, 04</span><span class="ref">Team 3 Ch3 · s.05</span></div>
   <h4>Why quantum algorithms matter now</h4>
   <ul>
     <li><b>Unlocking quantum potential:</b> hardware is useless without algorithms that give it problems to solve.</li>
@@ -1302,7 +1304,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td>Output</td><td>Same input → same output</td><td>Same input → a distribution of outputs</td></tr>
     </tbody></table></div>
   <p>Or put simply: <i>"Think of it as a program built for quantum hardware, not magic or a faster answer to every problem."</i></p>
-  <div class="refs"><span class="ref">Group 4 · Page 03</span><span class="ref">Team 1 Ch3 · p.4–5</span><span class="ref">Team 7 · s.4</span><span class="ref">Teacher Ch4 · s.4</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.4</span></div>
   <p>Sorting the famous algorithms: The ones covered in this course are Deutsch–Jozsa, Bernstein–Vazirani, Grover, QPE, Shor and VQE. Others you'll hear about: QAOA (optimisation), Simon's algorithm, HHL (linear equations) and quantum walks.</p>
   </section>
 
@@ -1322,7 +1324,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   </ol>
   <figure class="fig lg"><span class="frame"><img src="assets/qc/c3-process.webp" width="1200" height="552" loading="lazy" alt="A winding road map of the development stages from problem framing through to iterating and optimising"></span><figcaption><span class="ref">Teacher Ch3 · s.5</span>The winding road, from the slide.</figcaption></figure>
   <figure class="fig md"><span class="frame"><img src="assets/qc/c3-sim.webp" width="1200" height="367" loading="lazy" alt="Two histograms for a Bell state: an ideal simulator gives only two bars, and a fake device adds small bars from noise"></span><figcaption><span class="ref">Teacher Ch3 · s.9</span>The same Bell circuit twice. The small extra bars on the right are noise, and they're why step 6 exists.</figcaption></figure>
-  <div class="refs"><span class="ref">Teacher Ch4 · s.5</span><span class="ref">Group 4 · Page 16</span><span class="ref">Team 7 · s.5</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.5</span></div>
   <div class="call analogy"><span class="tag">Think of it like…</span>
     <p>Normal software development (design → code → test → deploy → monitor), except the "test" step has two levels: a perfect simulator first (unit test), then a noisy fake chip (staging), then the real chip (production).</p>
   </div>
@@ -1368,7 +1370,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <p>Translating a speech for a foreign audience. First you cut the repetition (phase 1), split long sentences (2), assign who reads which part (3), arrange seats so speakers who need to talk to each other sit together, or pass notes along the row (4), translate into the local language (5), then polish the final text (6). Every extra note passed is a chance for a mistake.</p>
   </div>
   <figure class="fig lg"><span class="frame"><img src="assets/qc/c3-noise.webp" width="1200" height="369" loading="lazy" alt="Bar chart of fidelity for twelve circuits on an ideal simulator, a fake device and a real device. Real device bars drop to about 0.4 on ghz_state and multiply"></span><figcaption><span class="ref">Teacher Ch3 · s.18</span>The same circuits on all three. Real hardware drops to about 0.4 fidelity on ghz_state and multiply, and that loss is what a good transpile tries to limit.</figcaption></figure>
-  <div class="refs"><span class="ref">Group 4 · Page 17–24</span></div>
   </section>
 
   <section class="sub" id="c3-par">
@@ -1378,7 +1379,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <p>There's a catch: quantum operations must be <b>reversible</b>. A function like AND isn't: if AND outputs 0, you can't tell whether the input was 00, 01 or 10. So the standard oracle keeps the input x and <b>XORs</b> the answer into an extra qubit y:</p>
   <div class="math">\[ U_f\,|x\rangle|y\rangle = |x\rangle\,|y\oplus f(x)\rangle \]</div>
   <p class="say">"The oracle preserves x and writes f(x) into y using XOR." Applying it twice gives back the original (y ⊕ f ⊕ f = y), so it's its own inverse and a valid unitary. That's why we need the auxiliary qubit.</p>
-  <div class="refs"><span class="ref">Group 4 · Page 06–07</span><span class="ref">Team 5 Ch3 · s.7</span></div>
   <h4>Quantum parallelism</h4>
   <p><i>Quantum parallelism is the ability of a quantum computer to apply an operation to multiple inputs simultaneously by using a superposition of quantum states.</i> Put H on every input qubit, then call the oracle once, with y = 0:</p>
   <div class="math">\[ U_f\Big(\frac{1}{\sqrt{2^n}}\sum_x |x\rangle\Big)|0\rangle = \frac{1}{\sqrt{2^n}}\sum_x |x\rangle|f(x)\rangle \]</div>
@@ -1391,13 +1391,11 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     </ul>
     <p>Concretely: measuring the AND state above gives one random row, (00, 0), (01, 0), (10, 0) or (11, 1), each with 25%. <i>"One measurement = one random row. No better than one classical query."</i> The fix is to make f(x) show up as a <b>phase</b> (+ or −) instead of a bit flip, so it can interfere. That's phase kickback, next.</p>
   </div>
-  <div class="refs"><span class="ref">Group 4 · Page 05</span><span class="ref">Team 7 · s.11</span><span class="ref">Team 5 Ch3 · s.8</span></div>
   </section>
 
   <section class="sub" id="c3-kick">
   <h3>3.5 Phase kickback: the trick behind the oracles</h3>
   <p><i>Phase kickback is a quantum effect where a controlled operation transfers phase information from the target qubit to the control qubit's superposition.</i> In three steps: control in superposition → controlled operation → relative phase changes. It sounds backwards, but it's how oracles "write" their answer into the qubits we measure. And it's useful because <i>quantum computers can transform phase information into measurable outcomes through interference.</i></p>
-  <div class="refs"><span class="ref">Group 4 · Page 08</span></div>
   <p>The key fact: the state \(|-\rangle = \tfrac{1}{\sqrt2}(|0\rangle-|1\rangle)\) is unchanged by X except for a sign, \(X|-\rangle = -|-\rangle\). So:</p>
   <div class="math">\[ U_f\,|x\rangle|-\rangle = (-1)^{f(x)}\,|x\rangle|-\rangle \]</div>
   <p class="say">If f(x) = 1, the oracle flips the target, which just multiplies everything by −1. That minus sign "belongs" to |x⟩. The target is untouched; the information jumped ("kicked back") into the phase of the input register.</p>
@@ -1422,7 +1420,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call analogy"><span class="tag">Think of it like…</span>
     <p>Pushing off a wall on roller skates. You push the wall (the target), but the wall doesn't move; you do. The control qubit "pushes" on the target and gets the recoil.</p>
   </div>
-  <div class="refs"><span class="ref">Team 7 · s.14–15</span><span class="ref">Team 5 Ch3 · s.9–10</span><span class="ref">Teacher Ch4 · s.20</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.20</span></div>
   </section>
 
   <section class="sub" id="c3-dj">
@@ -1463,7 +1461,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td class="num">32</td><td class="num">2,147,483,649 queries</td><td class="num">1 query</td></tr>
       <tr><td class="num">64</td><td class="num">≈ 9.2 × 10¹⁸ (over 9 quintillion)</td><td class="num">1 query</td></tr>
     </tbody></table></div>
-  <div class="refs"><span class="ref">Group 4 · Page 09–11</span><span class="ref">Team 5 Ch3 · s.11–13</span></div>
 
   <div class="lab" id="lab-dj">
     <div class="lab-head"><span class="tag">Try it</span><h4>Constant or balanced?</h4></div>
@@ -1489,7 +1486,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <li><b>Shor (1994) and Grover (1996):</b> the real-world impact, factoring and search.</li>
     </ul>
   </div>
-  <div class="refs"><span class="ref">Team 1 Ch3 · p.6–9</span><span class="ref">Team 7 · s.16–17</span><span class="ref">Team 5 Ch3 · s.14</span></div>
   </section>
 
   <section class="sub" id="c3-grover">
@@ -1519,7 +1515,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <tbody><tr><td>P(target), N = 8</td><td class="num">12.5%</td><td class="num">78.1%</td><td class="num"><b>94.5%</b></td><td class="num">33.0%</td></tr></tbody></table></div>
   <p>Two iterations is the sweet spot (\(\frac\pi4\sqrt8 \approx 2.22 \to 2\)). A third overshoots and the probability crashes to 33%. Reproduce every number above in the lab below (3 qubits, marked item 110).</p>
   <figure class="fig lg"><span class="frame"><img src="assets/qc/c2-grover.webp" width="1200" height="345" loading="lazy" alt="Grover&#x27;s circuit: Hadamards, then an oracle and diffuser block repeated about the square root of N times"></span><figcaption><span class="ref">Teacher Ch2 · s.19</span>The steps as a circuit: the oracle and diffuser block repeats.</figcaption></figure>
-  <div class="refs"><span class="ref">Team 3 Ch3 · s.14–21</span></div>
 
   <div class="lab" id="lab-grover">
     <div class="lab-head"><span class="tag">Try it</span><h4>Watch the amplitudes move</h4></div>
@@ -1551,14 +1546,13 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <li>Its generalisation, <b>amplitude amplification</b>, is the core of quantum Monte Carlo for finance.</li>
     </ul>
   </div>
-  <div class="refs"><span class="ref">Team 7 · s.6–10</span><span class="ref">Team 1 Ch3 · p.10–13</span><span class="ref">Team 2 Ch2 · p.12</span><span class="ref">Teacher Ch4 · s.26–29</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.26–29</span></div>
   </section>
 
   <section class="sub" id="c3-shor">
   <h3>3.8 Shor's algorithm</h3>
   <p>Peter Shor, 1994: a quantum algorithm that factors a composite integer N into its primes in <b>polynomial</b> time. It uses <b>Quantum Phase Estimation</b> and the <b>Quantum Fourier Transform</b> to find the period of a modular arithmetic function.</p>
-  <div class="refs"><span class="ref">Group 4 · Page 12</span></div>
-  <figure class="fig xs"><span class="frame"><img src="assets/qc/c4-shor.webp" width="1134" height="968" loading="lazy" alt="Portrait of Peter Shor with his arms crossed in front of a chalkboard"></span><figcaption><span class="ref">Team 2 Ch4 · s.17</span>Peter Shor. From Team 2's deck.</figcaption></figure>
+  <figure class="fig xs"><span class="frame"><img src="assets/qc/c4-shor.webp" width="1134" height="968" loading="lazy" alt="Portrait of Peter Shor with his arms crossed in front of a chalkboard"></span><figcaption>Peter Shor.</figcaption></figure>
   <div class="tbl"><table>
     <thead><tr><th></th><th>Best classical (General Number Field Sieve)</th><th>Shor (quantum)</th></tr></thead>
     <tbody><tr><td>Time</td><td>\(O\!\left(e^{c\,(\log N)^{1/3}(\log\log N)^{2/3}}\right)\), sub-exponential</td><td>\(O\big((\log N)^3\big)\), polynomial</td></tr></tbody></table></div>
@@ -1569,7 +1563,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <p>Estimates of how many qubits it would take to break RSA-2048 keep shrinking as algorithms improve, while chips keep growing:</p>
   <div class="svgwrap" id="rsa-svg"></div>
   <p>The gap is still huge (thousands of times) and the estimates assume <i>noisy</i> qubits with heavy error correction. In short: Shor breaks RSA/ECC (HTTPS, banking, software updates) because it solves their math fast, but <b>not yet</b>: it needs an error-corrected machine.</p>
-  <div class="refs"><span class="ref">Group 4 · Page 15</span></div>
   <h4>The big idea: turn factoring into period finding</h4>
   <p>Pick a random number a. Look at the powers of a, mod N: \(a^1, a^2, a^3, \dots \pmod N\). This sequence <b>repeats</b>. The length of the repeat is the <b>period</b> (or <b>order</b>) r: the smallest r with \(a^r \equiv 1 \pmod N\). If you know r, a little classical arithmetic gives the factors.</p>
   <div class="tbl"><table>
@@ -1599,7 +1592,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="math">\[ M_a|u_k\rangle = e^{2\pi i k/r}|u_k\rangle, \qquad |1\rangle = \frac{1}{\sqrt r}\sum_{k=0}^{r-1}|u_k\rangle \;\Rightarrow\; \text{QPE measures } \frac{y}{2^m} \approx \frac{k}{r} \]</div>
   <p><b>How many control qubits?</b> \(m = 2\lceil\log_2 N\rceil + 1\). Example: suppose r = 6, so the phase to find is 1/6. With m = 5, the best approximation is y = 5 out of 32 (about a 68% chance), and 32/5 = 6.4 rounds to 6, which is correct. With m = 4, the best is 3/16, and 16/3 = 5.33 rounds to 5, which is wrong. Too few qubits give a wrong period.</p>
   <p><b>Cost and success:</b> each controlled \(M_a^{2^j}\) costs O(n²) gates (n = number of bits in N) and there are O(n) of them, so O(n³) in total. One run fails (r odd, or trivial gcd) with probability at most ½, so a few repeats are enough. The powers \(a^2, a^4, \dots \bmod N\) are computed on a normal computer first.</p>
-  <div class="refs"><span class="ref">Team 3 Ch3 · s.31–36</span><span class="ref">Group 4 · Page 13</span></div>
   <h4>Worked example: factoring 15</h4>
   <p>N = 15, pick a = 7. gcd(7, 15) = 1, so no lucky shortcut. Powers of 7 mod 15:</p>
   <div class="tbl"><table>
@@ -1608,7 +1600,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <p>r = 4 is even. \(7^{2} = 49\). Then \(\gcd(48, 15) = 3\) and \(\gcd(50, 15) = 5\). So <b>15 = 3 × 5</b>.</p>
   <h4>Same number, different a</h4>
   <p>Now use a = 2. <b>Step 1:</b> gcd(2, 15) = 1, so use order finding. <b>Step 2:</b> 2¹ = 2, 2² = 4, 2³ = 8, 2⁴ = 16 ≡ 1 (mod 15), so r = 4. <b>Step 3:</b> x = 2^{r/2} = 2² = 4. <b>Step 4:</b> gcd(4 − 1, 15) = <b>3</b> and gcd(4 + 1, 15) = <b>5</b>. Different a, same period, same factors. (This is exactly what the Shor lab prints for N = 15.)</p>
-  <div class="refs"><span class="ref">Group 4 · Page 14</span><span class="ref">Team 1 Ch3 · p.21–22</span></div>
 
   <div class="lab" id="lab-shor">
     <div class="lab-head"><span class="tag">Try it</span><h4>Shor's recipe on any small number</h4></div>
@@ -1629,7 +1620,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call warn"><span class="tag">Careful: a common mix-up</span>
     <p>It's tempting to say "r = (p−1)(q−1)". That number is Euler's totient φ(N), which RSA uses to build its private key. The period r that Shor finds is the order of a specific a, which <i>divides</i> φ(N) but is usually smaller. For N = 15: φ(15) = 2 × 4 = 8, while the order of 7 is 4. The conclusion is the same: find r, break RSA.</p>
   </div>
-  <div class="refs"><span class="ref">Team 1 Ch3 · p.16–22</span><span class="ref">Team 7 · s.12–13</span><span class="ref">Teacher Ch4 · s.30–32</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.30–32</span></div>
   </section>
 
   <section class="sub" id="c3-vqe">
@@ -1671,7 +1662,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call warn"><span class="tag">Careful</span>
     <p>Timeline: <b>now (NISQ)</b> is VQE, QAOA and simulation; <b>later (error-corrected)</b> is Shor and Grover, with IBM targeting about 2029. VQE and QAOA can get stuck in local minima or "barren plateaus", so their advantage over classical methods is not yet proven.</p>
   </div>
-  <div class="refs"><span class="ref">Group 4 · Page 25</span><span class="ref">Team 3 Ch3 · s.37–43</span></div>
   </section>
 
   <section class="sub" id="c3-limits">
@@ -1719,7 +1709,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <tr><td><b>Output</b></td><td>The marked item</td><td>The phase</td><td>The order r, then the factors</td><td>The lowest energy and best angles</td></tr>
       <tr><td><b>Hardware needs</b></td><td>Repeat oracle + diffusion a fixed number of times</td><td>Deep: controlled-U count doubles per extra qubit</td><td>Many qubits, deep circuits (≈ n³)</td><td>Short circuit, many repeated runs with a classical optimizer</td></tr>
     </tbody></table></div>
-  <div class="refs"><span class="ref">Team 1 Ch3 · p.23–26</span><span class="ref">Group 4 · Page 26</span><span class="ref">Team 3 Ch3 · s.45</span></div>
   </section>
 
   <div class="recap">
@@ -1750,7 +1739,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <span class="num">Chapter 4</span>
     <h2>Quantum Fourier Transform</h2>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch4 · s.1–35</span><span class="ref">Labs: QPE, Grover, Shor</span><span class="ref">Team 1 Ch3 · p.14–15</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.1–35</span><span class="ref">Labs: QPE, Grover, Shor</span></div>
   <p>Chapter 4 does two jobs. It introduces the <b>Quantum Fourier Transform (QFT)</b>, the engine inside Shor and phase estimation. Then it revisits the algorithms as hands-on <b>labs</b>: QFT-3, BV-8, QPE, Grover on 3 qubits, and Shor. Let's open with a game.</p>
 
   <section class="sub" id="c4-beat">
@@ -1775,14 +1764,14 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="call analogy"><span class="tag">Think of it like…</span>
     <p>A smoothie and its recipe. The time signal is the blended smoothie. The Fourier transform un-blends it and tells you: 50% banana, 30% mango, 20% milk. In sound: a chord goes in, and out come the individual notes.</p>
   </div>
-  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-fourier.webp" width="1200" height="589" loading="lazy" alt="A jagged red signal over time splits into separate waves, and those waves become bars on a frequency axis"></span><figcaption><span class="ref">Team 2 Ch4 · s.4</span>One messy signal, split into its waves, read off as frequencies. From Team 2's deck.</figcaption></figure>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-fourier.webp" width="1200" height="589" loading="lazy" alt="A jagged red signal over time splits into separate waves, and those waves become bars on a frequency axis"></span><figcaption>One messy signal, split into its waves, read off as frequencies.</figcaption></figure>
   <p>For a list of N numbers \(x = (x_0, \dots, x_{N-1})\), the <b>Discrete Fourier Transform (DFT)</b> produces a new list \(y = (y_0, \dots, y_{N-1})\):</p>
   <div class="math">\[ y_k = \frac{1}{\sqrt N}\sum_{j=0}^{N-1} x_j\, e^{2\pi i\, jk/N} \]</div>
   <p class="say">For each frequency k, walk through the signal, spin each sample \(x_j\) by angle \(2\pi jk/N\), and add everything up. If the signal really repeats at that frequency, the spins line up and add to something big. If not, they point in random directions and cancel. Interference again.</p>
   <div class="call use"><span class="tag">Where it's used (classically, everywhere)</span>
     <p>MP3 and JPEG compression, Shazam song recognition, Wi-Fi and 4G/5G signals, MRI image reconstruction, audio equalisers, earthquake analysis. The fast algorithm for it, the <b>FFT</b>, is one of the most important algorithms ever written.</p>
   </div>
-  <div class="refs"><span class="ref">Teacher Ch4 · s.10</span><span class="ref">Team 1 Ch3 · p.14</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.10</span></div>
   </section>
 
   <section class="sub" id="c4-qft">
@@ -1798,7 +1787,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <p>It changes the <b>computational basis</b> (|0⟩, |1⟩, …) into the <b>Fourier basis</b> (states with evenly spaced phases). And the QFT matrix is unitary (\(U^\dagger U = I\)), so it's a valid quantum gate.</p>
   <p>For one qubit (N = 2) the QFT is just the Hadamard gate. For two qubits (N = 4, and \(e^{2\pi i/4} = i\)):</p>
   <div class="math">\[ \mathrm{QFT}_4 = \frac12\begin{pmatrix}1&1&1&1\\1&i&-1&-i\\1&-1&1&-1\\1&-i&-1&i\end{pmatrix} \]</div>
-  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-phases.webp" width="1200" height="251" loading="lazy" alt="Four dials for QFT|01⟩: |00⟩ at 0 degrees, |01⟩ at 90, |10⟩ at 180 and |11⟩ at 270"></span><figcaption><span class="ref">Team 2 Ch4 · s.8</span>QFT|01⟩: every output has the same size, and only the dial turns. Team 2's picture of what you're about to play with.</figcaption></figure>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-phases.webp" width="1200" height="251" loading="lazy" alt="Four dials for QFT|01⟩: |00⟩ at 0 degrees, |01⟩ at 90, |10⟩ at 180 and |11⟩ at 270"></span><figcaption>QFT|01⟩: every output has the same size, and only the dial turns. It's a picture of what you're about to play with.</figcaption></figure>
   <p>Below, each dial is one output amplitude. Pick an input |j⟩ and watch how fast the hands turn as k increases. The bigger j, the faster they spin. That "spin speed" encodes j.</p>
   <div class="lab" id="lab-clocks">
     <div class="lab-head"><span class="tag">Try it</span><h4>QFT phase clocks (3 qubits)</h4></div>
@@ -1814,7 +1803,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <div class="math">\[ \mathrm{QFT}\,|j\rangle = \bigotimes_{l=1}^{n} \frac{|0\rangle + e^{2\pi i\, j/2^{l}}\,|1\rangle}{\sqrt2} \]</div>
   <p class="say">Each output qubit is an equal blend of |0⟩ and |1⟩ with its own phase. One qubit turns j/2 of a circle, the next j/4, the next j/8, like the hands of a clock: second hand, minute hand, hour hand. Because each qubit only needs one H and a few phase rotations, the whole circuit is small.</p>
   <p><b>"Exponential compression"</b>: the QFT acts on all 2ⁿ amplitudes at once using only ~n² gates, while the classical FFT needs ~n·2ⁿ steps. But remember the catch from Chapter 3: you can't read all the amplitudes out. The QFT is only useful as a step inside algorithms where one measurement is enough, like period finding.</p>
-  <div class="refs"><span class="ref">Teacher Ch4 · s.10–11</span><span class="ref">Team 1 Ch3 · p.15</span></div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.10–11</span></div>
   </section>
 
   <section class="sub" id="c4-circuit">
@@ -1831,7 +1820,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   <h4>The 2-qubit QFT</h4>
   <ol class="body"><li>H on q0</li><li>Controlled-P(π/2) from q1 → q0</li><li>H on q1</li><li>SWAP q0 and q1</li></ol>
   <div class="svgwrap" id="qft2-svg"></div>
-  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-circ3.webp" width="1200" height="337" loading="lazy" alt="A 3-qubit QFT circuit: H, controlled phases, H, controlled phase, H, then a swap of the outer qubits"></span><figcaption><span class="ref">Team 2 Ch4 · s.11</span>The same recipe with 3 qubits. From Team 2's deck.</figcaption></figure>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-circ3.webp" width="1200" height="337" loading="lazy" alt="A 3-qubit QFT circuit: H, controlled phases, H, controlled phase, H, then a swap of the outer qubits"></span><figcaption>The same recipe with 3 qubits.</figcaption></figure>
   <p><b>Gate count:</b> n Hadamards + n(n−1)/2 controlled rotations + about n/2 swaps = <b>O(n²)</b>. For 3 qubits: 3 H + 3 CP + 1 SWAP.</p>
   <h4>Inverse QFT (QFT⁻¹ or QFT†)</h4>
   <div class="math">\[ \mathrm{QFT}^{-1}|k\rangle = \frac{1}{\sqrt N}\sum_{j=0}^{N-1} e^{-2\pi i\, jk/N}\,|j\rangle \]</div>
@@ -1945,7 +1934,6 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
   </div>
   <p><b>Example: finding the T gate's rotation.</b> The T gate turns |1⟩ by 1/8 of a full circle (\(e^{i\pi/4} = e^{2\pi i\cdot 1/8}\)). Can QPE find 1/8? Step 1: an X gate turns the target into |1⟩. Step 2: H on 3 counting qubits. Step 3: apply controlled-T 1, 2 and 4 times (1/8, 2/8, 4/8 of a turn). Step 4: the inverse QFT turns those rotations into bits. Measured <span class="mono">001</span> = 1, and 1/8 = φ. Try the "T gate" button.</p>
   <p><b>Accuracy and cost:</b> when φ doesn't fit in n bits (try 1/3), the histogram spreads, and QPE returns the closest n-bit value at least ~40% of the time (exactly \(4/\pi^2 \approx 40.5\%\)). So run it several times and take the most common answer. More counting qubits give a sharper peak, but the number of controlled-U applications <b>doubles</b> with each extra qubit, and deep circuits suffer on noisy hardware. Classically, estimating a phase to n bits this way would take about 2ⁿ uses of U; QPE needs O(n) qubits.</p>
-  <div class="refs"><span class="ref">Team 3 Ch3 · s.23–29</span></div>
   <div class="call use"><span class="tag">Where it's used</span>
     <ul>
       <li><b>Shor's algorithm:</b> order-finding <i>is</i> QPE, with U = "multiply by a mod N". Its phases are s/r, so QPE reveals the period r.</li>
@@ -2092,7 +2080,16 @@ Found trivial factor: 5    → Factors found: (5, 11)</div>
       <tr><td><b>Transpile</b></td><td>Rewrite a circuit into a specific chip's native gates and wiring.</td></tr>
       <tr><td><b>Unitary</b></td><td>A reversible, probability-preserving operation; all quantum gates are unitary.</td></tr>
     </tbody></table></div>
-  <p class="foot">Simulations on this page run a small, exact quantum state simulator in your browser. Figures are cropped from the teacher's decks and from Team 2's Chapter 4 deck, as credited under each one. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
+  <h3 id="materials">Course materials</h3>
+  <p>The original files this page was built from. Tap one to download it.</p>
+  <h4>Lecture decks (Ms. Heng Sovanmonynuth)</h4>
+  <ul class="dl">
+    <li><a href="materials/qc/Course_Orientation.pdf" download="Course Orientation.pdf" data-dl>Course orientation</a> <span class="small muted">PDF · 1.0 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/qc/Chapter_1_Introduction_to_Quantum_Computing.pdf" download="Chapter 1 Introduction to Quantum Computing.pdf" data-dl>Chapter 1 · Introduction to Quantum Computing</a> <span class="small muted">PDF · 7.5 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/qc/Chapter_2_Basic_of_Quantum_Mechanics.pdf" download="Chapter 2 Basic of Quantum Mechanics.pdf" data-dl>Chapter 2 · Basics of Quantum Mechanics</a> <span class="small muted">PDF · 1.7 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/qc/Chapter_3_Quantum_Algorithms.pdf" download="Chapter 3 Quantum Algorithms.pdf" data-dl>Chapter 3 · Quantum Algorithms</a> <span class="small muted">PDF · 2.4 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+  </ul>
+  <p class="foot">Simulations on this page run a small, exact quantum state simulator in your browser. Figures are cropped from the course slides. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
 </section>
 </main>
 </div>
@@ -2145,6 +2142,22 @@ addEventListener("scroll",function(){if(!t)t=setTimeout(save,500);},{passive:tru
   nav.addEventListener("click",function(e){if(!mq.matches)return;if(e.target.closest("summary"))e.preventDefault();else if(e.target.closest("a"))setOpen(false);});
   if(mq.addEventListener)mq.addEventListener("change",sync);else mq.addListener(sync);
   sync();
+})();
+</script>
+<script>
+/* ---------- Course materials: download through the viewer when it offers saving ---------- */
+(function(){
+  var links=[].slice.call(document.querySelectorAll("a[data-dl]"));
+  if(!links.length||!window.claude||typeof claude.use!=="function")return;
+  claude.use("downloads").then(function(dl){
+    if(!dl)return;
+    links.forEach(function(a){a.addEventListener("click",function(e){
+      e.preventDefault();var st=a.parentNode.querySelector(".dl-st");st.textContent="Preparing…";
+      fetch(a.getAttribute("href")).then(function(r){if(!r.ok)throw new Error(r.status);return r.blob();})
+        .then(function(b){return dl.save({filename:a.getAttribute("download"),data:b});})
+        .then(function(){st.textContent="";},function(err){st.textContent=(err&&err.code==="declined")?"":"Couldn't download it here.";});
+    });});
+  },function(){});
 })();
 </script>
 </body></html>
