@@ -1,0 +1,200 @@
+<title>Year 4 Study Hub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: three full-height subject panels side by side, in the same black-and-white slide style as the lecture pages. */
+:root{
+  --bg:#ffffff; --surface-2:#f1f1f1; --ink:#000000; --muted:#3d3d3d; --line:#d0d0d0; --faint:#e2e2e2;
+  --f-display:"Anton","Oswald","Impact","Arial Narrow",sans-serif;
+  --f-body:"Inter","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e0e0e;--surface-2:#1d1d1d;--ink:#f2f2f2;--muted:#b8b8b8;--line:#363636;--faint:#2a2a2a;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0e0e0e;--surface-2:#1d1d1d;--ink:#f2f2f2;--muted:#b8b8b8;--line:#363636;--faint:#2a2a2a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 56px;display:grid;gap:22px}
+.slidebar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);padding:6px 0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.btn{font:inherit;font-size:13px;font-weight:700;padding:4px 10px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;border-radius:0;text-transform:none;letter-spacing:0}
+.btn:hover{background:var(--surface-2)}
+a:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+h1,h2{font-family:var(--f-display);font-weight:400;text-transform:uppercase;margin:0;line-height:1.05;text-wrap:balance}
+h1{font-size:clamp(2.8rem,8vw,5.6rem);letter-spacing:.005em}
+.lede{margin:10px 0 0;font-size:1.12rem;max-width:40rem}
+
+.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px}
+.subj{border:2px solid var(--ink);display:grid;grid-template-rows:auto 1fr;min-width:0}
+.head{--pane:var(--bg);display:grid;gap:12px;padding:18px 20px 20px;color:var(--ink);background:var(--pane);text-decoration:none;border-bottom:2px solid var(--ink);transition:background .15s,color .15s}
+.head:hover{--pane:var(--ink);color:var(--bg)}
+@media (prefers-reduced-motion: reduce){.head{transition:none}}
+.eyebrow{font-weight:800;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
+.head h2{font-size:clamp(2rem,3vw,2.9rem)}
+.head p{margin:0;font-size:1rem}
+.go{font-weight:800;font-size:13.5px;text-transform:uppercase;letter-spacing:.05em}
+.motif{display:block;width:100%;height:auto;max-width:440px}
+.motif text{font-family:var(--f-mono);fill:currentColor}
+.w{stroke:currentColor;stroke-width:1.5;fill:none}
+.box{stroke:currentColor;stroke-width:1.5;fill:var(--pane)}
+.dot{fill:currentColor}
+.body{padding:14px 20px 18px;display:grid;gap:14px;align-content:start}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stats div{border:1.5px solid var(--ink);padding:5px 9px}
+.stats b{display:block;font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.15;font-variant-numeric:tabular-nums}
+.stats span{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.prog{display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+.prog i{display:block;height:5px;background:var(--faint)}
+.prog s{display:block;height:100%;width:0;background:var(--ink);text-decoration:none}
+.lbl{font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;margin:0 0 4px}
+.chapters{list-style:none;margin:0;padding:0;counter-reset:c}
+.chapters li{counter-increment:c;border-top:1px solid var(--line)}
+.chapters li:last-child{counter-increment:none}
+.chapters a{display:grid;grid-template-columns:26px minmax(0,1fr);gap:6px;padding:6px 4px;color:var(--ink);text-decoration:none;font-weight:600;font-size:15px}
+.chapters a::before{content:counter(c);font-family:var(--f-display);font-weight:400;font-size:17px;line-height:1.35}
+.chapters li:last-child a::before{content:"§"}
+.chapters a:hover{background:var(--ink);color:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips a{font-size:12.5px;font-weight:700;padding:3px 9px;border:1.5px solid var(--ink);color:var(--ink);text-decoration:none}
+.chips a:hover{background:var(--ink);color:var(--bg)}
+.foot{font-size:13px;color:var(--muted);border-top:1.5px solid var(--ink);padding-top:10px;margin:0}
+</style>
+<script>
+try{var t=localStorage.getItem("qc-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}
+/* Older links to the IR explainer point at this address with a section hash, so send them on to that page. */
+if(/^#(start|ch\d|c\d-|quiz\d|sheet|lab-)/.test(location.hash))location.replace("ir.html"+location.hash);
+</script>
+
+<div class="wrap">
+  <div class="slidebar"><span>Year 4 study notes</span><button class="btn" id="theme-btn" type="button">Dark mode</button></div>
+  <header>
+    <h1>Year 4 Study Hub</h1>
+    <p class="lede">Three courses, explained from the first idea to the final formula, with demos you can run in the page. Pick one to start.</p>
+  </header>
+
+  <main class="subjects">
+    <article class="subj">
+      <a class="head" href="quantum.html">
+        <span class="eyebrow">Quantum Computing</span>
+        <h2>From Bits to Shor</h2>
+        <svg class="motif" viewBox="0 0 440 104" role="img" aria-label="A two-qubit Bell circuit, H then CNOT, measuring 00 or 11 half the time each">
+          <text x="0" y="31" font-size="13">|0⟩</text><text x="0" y="77" font-size="13">|0⟩</text>
+          <line class="w" x1="30" x2="250" y1="27" y2="27"/><line class="w" x1="30" x2="250" y1="73" y2="73"/>
+          <rect class="box" x="66" y="11" width="34" height="32"/><text x="83" y="32" font-size="15" font-weight="600" text-anchor="middle">H</text>
+          <line class="w" x1="160" x2="160" y1="27" y2="84"/><circle class="dot" cx="160" cy="27" r="5"/>
+          <circle class="box" cx="160" cy="73" r="11"/><line class="w" x1="149" x2="171" y1="73" y2="73"/><line class="w" x1="160" x2="160" y1="62" y2="84"/>
+          <rect class="dot" x="296" y="30" width="44" height="52"/><rect class="dot" x="376" y="30" width="44" height="52"/>
+          <line class="w" x1="280" x2="436" y1="82" y2="82"/>
+          <text x="318" y="98" font-size="12" text-anchor="middle">00</text><text x="398" y="98" font-size="12" text-anchor="middle">11</text>
+          <text x="318" y="22" font-size="12" text-anchor="middle">50%</text><text x="398" y="22" font-size="12" text-anchor="middle">50%</text>
+        </svg>
+        <p>From "what even is a qubit?" to the algorithm that could break internet encryption. No physics background needed.</p>
+        <span class="go">Open Quantum Computing →</span>
+      </a>
+      <div class="body">
+        <div class="stats"><div><b>4</b><span>Chapters</span></div><div><b>20</b><span>Live demos</span></div><div><b>27</b><span>Quiz questions</span></div></div>
+        <div class="prog" data-prog="quantum"><span class="t">Not started</span><i><s></s></i></div>
+        <div><p class="lbl">Chapters</p>
+          <ol class="chapters">
+            <li><a href="quantum.html#ch1">Introduction to Quantum Computing</a></li>
+            <li><a href="quantum.html#ch2">Basics of Quantum Mechanics</a></li>
+            <li><a href="quantum.html#ch3">Quantum Algorithms</a></li>
+            <li><a href="quantum.html#ch4">Quantum Fourier Transform</a></li>
+            <li><a href="quantum.html#sheet">Formula sheet and glossary</a></li>
+          </ol></div>
+        <div><p class="lbl">Jump to a demo</p>
+          <div class="chips"><a href="quantum.html#lab-bloch">Bloch sphere</a><a href="quantum.html#lab-circuit">Circuit simulator</a><a href="quantum.html#lab-grover">Grover's amplitudes</a><a href="quantum.html#lab-shor">Shor's recipe</a></div></div>
+      </div>
+    </article>
+
+    <article class="subj">
+      <a class="head" href="ir.html">
+        <span class="eyebrow">Information Retrieval</span>
+        <h2>From Substring to NDCG</h2>
+        <svg class="motif" viewBox="0 0 440 104" role="img" aria-label="An inverted index: each term points to the documents that contain it">
+          <text x="0" y="22" font-size="13" font-weight="600">python</text><text x="0" y="58" font-size="13" font-weight="600">phnom</text><text x="0" y="94" font-size="13" font-weight="600">cat</text>
+          <line class="w" x1="64" x2="92" y1="18" y2="18"/><line class="w" x1="64" x2="92" y1="54" y2="54"/><line class="w" x1="64" x2="92" y1="90" y2="90"/>
+          <g font-size="13" text-anchor="middle">
+            <rect class="box" x="92" y="4" width="50" height="28"/><text x="117" y="23">d04</text>
+            <rect class="box" x="148" y="4" width="50" height="28"/><text x="173" y="23">d05</text>
+            <rect class="box" x="204" y="4" width="50" height="28"/><text x="229" y="23">d18</text>
+            <rect class="box" x="92" y="40" width="50" height="28"/><text x="117" y="59">d01</text>
+            <rect class="box" x="148" y="40" width="50" height="28"/><text x="173" y="59">d12</text>
+            <rect class="box" x="204" y="40" width="50" height="28"/><text x="229" y="59">d29</text>
+            <rect class="box" x="92" y="76" width="50" height="28"/><text x="117" y="95">d16</text>
+          </g>
+          <rect class="dot" x="300" y="8" width="136" height="16"/><rect class="dot" x="300" y="34" width="92" height="16"/><rect class="dot" x="300" y="60" width="72" height="16"/><rect class="dot" x="300" y="86" width="58" height="16"/>
+        </svg>
+        <p>Start with the simplest search there is, watch it fail, and fix each failure until you can prove which ranker is better.</p>
+        <span class="go">Open Information Retrieval →</span>
+      </a>
+      <div class="body">
+        <div class="stats"><div><b>4</b><span>Chapters</span></div><div><b>8</b><span>Live demos</span></div><div><b>20</b><span>Quiz questions</span></div></div>
+        <div class="prog" data-prog="ir"><span class="t">Not started</span><i><s></s></i></div>
+        <div><p class="lbl">Chapters</p>
+          <ol class="chapters">
+            <li><a href="ir.html#ch1">What Is Information Retrieval?</a></li>
+            <li><a href="ir.html#ch2">Preprocessing, the Inverted Index and Boolean Retrieval</a></li>
+            <li><a href="ir.html#ch3">Ranking with TF-IDF, Cosine and BM25</a></li>
+            <li><a href="ir.html#ch4">Evaluating Search</a></li>
+            <li><a href="ir.html#sheet">Formula sheet and glossary</a></li>
+          </ol></div>
+        <div><p class="lbl">Jump to a demo</p>
+          <div class="chips"><a href="ir.html#lab-naive">Watch a scan</a><a href="ir.html#lab-pipe">Stop words and stemming</a><a href="ir.html#lab-build">Build an index</a><a href="ir.html#lab-race">Score and sort</a><a href="ir.html#lab-bench">Metrics bench</a></div></div>
+      </div>
+    </article>
+    <article class="subj">
+      <a class="head" href="ml.html">
+        <span class="eyebrow">Machine Learning</span>
+        <h2>From Rules to Recall</h2>
+        <svg class="motif" viewBox="0 0 440 104" role="img" aria-label="Left: points with a fitted straight line. Right: two groups of points split by an S-shaped curve">
+          <line class="w" x1="6" x2="200" y1="100" y2="100"/><line class="w" x1="6" x2="6" y1="4" y2="100"/>
+          <line class="w" x1="14" x2="194" y1="88" y2="14"/>
+          <circle class="dot" cx="30" cy="74" r="5"/><circle class="dot" cx="56" cy="78" r="5"/><circle class="dot" cx="78" cy="56" r="5"/><circle class="dot" cx="104" cy="60" r="5"/><circle class="dot" cx="128" cy="36" r="5"/><circle class="dot" cx="152" cy="40" r="5"/><circle class="dot" cx="180" cy="14" r="5"/>
+          <line class="w" x1="240" x2="434" y1="100" y2="100"/><line class="w" x1="240" x2="240" y1="4" y2="100"/>
+          <path class="w" fill="none" d="M244 92 C310 92 322 92 337 52 C352 12 364 12 430 12"/>
+          <circle class="dot" cx="258" cy="92" r="5"/><circle class="dot" cx="280" cy="92" r="5"/><circle class="dot" cx="302" cy="92" r="5"/><circle class="dot" cx="322" cy="92" r="5"/><circle class="dot" cx="352" cy="12" r="5"/><circle class="dot" cx="374" cy="12" r="5"/><circle class="dot" cx="396" cy="12" r="5"/><circle class="dot" cx="418" cy="12" r="5"/>
+        </svg>
+        <p>Start with why rules aren't enough, fit your first line, then learn how to tell a model that works from one that only looks like it does.</p>
+        <span class="go">Open Machine Learning →</span>
+      </a>
+      <div class="body">
+        <div class="stats"><div><b>7</b><span>Chapters</span></div><div><b>19</b><span>Live demos</span></div><div><b>35</b><span>Quiz questions</span></div></div>
+        <div class="prog" data-prog="ml"><span class="t">Not started</span><i><s></s></i></div>
+        <div><p class="lbl">Chapters</p>
+          <ol class="chapters">
+            <li><a href="ml.html#ch1">What Is Artificial Intelligence?</a></li>
+            <li><a href="ml.html#ch2">What Is Machine Learning?</a></li>
+            <li><a href="ml.html#ch3">The Python Toolkit</a></li>
+            <li><a href="ml.html#ch4">Linear Regression</a></li>
+            <li><a href="ml.html#ch5">Data Preprocessing</a></li>
+            <li><a href="ml.html#ch6">Logistic Regression</a></li>
+            <li><a href="ml.html#ch7">Training and Evaluation</a></li>
+            <li><a href="ml.html#sheet">Formula sheet and glossary</a></li>
+          </ol></div>
+        <div><p class="lbl">Jump to a demo</p>
+          <div class="chips"><a href="ml.html#lab-gd">Gradient descent</a><a href="ml.html#lab-smote">Balance with SMOTE</a><a href="ml.html#lab-fit">Overfitting</a><a href="ml.html#lab-cm">Confusion matrix</a></div></div>
+      </div>
+    </article>
+  </main>
+
+  <p class="foot">Everything runs in your browser. Reading progress is saved only on this device.</p>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement,btn=document.getElementById("theme-btn");
+  function isDark(){var a=root.getAttribute("data-theme");if(a)return a==="dark";return !!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);}
+  function paint(){btn.textContent=isDark()?"Light mode":"Dark mode";}
+  btn.addEventListener("click",function(){var n=isDark()?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("qc-theme",n);}catch(e){}paint();});
+  paint();
+  document.querySelectorAll("[data-prog]").forEach(function(el){
+    var p=0;try{p=parseInt(localStorage.getItem("hub-progress-"+el.dataset.prog),10)||0;}catch(e){}
+    if(p>0){el.querySelector(".t").textContent="Read "+p+"% so far";el.querySelector("s").style.width=p+"%";}
+  });
+})();
+</script>

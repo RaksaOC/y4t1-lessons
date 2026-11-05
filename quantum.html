@@ -1,0 +1,2150 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+
+<title>From Bits to Shor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: black-and-white slide style. Condensed bold capitals for headings, thin rules, bordered boxes. Light and dark themes share one token set. */
+:root{
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f1f1f1; --ink:#000000; --muted:#3d3d3d; --line:#d0d0d0; --line-strong:#000000;
+  --accent:#000000; --accent-ink:#ffffff; --pos:#000000; --neg:#9b9b9b; --dim:#bdbdbd; --faint:#e2e2e2; --mean:#000000;
+  --f-display:"Anton","Oswald","Impact","Arial Narrow",sans-serif;
+  --f-body:"Inter","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e0e; --surface:#0e0e0e; --surface-2:#1d1d1d; --ink:#f2f2f2; --muted:#b8b8b8; --line:#363636; --line-strong:#f2f2f2;
+    --accent:#f2f2f2; --accent-ink:#0e0e0e; --pos:#f2f2f2; --neg:#7d7d7d; --dim:#4d4d4d; --faint:#2a2a2a; --mean:#f2f2f2;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e0e; --surface:#0e0e0e; --surface-2:#1d1d1d; --ink:#f2f2f2; --muted:#b8b8b8; --line:#363636; --line-strong:#f2f2f2;
+  --accent:#f2f2f2; --accent-ink:#0e0e0e; --pos:#f2f2f2; --neg:#7d7d7d; --dim:#4d4d4d; --faint:#2a2a2a; --mean:#f2f2f2;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:56px;max-width:1180px;margin:0 auto;padding-block:32px 96px}
+@media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr);gap:16px;padding-block:16px 64px}}
+
+/* TOC */
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;max-height:calc(100vh - 40px);overflow:auto;font-size:13.5px;padding-right:4px}
+.toc summary{font-family:var(--f-display);font-size:18px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;padding:4px 0;border-bottom:2px solid var(--ink)}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc .chap{margin-top:14px}
+.toc .chap > a{font-weight:800;color:var(--ink);text-transform:uppercase;font-size:12.5px;letter-spacing:.04em}
+.toc .chap ol{margin:4px 0 0 0;padding-left:10px;border-left:1px solid var(--ink)}
+.toc a{color:var(--muted);text-decoration:none;display:block;padding:2px 6px;line-height:1.35}
+.toc a:hover{color:var(--ink);text-decoration:underline}
+.toc a.active{color:var(--bg);background:var(--ink)}
+@media (max-width:960px){.toc{position:static;max-height:none;border:2px solid var(--ink);padding:4px 14px 10px}.toc summary{border-bottom:0}}
+
+/* Type */
+main{min-width:0}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:400;text-wrap:balance;line-height:1.08;margin:0;color:var(--ink)}
+h1{font-size:clamp(2.6rem,6vw,4.4rem);text-transform:uppercase;letter-spacing:.005em}
+h2{font-size:clamp(2rem,4.4vw,3rem);text-transform:uppercase;letter-spacing:.01em}
+h3{font-size:clamp(1.5rem,2.6vw,1.9rem);margin-top:3rem;padding-bottom:6px;border-bottom:1.5px solid var(--ink);scroll-margin-top:24px;letter-spacing:.005em}
+h4{font-family:var(--f-body);font-weight:800;font-size:1.02rem;margin-top:1.6rem;text-transform:uppercase;letter-spacing:.04em}
+p,ul,ol.body{max-width:44rem}
+p{margin:.85rem 0}
+ul,ol.body{padding-left:1.3rem;margin:.6rem 0}
+li{margin:.25rem 0}
+strong,b{font-weight:700}
+a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+code{background:var(--surface-2);padding:1px 5px}
+.eyebrow{font-weight:800;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+.lede{font-size:1.12rem;max-width:42rem}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+
+/* Hero */
+.hero{display:grid;gap:14px}
+.slidebar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);padding:6px 0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.slidebar span b{font-weight:400}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+
+/* Chapter divider, like Group 4's section slides */
+.chapter{scroll-margin-top:16px;padding-top:5rem}
+.chapter-head{display:grid;gap:6px;justify-items:center;text-align:center;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:30px 0 26px;margin-bottom:10px}
+.chapter-head .num{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+section.sub{scroll-margin-top:16px}
+
+/* Callouts: black-bordered boxes */
+.call{max-width:44rem;padding:12px 16px;margin:1.2rem 0;border:2px solid var(--ink);background:var(--bg)}
+.call > .tag{display:inline-block;font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;padding:1px 7px;border:1.5px solid var(--ink)}
+.call p{margin:.35rem 0}
+.call ul{margin:.3rem 0}
+.call.use{background:var(--surface-2)}
+.call.warn > .tag{background:var(--ink);color:var(--bg)}
+.call.key{border-width:3px}
+.call.analogy{border-style:dashed}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border:2px solid var(--ink);background:var(--bg)}
+.chip.dash{border-style:dashed}
+.chip.fill{background:var(--surface-2)}
+.chip.inv{background:var(--ink);color:var(--bg)}
+.chip.thick{border-width:3px}
+.ref{display:inline-block;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;padding:1px 7px;border:1px solid var(--ink);color:var(--ink);background:var(--bg);white-space:nowrap;vertical-align:1px}
+.ref.g{background:var(--ink);color:var(--bg)}
+.refs{display:flex;flex-wrap:wrap;gap:6px;margin:.4rem 0 .2rem}
+
+/* Math */
+.math{max-width:44rem;overflow-x:auto;overflow-y:hidden;padding:6px 0;margin:.6rem 0}
+.say{max-width:44rem;font-size:.95rem;color:var(--muted);border-left:3px solid var(--ink);padding:2px 0 2px 12px;margin:.2rem 0 1rem}
+
+/* Tables */
+.tbl{max-width:100%;overflow-x:auto;margin:1rem 0;border:1.5px solid var(--ink);background:var(--bg)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;text-transform:uppercase;font-size:.78rem;letter-spacing:.05em;background:var(--ink);color:var(--bg);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td code{white-space:nowrap}
+
+/* Lab bench */
+.lab{background:var(--bg);border:2px solid var(--ink);margin:1.8rem 0;overflow:hidden}
+.lab-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:10px 16px;border-bottom:2px solid var(--ink)}
+.lab-head .tag{font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:2px 8px}
+.lab-head h4{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.3rem;text-transform:none;letter-spacing:.01em}
+.lab-body{padding:14px 16px 16px;display:grid;gap:12px}
+.lab-body p{margin:.2rem 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:700px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.btn{font:inherit;font-size:13.5px;font-weight:700;padding:6px 12px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;line-height:1.3;border-radius:0}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--ink);color:var(--bg)}
+.btn.primary:hover{background:var(--muted)}
+.btn.gate{font-family:var(--f-mono);min-width:44px}
+.btn.on{background:var(--ink);color:var(--bg)}
+.btn:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+label.ctl{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:5px 8px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);max-width:100%;border-radius:0}
+input[type=text]{font-family:var(--f-mono)}
+input[type=range]{accent-color:var(--ink);width:180px;max-width:100%}
+.readout{font-family:var(--f-mono);font-size:13px;background:var(--surface-2);padding:10px 12px;overflow-x:auto;line-height:1.55;white-space:pre-wrap;word-break:break-word;border-left:3px solid var(--ink)}
+.readout b{font-weight:700}
+.status{font-size:14px;color:var(--muted);min-height:1.3em}
+.status.ok{color:var(--ink);font-weight:700} .status.bad{color:var(--ink);font-weight:700;text-decoration:underline}
+.svgwrap{overflow-x:auto;max-width:100%}
+svg text{font-family:var(--f-mono)}
+svg.chart{width:100%;height:auto;display:block}
+.c-axis{stroke:var(--ink);stroke-width:1}
+.c-grid{stroke:var(--line);stroke-width:1}
+.c-pos{fill:var(--pos)} .c-neg{fill:var(--neg)} .c-hi{fill:var(--ink)} .c-dim{fill:var(--dim)}
+.c-txt{fill:var(--muted);font-size:10.5px} .c-txt-ink{fill:var(--ink);font-size:11px}
+.c-mean{stroke:var(--mean);stroke-width:1.5;stroke-dasharray:5 4}
+.c-curve{fill:none;stroke:var(--ink);stroke-width:2}
+.cw{stroke:var(--ink);stroke-width:1.2}
+.cg{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.cgt{fill:var(--ink);font-size:12px;font-weight:600}
+.cdot{fill:var(--ink)} .cline{stroke:var(--ink);stroke-width:1.5} .ctgt{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.clbl{fill:var(--ink);font-size:12px}
+.cmeter{fill:var(--surface-2);stroke:var(--ink)}
+.node{fill:var(--bg);stroke:var(--ink);stroke-width:2} .node.sel{fill:var(--ink)} .node.path{fill:var(--dim)}
+.ntxt{font-size:13px;font-weight:700;fill:var(--ink)} .ntxt.sel{fill:var(--bg)}
+.edge{stroke:var(--ink);stroke-width:2} .edge.path{stroke-width:5}
+canvas{max-width:100%;height:auto;display:block}
+.dots{display:flex;flex-wrap:wrap;gap:6px}
+.dots span{width:20px;height:20px;border-radius:50%;background:var(--bg);border:2px solid var(--ink);transition:transform .08s,background .08s}
+.dots span.lit{background:var(--ink);transform:scale(1.12)}
+.dots span.acc{width:26px;height:26px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.panel{background:var(--surface-2);padding:10px 14px;border-left:3px solid var(--ink)}
+.panel ul{margin:.2rem 0}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:1rem 0;max-width:none;list-style:none;padding:0;counter-reset:bx}
+.boxes li{border:2px solid var(--ink);padding:10px 12px;margin:0;font-size:.93rem;counter-increment:bx}
+.boxes li::before{content:counter(bx) ". ";font-weight:800}
+.boxes li b{display:inline}
+.clocks{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px}
+.clock{display:grid;justify-items:center;gap:2px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:6px;max-width:none}
+.steps li{display:block;position:relative;padding-left:36px;min-height:24px;margin:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:1px;font-size:12px;font-weight:800;width:24px;height:24px;display:grid;place-items:center;border:1.5px solid var(--ink);background:var(--bg)}
+.steps li.cur::before{background:var(--ink);color:var(--bg)}
+.steps li.done{color:var(--neg)}
+
+/* Quiz */
+.quiz{display:grid;gap:14px}
+.q{border:2px solid var(--ink);padding:12px 14px;background:var(--bg)}
+.q p.qt{margin:0 0 8px;font-weight:800}
+.q .opts{display:grid;gap:6px}
+.q button.opt{text-align:left;font:inherit;font-size:15px;padding:7px 11px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;border-radius:0}
+.q button.opt:hover{background:var(--surface-2)}
+.q button.opt.right{background:var(--ink);color:var(--bg)}
+.q button.opt.right::after{content:"  ✓ correct";font-weight:800}
+.q button.opt.wrong{color:var(--muted);text-decoration:line-through;border-style:dashed}
+.q .why{margin-top:8px;font-size:15px;color:var(--muted)}
+.score{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+
+/* Recap */
+.recap{border:2px solid var(--ink);margin-top:3rem;padding:14px 18px}
+.recap h3{border-bottom:0;padding-bottom:0}
+.recap ul{columns:2;column-gap:32px;max-width:none}
+.recap li{break-inside:avoid}
+@media (max-width:700px){.recap ul{columns:1}}
+.foot{margin-top:5rem;font-size:13.5px;color:var(--muted);border-top:1.5px solid var(--ink);padding-top:16px}
+mjx-container[display="true"]{margin:.4em 0 !important}
+
+/* SVG colours follow the theme */
+svg{color:var(--ink)}
+.f-mid{fill:var(--neg)} .s-mid{stroke:var(--neg)} .s-faint{stroke:var(--faint)}
+
+/* Theme switch */
+.theme-btn{width:100%;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.theme-btn .ico{font-family:var(--f-mono);font-weight:400}
+
+/* Reading progress pill */
+.progress-pill{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 14px);right:calc(max(16px,env(safe-area-inset-right,0px)));
+  display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 10px;max-width:min(300px,calc(100vw - 32px));
+  background:var(--bg);color:var(--ink);border:2px solid var(--ink);padding:8px 12px 10px;box-shadow:4px 4px 0 var(--ink);
+  opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+.progress-pill.show{opacity:1;transform:none}
+.progress-pill b{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.progress-pill span{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.progress-pill i{grid-column:1 / -1;height:4px;background:var(--faint);display:block}
+.progress-pill s{display:block;height:100%;background:var(--ink);text-decoration:none;width:0}
+@media (prefers-reduced-motion: reduce){.progress-pill{transition:opacity .15s linear;transform:none}}
+
+/* Horizontal safety */
+html,body{overflow-x:clip}
+main > *,.lab-body > *,.grid2 > *,.call,.panel{min-width:0}
+mjx-container{max-width:100%}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden}
+img,svg,canvas,video{max-width:100%}
+.svgwrap svg:not(.chart){max-width:none}
+select{max-width:100%;text-overflow:ellipsis}
+@media (max-width:600px){
+  body{font-size:15.5px;line-height:1.65}
+  .shell{padding-block:12px 56px}
+  .chapter{padding-top:3.5rem}
+  .chapter-head{padding:22px 0 18px}
+  h3{margin-top:2.4rem}
+  .lab-head{padding:9px 12px}
+  .lab-body{padding:12px}
+  .call{padding:10px 12px}
+  th,td{padding:7px 9px}
+  table{font-size:.85rem}
+  th{white-space:normal}
+  input[type=range]{width:140px}
+  .boxes{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .recap{padding:12px}
+  .readout{font-size:12.5px}
+  .btn{padding:6px 10px}
+}
+@media (max-width:380px){.boxes{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+<script>
+try{var t=localStorage.getItem("qc-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code','svg','canvas','select','button'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+
+<style>
+/* ---- Added: figures from the slides, real-world boxes ---- */
+.fig{margin:1.3rem 0;max-width:44rem;min-width:0}
+.fig .frame{display:block;background:#fff;border:1.5px solid var(--ink);padding:10px}
+.fig img{display:block;width:100%;height:auto;cursor:zoom-in}
+.fig.xs{max-width:17rem}.fig.sm{max-width:25rem}.fig.md{max-width:34rem}.fig.lg{max-width:44rem}
+.fig figcaption{font-size:.88rem;line-height:1.45;color:var(--muted);margin-top:6px}
+.fig figcaption .ref{margin-right:6px}
+.grid2 .fig{margin:.4rem 0}
+.flipnav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px}
+.flipnav .btn{min-width:52px;font-size:17px;padding:3px 12px}
+.flipnav .btn:disabled{opacity:.3;cursor:default}
+.flipnav span{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.call.real{border-left-width:10px}
+.call.real > .tag{background:var(--surface-2)}
+.chip.real{border-left-width:9px}
+dialog.zoom{border:2px solid var(--ink);background:#fff;padding:12px;max-width:min(96vw,1200px);max-height:94vh;overflow:auto}
+dialog.zoom::backdrop{background:rgba(0,0,0,.72)}
+dialog.zoom img{display:block;max-width:100%;height:auto;margin:0 auto}
+dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
+</style>
+<style>
+/* Quiz carousel */
+.qc{border:2px solid var(--ink);padding:14px 16px;display:grid;gap:12px}
+.qc .eyebrow{font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.qnav{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1.5px solid var(--ink);padding-top:10px}
+.qnav .btn{min-width:56px;font-size:18px;padding:4px 14px}
+.qnav .btn:disabled{opacity:.3;cursor:default}
+.qdots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.qdots button{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);background:var(--bg);padding:0;cursor:pointer}
+.qdots button.now{outline:2px solid var(--ink);outline-offset:2px}
+.qdots button.ok{background:var(--ink)}
+.qdots button.bad{border-style:dashed;background:var(--faint)}
+.qscore{font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}
+
+</style>
+<style>
+/* Phones and tablets: the progress bar stays on screen and opens the menu */
+.progress-pill{font:inherit;text-align:left;border-radius:0}
+.pp-menu,.toc-close,.toc-scrim{display:none}
+.legend .chip{margin:0}
+@media (max-width:960px){
+  .shell{padding-top:calc(env(safe-area-inset-top,0px) + 66px)}
+  main [id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 66px)}
+  .progress-pill{top:0;left:0;right:0;width:100%;max-width:none;z-index:30;opacity:1;transform:none;pointer-events:auto;cursor:pointer;transition:none;
+    grid-template-columns:auto minmax(0,1fr) auto;gap:0 10px;border:0;border-bottom:2px solid var(--ink);box-shadow:none;
+    padding:calc(env(safe-area-inset-top,0px) + 8px) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));-webkit-tap-highlight-color:transparent}
+  .progress-pill b{font-size:22px}
+  .progress-pill span{-webkit-line-clamp:1;word-break:break-all}
+  .progress-pill i{position:absolute;left:0;right:0;bottom:0;height:4px}
+  .pp-menu{display:block;font-style:normal;font-weight:800;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border:1.5px solid var(--ink);padding:4px 9px}
+  .toc{position:fixed;top:0;bottom:0;left:0;z-index:40;align-self:stretch;width:min(86vw,360px);max-height:none;background:var(--bg);border:0;border-right:2px solid var(--ink);
+    padding:0 16px calc(env(safe-area-inset-bottom,0px) + 28px) max(16px,env(safe-area-inset-left,0px));
+    overflow-y:auto;overscroll-behavior:contain;
+    transform:translateX(-105%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
+  .nav-open .toc{transform:none;visibility:visible;transition:transform .22s ease}
+  .toc-scrim{display:block;position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .22s ease}
+  .nav-open .toc-scrim{opacity:1;pointer-events:auto}
+  body.nav-open{overflow:hidden}
+  .toc-close{display:block}
+  .toc-top{position:sticky;top:0;z-index:1;background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 14px) 0 12px;border-bottom:2px solid var(--ink);margin-bottom:12px}
+  .toc .toc-top a.hub-back{margin:0;align-self:stretch;display:flex;align-items:center}
+  .toc-top .theme-btn{margin:0;grid-column:1 / -1}
+  .toc summary{list-style:none;cursor:default;border-bottom:2px solid var(--ink)}
+  .toc summary::-webkit-details-marker{display:none}
+  .toc a{padding:7px 8px;font-size:14.5px}
+  .toc .chap > a{font-size:12.5px}
+  .refs .ref{max-width:100%;white-space:normal}
+}
+@media (max-width:960px) and (prefers-reduced-motion: reduce){.toc,.toc-scrim{transition:none}}
+</style>
+<style>.toc a.hub-back{display:block;padding:6px 12px;margin-bottom:8px;border:1.5px solid var(--ink);color:var(--ink);font-weight:700;font-size:13.5px;text-decoration:none}.toc a.hub-back:hover{background:var(--ink);color:var(--bg)}</style>
+<button class="progress-pill" id="pp" type="button" tabindex="-1" aria-hidden="true" aria-controls="toc-nav" aria-expanded="false"><b id="pp-pct">0%</b><span id="pp-sec"></span><em class="pp-menu" aria-hidden="true">Menu</em><i><s id="pp-bar"></s></i></button>
+<div class="toc-scrim" id="toc-scrim"></div>
+<div class="shell">
+<nav class="toc" id="toc-nav" aria-label="Contents">
+  <div class="toc-top">
+  <a class="hub-back" href="index.html">← All subjects</a>
+  <button class="btn toc-close" id="toc-close" type="button" aria-label="Close menu">Close</button>
+  <button class="btn theme-btn" id="theme-btn" type="button" aria-label="Switch colour theme"><span id="theme-lbl">Dark mode</span><span class="ico" aria-hidden="true">◐</span></button>
+  </div>
+  <details id="toc-d">
+    <summary>Contents</summary>
+    <ol>
+      <li class="chap"><a href="#start">Before we begin</a></li>
+      <li class="chap"><a href="#ch1">1 · Introduction</a>
+        <ol>
+          <li><a href="#c1-history">Where it came from</a></li>
+          <li><a href="#c1-what">What is quantum computing?</a></li>
+          <li><a href="#c1-why">Why we need it</a></li>
+          <li><a href="#c1-vs">Bits vs qubits</a></li>
+          <li><a href="#c1-coin">The quantum coin</a></li>
+          <li><a href="#c1-adv">Advantages and challenges</a></li>
+          <li><a href="#c1-nisq">NISQ and quantum advantage</a></li>
+          <li><a href="#c1-hw">Hardware types</a></li>
+          <li><a href="#c1-apps">Applications</a></li>
+          <li><a href="#c1-tools">Tools</a></li>
+          <li><a href="#quiz1">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch2">2 · Quantum mechanics</a>
+        <ol>
+          <li><a href="#c2-qm">What quantum mechanics says</a></li>
+          <li><a href="#c2-slit">The double-slit experiment</a></li>
+          <li><a href="#c2-toolkit">The math toolkit</a></li>
+          <li><a href="#c2-state">Quantum state and measurement</a></li>
+          <li><a href="#c2-gates1">Single-qubit gates</a></li>
+          <li><a href="#c2-gates2">Multi-qubit gates</a></li>
+          <li><a href="#c2-super">Superposition</a></li>
+          <li><a href="#c2-ent">Entanglement</a></li>
+          <li><a href="#c2-int">Interference</a></li>
+          <li><a href="#c2-clone">No-cloning</a></li>
+          <li><a href="#c2-rand">Randomness</a></li>
+          <li><a href="#c2-tele">Teleportation</a></li>
+          <li><a href="#c2-sdc">Superdense coding</a></li>
+          <li><a href="#c2-lab">Lab: Bell state</a></li>
+          <li><a href="#quiz2">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch3">3 · Quantum algorithms</a>
+        <ol>
+          <li><a href="#c3-what">What is a quantum algorithm?</a></li>
+          <li><a href="#c3-process">Development process</a></li>
+          <li><a href="#c3-transpile">Transpilation</a></li>
+          <li><a href="#c3-par">Oracles and parallelism</a></li>
+          <li><a href="#c3-kick">Phase kickback</a></li>
+          <li><a href="#c3-dj">Deutsch and Deutsch–Jozsa</a></li>
+          <li><a href="#c3-grover">Grover's search</a></li>
+          <li><a href="#c3-shor">Shor's algorithm</a></li>
+          <li><a href="#c3-vqe">VQE and QAOA</a></li>
+          <li><a href="#c3-limits">Limitations</a></li>
+          <li><a href="#quiz3">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch4">4 · Quantum Fourier Transform</a>
+        <ol>
+          <li><a href="#c4-beat">Find the hidden beat</a></li>
+          <li><a href="#c4-ft">Fourier transform</a></li>
+          <li><a href="#c4-qft">The QFT</a></li>
+          <li><a href="#c4-circuit">QFT circuit and inverse</a></li>
+          <li><a href="#c4-period">Period finding</a></li>
+          <li><a href="#c4-bv">Bernstein–Vazirani</a></li>
+          <li><a href="#c4-qpe">Phase estimation</a></li>
+          <li><a href="#c4-grover">Grover in the lab</a></li>
+          <li><a href="#c4-shor">Shor in the lab</a></li>
+          <li><a href="#c4-compare">Comparison and labs</a></li>
+          <li><a href="#quiz4">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+<!-- ======================================================= HERO -->
+<header class="hero" id="start">
+  <div class="slidebar"><span>Quantum Computing</span><span>Chapters 1–4</span></div>
+  <h1>From Bits to Shor</h1>
+  <p class="lede">Hi. Pull up a chair. Over the next few hours I'm going to walk you from "what even is a qubit?" all the way to the algorithm that could break internet encryption. You don't need any physics background. If you can multiply two small numbers and read a table, you can follow every step.</p>
+  <div class="legend" aria-label="How to read the boxes">
+    <span class="chip dash">Think of it like…</span>
+    <span class="chip fill">Where it's used</span>
+    <span class="chip real">Real world</span>
+    <span class="chip thick">Key idea</span>
+    <span class="chip inv">Careful</span>
+  </div>
+  <p class="small muted"><b>Bit order:</b> on this page, a state like |01⟩ means q0 = 0 and q1 = 1, reading left to right like the textbook. Qiskit and The Quantum Land print q0 on the <i>right</i>, so the same state shows up as "10" there. I'll remind you when it matters.</p>
+  <div class="call key"><span class="tag">The plan</span>
+    <ul>
+      <li><b>Chapter 1</b> covers the why: what quantum computers are, what they're good at, what's holding them back.</li>
+      <li><b>Chapter 2</b> covers the rules: qubits, gates, superposition, entanglement, interference, and two party tricks (teleportation and superdense coding).</li>
+      <li><b>Chapter 3</b> covers the algorithms: Deutsch–Jozsa, Grover and Shor, and how they use those rules.</li>
+      <li><b>Chapter 4</b> covers the engine: the Quantum Fourier Transform, Bernstein–Vazirani, phase estimation, and how the labs are built.</li>
+    </ul>
+  </div>
+</header>
+
+<!-- ======================================================= CHAPTER 1 -->
+<section class="chapter" id="ch1">
+  <div class="chapter-head">
+    <span class="num">Chapter 1</span>
+    <h2>Introduction to Quantum Computing</h2>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.1–41</span><span class="ref">Team 3 · Intro deck</span><span class="ref">Team 5 · Intro deck</span><span class="ref">Team 1 · Intro</span><span class="ref">Team 2 · Intro</span></div>
+
+  <section class="sub" id="c1-history">
+  <h3>1.1 Where this all came from</h3>
+  <p>Let's start with a story, because it explains why "quantum computer" is a sensible idea and not science fiction.</p>
+  <ul>
+    <li><b>1928, David Hilbert</b> (German mathematician) asked: is there a mechanical procedure that can decide whether any mathematical statement is true? That question forced people to define what a "procedure", meaning an algorithm, actually is.</li>
+    <li><b>1936, Alan Turing</b> (English mathematician) answered with the <b>Turing machine</b>: an infinitely long tape of cells, a <b>head</b> that reads and writes one symbol at a time, and a table of rules saying "if you're in state A and read a 1, write 0, move right, go to state B." Every laptop and phone today is, in theory, a Turing machine.</li>
+    <li><b>1982, Richard Feynman</b> pointed out that simulating nature (atoms, molecules) on such a machine is brutally slow, because nature is quantum. His suggestion: build the computer out of quantum things.</li>
+    <li><b>1985, David Deutsch</b> (English physicist) wrote down the theory of a <b>universal quantum computer</b>: a Turing machine whose tape and head obey quantum physics.</li>
+  </ul>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c1-history.webp" width="1200" height="499" loading="lazy" alt="A timeline: David Hilbert in 1928, Alan Turing and the Turing machine in 1936, David Deutsch and quantum theory in 1985, leading to the quantum computer"></span><figcaption><span class="ref">Teacher Ch1 · s.4</span>The chain of questions that led here.</figcaption></figure>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.4–5</span><span class="ref">Team 5 · s.03 (history timeline)</span><span class="ref">Team 2 · s.13 (Feynman 1982)</span></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Turing defined the "rules of cooking": any recipe can be written as step-by-step instructions. Deutsch asked: what if the kitchen itself followed different physics, where an ingredient can be in two bowls at once? You get recipes that are impossible in a normal kitchen.</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c1-what">
+  <h3>1.2 So what is quantum computing?</h3>
+  <p>Here's a definition worth memorising:</p>
+  <div class="call key"><span class="tag">Definition</span>
+    <p><b>Quantum computing</b> is a new model of computing that uses the rules of quantum physics to process information in ways classical computers can't, enabling speedups on <i>specific</i> problem types.</p>
+  </div>
+  <p>Two things in that sentence matter. First, it's a different <i>model</i>, not a faster version of the same thing. Second, the speedups apply to <i>specific</i> problems. A quantum computer will not make Word open faster.</p>
+  <p>That's why, in practice, there are no standalone quantum computers. We have a <b>QPU</b> (quantum processing unit) that sits beside normal hardware, the same way a GPU does. Your CPU runs the program, hands the hard quantum-shaped part to the QPU, gets the answer back and continues.</p>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-ibmq.webp" width="1200" height="311" loading="lazy" alt="A quantum chip, the gold chandelier of a quantum computer, and a comparison table of CPU, GPU, TPU and FPGA"></span><figcaption><span class="ref">Teacher Ch1 · s.6</span>The hardware you've seen in photos, next to the accelerators a QPU sits beside. The chandelier is mostly cooling and wiring. The chip sits at the bottom.</figcaption></figure>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.6</span><span class="ref">Team 5 · s.02 (CPU / GPU / QPU picture)</span><span class="ref">Team 3 · s.03</span></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>A restaurant kitchen. The head chef (CPU) does most of the work. There's a pastry specialist (GPU) for one kind of job, and now a new specialist (QPU) who is unbelievably good at a few very particular dishes and useless at frying an egg. You call the QPU only when one of those dishes is on the order.</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c1-why">
+  <h3>1.3 Why do we need it?</h3>
+  <h4>Reason 1: chips are hitting physical limits</h4>
+  <p><b>Moore's Law</b> was the observation that the number of transistors on a chip doubles roughly every two years. It held for decades, but transistors are now only a few dozen atoms wide. Shrink them further and electrons start to "leak" through barriers by <i>quantum tunnelling</i>, a quantum effect that makes the transistor unreliable. So the free performance gains are slowing down.</p>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-moore.webp" width="1200" height="356" loading="lazy" alt="A Moore&#x27;s Law chart of transistor counts rising through the years, and a timeline of Intel process nodes shrinking"></span><figcaption><span class="ref">Teacher Ch1 · s.8</span>Moore's Law, and the shrinking chips behind it.</figcaption></figure>
+  <h4>Reason 2: some problems are hopeless for any classical computer</h4>
+  <p>Computer scientists sort problems by how fast the work grows as the input gets bigger. This is <b>computational complexity theory</b>. The main families:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Class</th><th>Plain meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>P</b></td><td>Solvable quickly (polynomial time) by a classical computer</td><td>Sorting, shortest path, testing if a number is prime</td></tr>
+      <tr><td><b>NP</b></td><td>If someone hands you an answer, you can <i>check</i> it quickly</td><td>Sudoku: hard to solve, easy to check</td></tr>
+      <tr><td><b>NP-complete</b></td><td>The hardest problems inside NP. Solve one fast and you can solve all of NP fast</td><td>Map colouring, box packing, Sudoku (n×n)</td></tr>
+      <tr><td><b>NP-hard</b></td><td>At least as hard as NP-complete (may not even be checkable quickly)</td><td>Travelling salesman (find the shortest route)</td></tr>
+      <tr><td><b>BQP</b></td><td>Solvable quickly by a <b>quantum</b> computer with error probability below 1/3</td><td>Factoring, discrete logarithm (Shor)</td></tr>
+      <tr><td><b>PSPACE / EXP</b></td><td>Solvable with polynomial memory / exponential time</td><td>Perfect play in generalised chess or Go</td></tr>
+    </tbody></table></div>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-complex.webp" width="1200" height="452" loading="lazy" alt="A Venn diagram of P, NP, NP-complete and NP-hard, and curves of computation count against input size from constant up to factorial"></span><figcaption><span class="ref">Teacher Ch1 · s.9</span>Left: the families in the table. Right: how fast each kind of cost grows.</figcaption></figure>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>BQP is believed to contain factoring, which is outside P as far as anyone knows. It is <b>not</b> believed to contain the NP-complete problems. Quantum computers are not magic NP solvers. They are very good at problems with hidden <i>structure</i>, such as periods and symmetries.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.7–11</span><span class="ref">Team 5 · s.04</span></div>
+  <p>Two examples of how fast things explode:</p>
+  <ul>
+    <li>Seating <b>10 people</b> around a round table: \((10-1)! = 9! = 362{,}880\) arrangements.</li>
+    <li>A <b>travelling salesman</b> visiting 20 cities and returning home: \(\frac{(20-1)!}{2} = 60{,}822{,}550{,}204{,}416{,}000 \approx 6.08\times 10^{16}\) possible routes.</li>
+  </ul>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-tsp.webp" width="1200" height="436" loading="lazy" alt="Ten people around a table with 362,880 seatings, and a travelling salesman route across the United States with about 6.08 × 10^16 possible routes"></span><figcaption><span class="ref">Teacher Ch1 · s.11</span>Both examples from the slide.</figcaption></figure>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>This isn't just a textbook puzzle. A delivery driver's day is a travelling salesman problem, and it costs real fuel. UPS says its route-planning system, ORION, saves about 100 million miles a year. That's a classical system that finds <i>good</i> routes without proving they're the best, because checking them all is impossible. Better answers here are worth real money, which is why logistics companies keep watching quantum optimisation.</p>
+  </div>
+  <p>Play with the growth yourself. Notice how \(2^n\) and \(n!\) go from "fine" to "longer than the age of the universe" within a few clicks.</p>
+
+  <div class="lab" id="lab-growth">
+    <div class="lab-head"><span class="tag">Try it</span><h4>How fast does the work grow?</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="gr-n">Input size n</label>
+        <input type="range" id="gr-n" min="1" max="80" value="20">
+        <b class="mono" id="gr-nv">20</b>
+        <span class="muted small">Computer speed: 10⁹ operations per second</span>
+      </div>
+      <div class="tbl" style="margin:0"><table id="gr-table"><thead><tr><th>Growth</th><th>Name</th><th class="num">Operations</th><th class="num">Time</th></tr></thead><tbody></tbody></table></div>
+      <div class="row">
+        <label class="ctl" for="gr-c">Travelling salesman, cities</label>
+        <input type="range" id="gr-c" min="3" max="40" value="20">
+        <b class="mono" id="gr-cv">20</b>
+      </div>
+      <div class="readout" id="gr-tsp"></div>
+    </div>
+  </div>
+
+  <h4>Reason 3: nature itself is quantum</h4>
+  <p>Here's the clearest way to see it. To describe <i>n</i> qubits exactly, a classical computer must store \(2^n\) numbers (called amplitudes; you'll meet them in Chapter 2). Each extra qubit <b>doubles</b> the memory.</p>
+  <div class="refs"><span class="ref">Team 3 · s.04 "Why classical computing is not enough"</span></div>
+
+  <div class="lab" id="lab-memory">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Memory needed to simulate n qubits</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="mem-n">Qubits</label>
+        <input type="range" id="mem-n" min="1" max="300" value="50">
+        <b class="mono" id="mem-nv">50</b>
+        <button class="btn" data-q="10">10</button><button class="btn" data-q="30">30</button><button class="btn" data-q="50">50</button><button class="btn" data-q="300">300</button>
+      </div>
+      <div class="readout" id="mem-out"></div>
+    </div>
+  </div>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <p>This is exactly why chemistry is the "killer app". A caffeine molecule has so many interacting electrons that storing its exact quantum state would take more bits than there are atoms on Earth. A quantum computer stores that state <i>natively</i> in its qubits, because it is made of the same kind of physics.</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c1-vs">
+  <h3>1.4 Bits vs qubits: the side-by-side</h3>
+  <p>Here's the full comparison:</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Classical</th><th>Quantum</th></tr></thead>
+    <tbody>
+      <tr><td><b>Basic unit</b></td><td>Bit: always 0 or 1</td><td>Qubit: a blend (superposition) of 0 and 1 until measured</td></tr>
+      <tr><td><b>Reading it</b></td><td>You get the value; nothing changes</td><td>You get 0 or 1 with some probability, and the blend is destroyed</td></tr>
+      <tr><td><b>Logic</b></td><td>Deterministic logic gates (AND, OR, NOT), many irreversible</td><td>Unitary quantum gates: always reversible</td></tr>
+      <tr><td><b>Running</b></td><td>Sequential operations, same input gives same output</td><td>Probabilistic: same input gives a <i>distribution</i> of outputs</td></tr>
+      <tr><td><b>Working together</b></td><td>Bits are independent</td><td>Qubits can be <b>entangled</b> and act as one system</td></tr>
+      <tr><td><b>Copying</b></td><td>Copy freely</td><td>Unknown states cannot be copied (no-cloning)</td></tr>
+      <tr><td><b>With n units</b></td><td>Holds one of \(2^n\) values at a time</td><td>Described by \(2^n\) amplitudes at once</td></tr>
+      <tr><td><b>Best at</b></td><td>Everyday tasks: cheap, reliable</td><td>Simulation, optimisation, structured math problems</td></tr>
+    </tbody></table></div>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-bitqubit.webp" width="1200" height="363" loading="lazy" alt="Classical logic gates and a bit that is either 0 or 1, beside a qubit drawn as a sphere with quantum gates"></span><figcaption><span class="ref">Teacher Ch1 · s.12</span>A bit is a choice of two points. A qubit is a point anywhere on a sphere.</figcaption></figure>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.12</span><span class="ref">Team 3 · s.05–06</span><span class="ref">Team 5 · s.05</span><span class="ref">Team 1 · s.5</span></div>
+  <p>In one line: <i>"Quantum is not a faster classical computer. It is a different tool for specific problems."</i></p>
+
+  <h4>Three myths to unlearn</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Myth</th><th>Reality</th></tr></thead>
+    <tbody>
+      <tr><td>"It tries every answer at once and gives you the best."</td><td>It holds many possibilities at once, but measuring gives only <b>one</b> random result. The skill is using <b>interference</b> to boost right answers and cancel wrong ones before you measure.</td></tr>
+      <tr><td>"It will replace your laptop."</td><td>It targets certain hard problems. Today's machines are small and noisy.</td></tr>
+      <tr><td>"Encryption is already broken."</td><td>A <i>future</i> large, error-corrected machine is the threat. That's why NIST published the first post-quantum encryption standards in August 2024.</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Team 2 · s.11</span></div>
+  </section>
+
+  <section class="sub" id="c1-coin">
+  <h3>1.5 Classical coin vs quantum coin</h3>
+  <p>A coin shows the deepest difference between the two worlds: <b>where randomness comes from</b>.</p>
+  <h4>A classical coin</h4>
+  <ul>
+    <li>Sample space {H, T}. A fair coin gives \(P(H)=P(T)=0.5\).</li>
+    <li>The randomness comes from <b>chaos</b>: initial spin, air, the surface. If you knew all of those perfectly, you could predict the result. It's randomness from <i>ignorance</i>.</li>
+    <li>It can be biased (a weighted coin, a special flipping style).</li>
+    <li>Computers mostly use <b>pseudo-random number generators (PRNGs)</b>: formulas that produce numbers that <i>look</i> random from a starting value called a <b>seed</b>. Same seed gives the same sequence every time. They're fast and reproducible, but predictable if you know the seed and the algorithm.</li>
+    <li>True randomness needs physical noise: heat (thermal noise), avalanche diodes, radioactive decay.</li>
+  </ul>
+  <h4>A quantum coin</h4>
+  <p>Put a qubit in the state</p>
+  <div class="math">\[ |+\rangle = \tfrac{1}{\sqrt2}\big(|0\rangle + |1\rangle\big) \]</div>
+  <p class="say">In words: "plus state equals one over root two times zero, plus one over root two times one." You make it by applying a Hadamard gate (H) to |0⟩.</p>
+  <p>Measure it and you get 0 or 1 with exactly 50/50 probability. But here the randomness is <b>intrinsic</b>. There is no hidden spin or air current that decided it; physics itself has not decided until you look. That randomness can even be <b>certified</b> with Bell tests, which is how device-independent quantum random number generators (QRNGs) work.</p>
+  <p>You can also make a biased quantum coin by choosing an angle θ:</p>
+  <div class="math">\[ |\psi\rangle = \cos\theta\,|0\rangle + \sin\theta\,|1\rangle, \qquad P(0)=\cos^2\theta,\quad P(1)=\sin^2\theta \]</div>
+  <p>With θ = 30°, \(\cos^2 30^\circ = 0.75\), so P(0) = 0.75 and P(1) = 0.25.</p>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.13–15</span><span class="ref">Team 2 Ch2 · p.7</span></div>
+
+  <div class="lab" id="lab-coin">
+    <div class="lab-head"><span class="tag">Try it</span><h4>PRNG coin vs quantum coin</h4></div>
+    <div class="lab-body">
+      <div class="grid2">
+        <div style="display:grid;gap:8px;min-width:0">
+          <b>Pseudo-random (seeded)</b>
+          <div class="row"><label class="ctl" for="cn-seed">Seed</label><input type="number" id="cn-seed" value="42" style="width:90px"><button class="btn" id="cn-gen">Flip 24 times</button></div>
+          <div class="readout" id="cn-prng">Press "Flip 24 times", then press it again with the same seed.</div>
+          <p class="small muted">Same seed, same "random" flips. That's predictable by design.</p>
+        </div>
+        <div style="display:grid;gap:8px;min-width:0">
+          <b>Quantum coin cos θ|0⟩ + sin θ|1⟩</b>
+          <div class="row"><label class="ctl" for="cn-th">θ</label><input type="range" id="cn-th" min="0" max="90" value="45"><b class="mono" id="cn-thv">45°</b></div>
+          <div class="row"><button class="btn" data-th="45">θ=45° (H|0⟩)</button><button class="btn" data-th="30">θ=30°</button><button class="btn" data-th="0">θ=0°</button><button class="btn primary" id="cn-meas">Measure 100×</button></div>
+          <div id="cn-chart" class="svgwrap"></div>
+          <div class="readout" id="cn-q"></div>
+        </div>
+      </div>
+      <p class="small muted">Simulated with your browser's secure random generator. A real QRNG gets its bits by measuring actual qubits.</p>
+    </div>
+  </div>
+
+  <h4>Schrödinger's cat</h4>
+  <p>Then there's the famous thought experiment: a cat in a sealed box with a device that is triggered by a single quantum event. Quantum mechanics says that until you open the box, the system is in a superposition of "cat alive" and "cat dead". Schrödinger meant it as a joke about how strange this is. For us, the lesson is: a qubit really is in a blend of 0 and 1 until measured, and opening the box (measuring) forces one answer.</p>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <p>QRNGs are already commercial products. They generate cryptographic keys, run lotteries, and feed Monte Carlo simulations in finance. Some smartphones (e.g. Samsung Galaxy Quantum series) include a QRNG chip for security.</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c1-adv">
+  <h3>1.6 What quantum computers are good at, and what's still hard</h3>
+  <div class="grid2">
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Advantages</h4>
+      <ul>
+        <li><b>Parallelism:</b> a superposition lets one circuit work on many inputs at once (Chapter 3 explains the catch).</li>
+        <li><b>Speed-ups for certain problems:</b> exponential for factoring (Shor), quadratic for search (Grover).</li>
+        <li><b>Natural simulation</b> of molecules and materials, "in their native quantum language".</li>
+        <li><b>Potential breakthroughs</b> in AI, finance and optimisation.</li>
+      </ul>
+    </div>
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Challenges</h4>
+      <ul>
+        <li><b>Fragile qubits:</b> <i>decoherence</i>, meaning heat, vibration or stray light leaks into the qubit and scrambles its state, often within microseconds.</li>
+        <li><b>Error correction is expensive:</b> one reliable <b>logical qubit</b> may need ~1,000 noisy <b>physical qubits</b> (Quantum Error Correction, QEC).</li>
+        <li><b>Scalability:</b> devices today have tens to a few thousand qubits.</li>
+        <li><b>Algorithm maturity:</b> only a few proven speed-ups exist.</li>
+        <li><b>Cost and cold:</b> superconducting chips run at 20–100 millikelvin, colder than outer space, inside dilution refrigerators.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.17–22</span><span class="ref">Team 3 · s.12 (decoherence, scaling, QEC overhead)</span><span class="ref">Team 5 · s.06–07</span><span class="ref">Team 1 · s.9–10</span></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Error correction: imagine whispering a message across a noisy room. To be sure it arrives, you get many people to whisper the same thing and take a majority vote. Quantum error correction does a cleverer version of this (you can't simply copy qubits), which is why one "good" qubit costs hundreds or thousands of "raw" ones.</p>
+  </div>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-qec.webp" width="1200" height="401" loading="lazy" alt="One logical qubit built from a grid of physical qubits, with error-correcting codes growing from 17 to 49 to 97 qubits as they correct more errors at a time"></span><figcaption><span class="ref">Teacher Ch1 · s.18</span>Why 1 logical qubit may need about 1,000 physical ones: fixing more errors takes a bigger grid.</figcaption></figure>
+  <p>The <b>IBM roadmap</b> (May 2022, updated August 2024) points one way: more qubits per chip, chips linked together, and a shift from "more qubits" to "better, error-corrected qubits".</p>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-roadmap.webp" width="1200" height="596" loading="lazy" alt="IBM&#x27;s quantum development roadmap from 2016 to 2033 and beyond, showing processors by year"></span><figcaption><span class="ref">Teacher Ch1 · s.21</span>IBM's roadmap, August 2024. Tap to read the details.</figcaption></figure>
+  </section>
+
+  <section class="sub" id="c1-nisq">
+  <h3>1.7 The NISQ era, supremacy and advantage</h3>
+  <p><b>NISQ</b> stands for <b>Noisy Intermediate-Scale Quantum</b>, a term coined by John Preskill in 2018. It describes where we are today:</p>
+  <ul>
+    <li>Devices with roughly <b>50 to 1,000 qubits</b> that are <b>not error-corrected</b>.</li>
+    <li>Useful for quantum simulation (chemistry, physics), <b>hybrid quantum-classical algorithms</b> like VQE (Variational Quantum Eigensolver) and QAOA (Quantum Approximate Optimization Algorithm), and research and proof-of-concept work.</li>
+    <li>Not yet full-scale universal quantum computing.</li>
+  </ul>
+  <p>A useful chart plots physical error rate against number of qubits. NISQ sits above the <b>error-correction threshold</b>. Below that line, adding more qubits for error correction actually reduces errors, and you get <b>fault-tolerant quantum computing (FTQC)</b>. Google's Willow chip (2024, reported in Nature 2025) was the first to show error correction getting better as the code grew.</p>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c1-nisq.webp" width="995" height="706" loading="lazy" alt="A scale of physical qubits from 10 to 1 million. NISQ sits around 100 to 1,000 and is where we are today. Fault-tolerant quantum computing lies past the error correction threshold"></span><figcaption><span class="ref">Teacher Ch1 · s.24</span>Where we are today, and the line we still have to cross.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Term</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>Quantum supremacy</b></td><td>A quantum device solves <i>some</i> task no classical computer can do in reasonable time, even if the task is useless</td><td>Google Sycamore, 2019, 53 qubits: random circuit sampling in 200 s</td></tr>
+      <tr><td><b>Quantum advantage</b></td><td>A <i>practical</i> benefit over the best classical method on a real problem</td><td>The current goal: chemistry, optimisation, finance</td></tr>
+      <tr><td><b>FTQC</b></td><td>Fault-tolerant quantum computing: error-corrected logical qubits, long computations</td><td>Needed for Shor on real RSA keys</td></tr>
+    </tbody></table></div>
+  <div class="grid2">
+    <div style="min-width:0">
+  <figure class="fig "><span class="frame"><img src="assets/qc/c1-chip.webp" width="576" height="309" loading="lazy" alt="Google&#x27;s Sycamore chip held in gloved hands"></span><figcaption><span class="ref">Teacher Ch1 · s.26</span>Google's Sycamore, the chip behind the 2019 result in the table.</figcaption></figure>
+  </div>
+    <div style="min-width:0">
+  <figure class="fig "><span class="frame"><img src="assets/qc/c1-dawn.webp" width="1200" height="536" loading="lazy" alt="A curve across eras: experimental, NISQ, quantum-at-scale and unlimited, with growing numbers of logical qubits"></span><figcaption><span class="ref">Teacher Ch1 · s.25</span>The eras ahead, from about 60 physical qubits to millions of logical ones.</figcaption></figure>
+  </div>
+  </div>
+  <p>Key areas to watch: cryptography, optimisation, drug discovery, climate modelling.</p>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.23–26</span><span class="ref">Team 5 · s.08 (NISQ and advantage)</span><span class="ref">Team 3 · s.14 (future outlook)</span></div>
+  </section>
+
+  <section class="sub" id="c1-hw">
+  <h3>1.8 How do you physically build a qubit?</h3>
+  <p>A qubit is any physical system with two clearly separated states you can control. Several very different technologies compete:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Type</th><th>What the qubit is</th><th>Who / device</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td><b>Superconducting</b></td><td>Tiny electrical circuits made of zero-resistance material that act like artificial atoms (Josephson junctions)</td><td>IBM Heron r1/r2 (133 and 156 qubits, heavy-hex lattice); Google Sycamore (53, 2D grid); Rigetti</td><td>Fast gates; needs 20–100 mK cryogenics</td></tr>
+      <tr><td><b>Trapped ion</b></td><td>Individual charged atoms held by electromagnetic fields and controlled with lasers</td><td>Quantinuum H1-1 (~20, all-to-all connectivity); IonQ Aria (#AQ 25)</td><td>Very high fidelity; slower gates</td></tr>
+      <tr><td><b>Photonic</b></td><td>Particles of light (photons) travelling on optical chips</td><td>Xanadu Borealis (216 squeezed modes); PsiQuantum</td><td>Room-temperature pathways; photon loss</td></tr>
+      <tr><td><b>Neutral atom / Rydberg</b></td><td>Uncharged atoms held in a 2D grid by laser "tweezers"</td><td>Atom Computing (~1,200); QuEra Aquila (256)</td><td>Scales to many qubits; slower cycles</td></tr>
+      <tr><td><b>Quantum annealer</b></td><td>Not gate-based: the system "settles" into the lowest-energy answer of an optimisation problem</td><td>D-Wave Advantage (5,000+ qubits, Pegasus topology)</td><td>Huge qubit counts, but only for optimisation-shaped problems</td></tr>
+      <tr><td><b>Topological</b></td><td>Exotic quasiparticles (anyons) in 2D materials; information stored in how they braid</td><td>Microsoft (research stage)</td><td>Naturally protected from noise, still experimental</td></tr>
+    </tbody></table></div>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c1-cryo.webp" width="1200" height="491" loading="lazy" alt="A layered diagram from room-temperature control down to the quantum plane, and a person standing beside a large cryogenic system"></span><figcaption><span class="ref">Teacher Ch1 · s.22</span>Why it's the size of a wardrobe: the chip is tiny, and everything else is cooling and control down to 20–100 millikelvin.</figcaption></figure>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.27–32</span><span class="ref">Team 3 · s.13 (hardware types)</span><span class="ref">Team 5 · s.09 (leading technologies)</span></div>
+  </section>
+
+  <section class="sub" id="c1-apps">
+  <h3>1.9 Applications: where quantum could actually help</h3>
+  <p>Pick a field.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Why does chemistry keep coming up? Making fertiliser by the Haber-Bosch process takes huge heat and pressure, and it uses roughly 1–2% of the world's energy. Bacteria do the same reaction at soil temperature, using an enzyme whose core (FeMoco) is too quantum for classical computers to simulate exactly. If we could simulate it, we might learn how to copy it. That's the sort of problem Feynman meant, and a big reason this field gets funded.</p>
+  </div>
+  <div class="lab" id="lab-apps">
+    <div class="lab-head"><span class="tag">Explore</span><h4>Quantum applications by field</h4></div>
+    <div class="lab-body">
+      <div class="tabs" role="tablist">
+        <button class="btn on" data-tab="fin" role="tab">Finance</button>
+        <button class="btn" data-tab="chem" role="tab">Chemistry and health</button>
+        <button class="btn" data-tab="ai" role="tab">AI / ML</button>
+        <button class="btn" data-tab="sec" role="tab">Cybersecurity</button>
+        <button class="btn" data-tab="log" role="tab">Logistics</button>
+        <button class="btn" data-tab="game" role="tab">Games</button>
+        <button class="btn" data-tab="edu" role="tab">Education</button>
+      </div>
+      <div class="panel" data-panel="fin"><ul>
+        <li><b>Portfolio optimisation</b> with QAOA / Ising models: balance risk and return across thousands of assets.</li>
+        <li><b>Credit-risk scoring and stress testing</b> using quantum kernels and boosting.</li>
+        <li><b>Derivatives pricing</b> with Quantum Monte Carlo / amplitude estimation (a quadratic speed-up over classical Monte Carlo).</li>
+        <li><b>Fraud and anomaly detection</b> with variational quantum classifiers.</li>
+        <li><b>Liquidity / market-impact simulation</b> using quantum walks.</li>
+        <li><b>Quantum money</b>: banknotes that can't be forged, thanks to no-cloning.</li></ul></div>
+      <div class="panel" data-panel="chem" hidden><ul>
+        <li><b>Ground-state energy estimation (VQE)</b> for catalyst design, e.g. better fertiliser production or carbon capture.</li>
+        <li><b>Protein–ligand docking</b> (how a drug fits a protein) with QAOA / QUBO encodings.</li>
+        <li><b>Peptide and protein design</b> via quantum generative models; protein folding prediction.</li>
+        <li><b>Multi-omics</b> feature selection and clustering with quantum kernels.</li>
+        <li><b>MRI / CT image reconstruction</b> with quantum-inspired solvers.</li>
+        <li><b>Hospital scheduling</b> (nurses, beds, operating rooms) via QUBO.</li>
+        <li><b>Personalised treatment</b> policy learning with quantum reinforcement learning.</li>
+        <li>Molecule simulation and drug discovery in general.</li></ul></div>
+      <div class="panel" data-panel="ai" hidden><ul>
+        <li><b>Quantum kernels</b> for small-data classification.</li>
+        <li><b>Variational quantum classifiers / regressors</b> (VQC / VQR).</li>
+        <li><b>Quantum generative models</b> (QGANs, quantum VAEs).</li>
+        <li><b>Feature selection and sparse coding</b> via Ising / QUBO.</li>
+        <li><b>Hyperparameter search</b> with QAOA.</li>
+        <li>Model families: QNN, QSVM, QLSTM, QRL (all covered in Chapter 6).</li></ul></div>
+      <div class="panel" data-panel="sec" hidden><ul>
+        <li><b>Quantum Key Distribution (QKD)</b>: links where eavesdropping is detectable, thanks to no-cloning.</li>
+        <li><b>QRNG</b> for cryptographic keys.</li>
+        <li><b>Post-quantum cryptography readiness testing</b> using Shor / Grover simulators.</li>
+        <li><b>Quantum-secure federated learning</b> protocols.</li>
+        <li><b>Intrusion pattern search</b> on graphs via QAOA.</li>
+        <li>Quantum channels, quantum-safe systems, quantum communication (Chapter 8).</li></ul></div>
+      <div class="panel" data-panel="log" hidden><ul>
+        <li><b>Vehicle routing with time windows</b> (VRPTW) via QUBO: delivery trucks, Grab-style ride matching.</li>
+        <li><b>Warehouse picking and bin packing.</b></li>
+        <li><b>Crew and roster scheduling</b> under constraints.</li>
+        <li><b>Production planning</b> and lot sizing; multi-echelon inventory.</li>
+        <li><b>Cargo loading</b>, fleet maintenance, demand forecasting.</li></ul></div>
+      <div class="panel" data-panel="game" hidden><ul>
+        <li><b>Quantum Go, Quantum Chess, Quantum Tic-Tac-Toe</b>: pieces can be in superposition across squares.</li>
+        <li>Game AI built from quantum reinforcement-learning primitives.</li>
+        <li>Puzzles and educational games that use quantum rules as mechanics.</li></ul></div>
+      <div class="panel" data-panel="edu" hidden><ul>
+        <li><b>Virtual labs</b> with real QPU back-ends and simulators.</li>
+        <li><b>Interactive circuit sandboxes</b> for courses (like the ones on this page).</li>
+        <li>A <b>Quantum Teachable Machine</b> (like Google Teachable Machine).</li>
+        <li>QAOA for school scheduling; VQE for chemistry classes.</li></ul></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.33–39</span><span class="ref">Team 3 · s.11</span><span class="ref">Team 5 · s.10</span><span class="ref">Team 2 · s.10 (outlook per field)</span></div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>An honest outlook per field: chemistry and materials is "most promising", cryptography "drives new standards", optimisation is "early research", machine learning is "mostly unproven". Keep that in mind when you read headlines.</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c1-tools">
+  <h3>1.10 The tools you'll use</h3>
+  <ul>
+    <li><b>Real quantum computers</b> on the cloud: IBM, Google, Rigetti, Fujitsu.</li>
+    <li><b>Fake devices</b>, meaning simulators that copy a real chip's noise (e.g. IBM's <code>FakePerth</code>): IBM Quantum, AWS Braket, Azure Quantum.</li>
+    <li><b>Simulators</b>: The Quantum Land (drag-and-drop, used in class), Qiskit (Python, used in the labs), Cirq (Google).</li>
+  </ul>
+  <p>The developer workflow has four steps: <b>Code</b> (Qiskit / Cirq), <b>Translate</b> the algorithm into a quantum circuit, <b>Choose</b> real hardware or a simulator, <b>Execute</b> (measure, iterate). Inside every run: <b>Initialize</b> qubits, <b>Apply gates</b>, let <b>interference</b> shape the outcomes, <b>Measure</b> to get a classical result.</p>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c2-land.webp" width="1200" height="625" loading="lazy" alt="The Quantum Land interface annotated step by step: drag gates, set qubits, send to the server, read the histogram"></span><figcaption><span class="ref">Teacher Ch2 · s.12</span>The Quantum Land, the simulator used in class, annotated.</figcaption></figure>
+  <div class="refs"><span class="ref">Teacher Ch1 · s.40</span><span class="ref">Team 5 · s.11 (tools and ecosystem)</span><span class="ref">Team 3 · s.10 (workflow)</span></div>
+  </section>
+
+  <div class="recap">
+    <h3 style="margin-top:0">Chapter 1 in ten lines</h3>
+    <ul>
+      <li>Quantum computing is a different model of computation, built on quantum physics.</li>
+      <li>A QPU is a co-processor, like a GPU, not a laptop replacement.</li>
+      <li>Classical chips are near physical limits; some problems grow as 2ⁿ or n!.</li>
+      <li>Simulating n qubits classically needs 2ⁿ numbers.</li>
+      <li>A qubit is a blend of 0 and 1 until measured; measurement gives one random answer.</li>
+      <li>Quantum randomness is intrinsic, not ignorance; it powers QRNGs.</li>
+      <li>Challenges: decoherence, ~1,000 physical qubits per logical one, scaling, extreme cold.</li>
+      <li>NISQ = 50–1,000 noisy qubits, no full error correction; hybrid VQE/QAOA.</li>
+      <li>Supremacy (Sycamore 2019) ≠ advantage (useful) ≠ fault tolerance.</li>
+      <li>Hardware: superconducting, ion trap, photonic, neutral atom, annealer, topological.</li>
+    </ul>
+  </div>
+  <h3 id="quiz1">Check yourself: Chapter 1</h3>
+  <div class="quiz" data-quiz="1"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 2 -->
+<section class="chapter" id="ch2">
+  <div class="chapter-head">
+    <span class="num">Chapter 2</span>
+    <h2>Basics of Quantum Mechanics</h2>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.1–30</span><span class="ref">Team 2 · Ch2 deck</span><span class="ref">Team 1 · Ch2 deck</span><span class="ref">Team 3 · s.07–09</span></div>
+  <p>This is the chapter where we learn the rules of the game. Take it slowly. Everything in Chapters 3 and 4 is just these rules used cleverly.</p>
+
+  <section class="sub" id="c2-qm">
+  <h3>2.1 What quantum mechanics says</h3>
+  <p><b>Quantum mechanics</b> is the physics of very small things: atoms, electrons, photons (particles of light). Before it existed, classical physics (Newton's laws) explained footballs and planets perfectly, but it could not explain why atoms only emit certain colours of light, or how light and matter exchange energy.</p>
+  <p>Three ideas from Teams 1 and 2 are all you need to start:</p>
+  <ul>
+    <li><b>Quantised:</b> energy comes in fixed packets. An electron in an atom can only sit on certain energy levels, like a ladder with no half-steps. That's why neon signs glow in specific colours.</li>
+    <li><b>Wave–particle duality:</b> light and electrons arrive at a detector as single dots (like particles), but spread out and interfere (like waves).</li>
+    <li><b>Probabilistic:</b> the theory usually can't predict exactly what will happen, only the probabilities.</li>
+  </ul>
+  <div class="tbl"><table>
+    <thead><tr><th>Feature</th><th>Classical physics</th><th>Quantum physics</th></tr></thead>
+    <tbody>
+      <tr><td>Scale</td><td>Everyday objects</td><td>Atoms and subatomic particles</td></tr>
+      <tr><td>Predictability</td><td>Deterministic: exact outcomes</td><td>Probabilistic: likelihoods only</td></tr>
+      <tr><td>How objects move</td><td>Definite paths</td><td>"Probability clouds"</td></tr>
+      <tr><td>Effect of observing</td><td>None</td><td>Measurement changes the state (collapse)</td></tr>
+      <tr><td>Examples</td><td>Throwing a football, Earth's orbit, car engines</td><td>Solar panels, microwaves, X-rays, lasers</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Team 1 Ch2 · p.4–8</span><span class="ref">Team 2 Ch2 · p.1</span></div>
+  <div class="call use"><span class="tag">Where it's used (already, today)</span>
+    <ul>
+      <li><b>Transistors and semiconductors:</b> every chip in your phone works because quantum mechanics explains how electrons move in silicon.</li>
+      <li><b>Solar cells:</b> light packets (photons) knock electrons loose to make electricity.</li>
+      <li><b>GPS:</b> satellites carry <b>atomic clocks</b> that tick using atomic energy transitions. Your phone's position depends on timing accurate to billionths of a second.</li>
+      <li><b>MRI scanners:</b> use the quantum spin of hydrogen nuclei in your body. <b>Electron microscopes</b> use the wave nature of electrons to see tiny structures.</li>
+    </ul>
+    <div class="refs"><span class="ref">Team 1 Ch2 · p.12–15</span></div>
+  </div>
+  </section>
+
+  <section class="sub" id="c2-slit">
+  <h3>2.2 The double-slit experiment</h3>
+  <p>This is the experiment that broke classical physics, and it explains <b>interference</b>, the most important tool in quantum computing.</p>
+  <p>Fire particles (electrons or photons) one at a time at a wall with two narrow slits, and record where each lands on a screen behind it. Each particle arrives as a single dot. But after thousands of dots, they form <b>stripes</b>: bright bands where many land and dark bands where almost none land. That stripe pattern is what waves do when they pass through two slits and overlap. So each single particle somehow went "through both slits" and interfered with itself.</p>
+  <p>Now put a detector at the slits to see which one each particle uses. The stripes <b>disappear</b>. You get two plain blobs. Measuring "which path" destroyed the interference.</p>
+
+  <div class="lab" id="lab-slit">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Fire particles at two slits</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <button class="btn" id="sl-1">Fire 1</button>
+        <button class="btn" id="sl-100">Fire 100</button>
+        <button class="btn primary" id="sl-auto">Auto fire</button>
+        <button class="btn" id="sl-clear">Clear screen</button>
+        <label class="ctl"><input type="checkbox" id="sl-det"> Detector at slits (watch which path)</label>
+      </div>
+      <canvas id="sl-canvas" width="720" height="260" aria-label="Detection screen"></canvas>
+      <div class="status" id="sl-status">0 particles detected.</div>
+    </div>
+  </div>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>Two paths leading to the same spot can <b>add up</b> (bright stripe) or <b>cancel</b> (dark stripe). Quantum algorithms are designed so that the paths to wrong answers cancel and the paths to the right answer add up.</p>
+  </div>
+  <div class="refs"><span class="ref">Team 1 Ch2 · p.9–11</span><span class="ref">Team 2 Ch2 · p.2–3</span><span class="ref">Teacher Ch2 · s.18</span></div>
+  </section>
+
+  <section class="sub" id="c2-toolkit">
+  <h3>2.3 The math toolkit (ten minutes, I promise)</h3>
+  <p>Before writing qubits down, you need three small tools. That's genuinely all the math in this course.</p>
+  <h4>Tool 1: complex numbers as arrows</h4>
+  <p>A complex number \(z = a + bi\) (where \(i^2=-1\)) is just an arrow on a 2D plane. It has a <b>length</b> \(|z| = \sqrt{a^2+b^2}\) and an <b>angle</b> called the <b>phase</b>. The neat way to write an arrow of length 1 pointing at angle θ is Euler's formula:</p>
+  <div class="math">\[ e^{i\theta} = \cos\theta + i\sin\theta \]</div>
+  <p class="say">"e to the i theta" is simply "the arrow of length 1 at angle θ". So \(e^{i\pi} = -1\) (pointing left), \(e^{i\pi/2} = i\) (pointing up).</p>
+  <p>The only thing you'll do with these arrows is <b>add</b> them (head to tail) and then take the <b>squared length</b> \(|z|^2\). That squared length becomes a probability.</p>
+  <h4>Tool 2: vectors and matrices</h4>
+  <p>We write the two basic qubit states as columns of numbers:</p>
+  <div class="math">\[ |0\rangle = \begin{pmatrix}1\\0\end{pmatrix},\qquad |1\rangle = \begin{pmatrix}0\\1\end{pmatrix},\qquad \alpha|0\rangle+\beta|1\rangle = \begin{pmatrix}\alpha\\ \beta\end{pmatrix} \]</div>
+  <p>The funny bracket \(|\;\rangle\) is called a <b>ket</b> (Dirac notation). It just means "this is a quantum state".</p>
+  <p>A gate is a 2×2 matrix, and applying it means matrix × vector. Example, the NOT gate X:</p>
+  <div class="math">\[ X|0\rangle = \begin{pmatrix}0&1\\1&0\end{pmatrix}\begin{pmatrix}1\\0\end{pmatrix} = \begin{pmatrix}0\cdot1+1\cdot0\\ 1\cdot1+0\cdot0\end{pmatrix} = \begin{pmatrix}0\\1\end{pmatrix} = |1\rangle \]</div>
+  <p class="say">Row times column: top row (0, 1) · (1, 0) = 0; bottom row (1, 0) · (1, 0) = 1. So X turns |0⟩ into |1⟩.</p>
+  <h4>Tool 3: the tensor product (combining qubits)</h4>
+  <p>Two qubits together have four basic states: |00⟩, |01⟩, |10⟩, |11⟩. You combine single-qubit states with the <b>tensor product</b> ⊗, which multiplies every entry by every entry:</p>
+  <div class="math">\[ |0\rangle\otimes|1\rangle = \begin{pmatrix}1\\0\end{pmatrix}\otimes\begin{pmatrix}0\\1\end{pmatrix} = \begin{pmatrix}1\cdot0\\1\cdot1\\0\cdot0\\0\cdot1\end{pmatrix} = \begin{pmatrix}0\\1\\0\\0\end{pmatrix} = |01\rangle \]</div>
+  <p>So n qubits need a column of \(2^n\) numbers. That's the 2ⁿ from Chapter 1.</p>
+  </section>
+
+  <section class="sub" id="c2-state">
+  <h3>2.4 The quantum state and measurement</h3>
+  <p>A quantum state holds <b>all</b> the information about a system. For one qubit:</p>
+  <div class="math">\[ |\psi\rangle = \alpha|0\rangle + \beta|1\rangle, \qquad |\alpha|^2 + |\beta|^2 = 1 \]</div>
+  <p class="say">"Psi" (ψ) is the name of the state. α (alpha) and β (beta) are complex numbers called <b>amplitudes</b>. They can be negative or complex, which normal probabilities can't.</p>
+  <h4>The Born rule (measurement)</h4>
+  <p>When you measure, you get:</p>
+  <div class="math">\[ P(0) = |\alpha|^2, \qquad P(1) = |\beta|^2 \]</div>
+  <p>That's why the squares must add to 1: the probabilities must total 100%. Example: \(|\psi\rangle = 0.6|0\rangle + 0.8|1\rangle\) gives P(0) = 0.36, P(1) = 0.64.</p>
+  <p><b>Collapse:</b> after measuring, the blend is gone. If you got 1, the qubit is now |1⟩, and measuring again gives 1 every time.</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>A spinning coin on a table is "both" heads and tails. Slap your hand on it and it becomes one of them, and it stays that way. The difference: a quantum coin's blend has <i>signs and angles</i> (amplitudes) that can cancel each other, which a real coin doesn't have.</p>
+  </div>
+  <h4>The Bloch sphere</h4>
+  <p>Because of normalisation (and because an overall phase doesn't matter physically), every single-qubit state can be written with just two angles:</p>
+  <div class="math">\[ |\psi\rangle = \cos\tfrac{\theta}{2}|0\rangle + e^{i\varphi}\sin\tfrac{\theta}{2}|1\rangle \]</div>
+  <p>Read θ as latitude and φ as longitude on a globe, and every qubit state is a point on a sphere, the <b>Bloch sphere</b>. North pole = |0⟩, south pole = |1⟩, the equator holds the 50/50 states (|+⟩, |−⟩, |i⟩, |−i⟩) which differ only in phase. Gates become <b>rotations</b> of the arrow.</p>
+  <figure class="fig xs"><span class="frame"><img src="assets/qc/c2-bloch.webp" width="618" height="753" loading="lazy" alt="A sphere with |0⟩ at the north pole, |1⟩ at the south pole, and a state |ψ⟩ marked by angles θ and φ"></span><figcaption><span class="ref">Teacher Ch2 · s.4</span>The Bloch sphere from the slide.</figcaption></figure>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>The quantum coin in Chapter 1 used cos θ|0⟩ + sin θ|1⟩. On the Bloch sphere, the angle is <b>doubled</b> (θ/2 inside). So the coin's θ = 45° is the Bloch θ = 90°, the equator. Same physics, different bookkeeping.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.4, s.9 (Bloch simulators)</span><span class="ref">Team 2 Ch2 · p.4–6</span><span class="ref">Team 3 · s.08 (superposition and measurement)</span></div>
+  </section>
+
+  <section class="sub" id="c2-gates1">
+  <h3>2.5 Single-qubit gates</h3>
+  <p>Gates are the steps of a quantum program. Each is a small matrix that changes the state, and every gate is <b>unitary</b>, \(U^\dagger U = I\), which means it can be undone. (The dagger † means "flip rows and columns and take the complex conjugate"; it's the "undo" of a gate.) This is very different from a classical AND gate, where you can't recover the inputs from the output.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Gate</th><th>Matrix</th><th>What it does in plain words</th></tr></thead>
+    <tbody>
+      <tr><td><b>I</b> (identity)</td><td>\(\begin{pmatrix}1&0\\0&1\end{pmatrix}\)</td><td>Nothing. Used as a placeholder (e.g. superdense coding bits 00).</td></tr>
+      <tr><td><b>X</b> (Pauli-X, NOT)</td><td>\(\begin{pmatrix}0&1\\1&0\end{pmatrix}\)</td><td>Flips |0⟩ ↔ |1⟩. Half-turn about the x-axis.</td></tr>
+      <tr><td><b>Y</b> (Pauli-Y)</td><td>\(\begin{pmatrix}0&-i\\i&0\end{pmatrix}\)</td><td>Flips and adds a phase. Half-turn about y.</td></tr>
+      <tr><td><b>Z</b> (Pauli-Z, phase flip)</td><td>\(\begin{pmatrix}1&0\\0&-1\end{pmatrix}\)</td><td>Leaves |0⟩ alone, flips the sign of |1⟩. Turns |+⟩ into |−⟩.</td></tr>
+      <tr><td><b>H</b> (Hadamard)</td><td>\(\tfrac{1}{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}\)</td><td>Makes a 50/50 blend: |0⟩→|+⟩, |1⟩→|−⟩. Applying it twice undoes it.</td></tr>
+      <tr><td><b>S</b> = √Z (phase)</td><td>\(\begin{pmatrix}1&0\\0&i\end{pmatrix}\)</td><td>Quarter-turn about z (90°). S† is the reverse: \(\mathrm{diag}(1,-i)\).</td></tr>
+      <tr><td><b>T</b> (π/8 gate)</td><td>\(\begin{pmatrix}1&0\\0&e^{i\pi/4}\end{pmatrix}\)</td><td>Eighth-turn about z (45°). T† reverses it.</td></tr>
+      <tr><td><b>√X</b> (SX)</td><td>\(\tfrac12\begin{pmatrix}1+i&1-i\\1-i&1+i\end{pmatrix}\)</td><td>Half a NOT: do it twice and you get X.</td></tr>
+      <tr><td><b>R<sub>x</sub>(θ)</b></td><td>\(\begin{pmatrix}\cos\frac\theta2&-i\sin\frac\theta2\\-i\sin\frac\theta2&\cos\frac\theta2\end{pmatrix}\)</td><td>Rotate by θ about the x-axis.</td></tr>
+      <tr><td><b>R<sub>y</sub>(θ)</b></td><td>\(\begin{pmatrix}\cos\frac\theta2&-\sin\frac\theta2\\ \sin\frac\theta2&\cos\frac\theta2\end{pmatrix}\)</td><td>Rotate by θ about y. Real amplitudes only, so it's the "biased coin" gate.</td></tr>
+      <tr><td><b>R<sub>z</sub>(θ)</b></td><td>\(\begin{pmatrix}e^{-i\theta/2}&0\\0&e^{i\theta/2}\end{pmatrix}\)</td><td>Rotate by θ about z.</td></tr>
+      <tr><td><b>P(λ)</b> (phase)</td><td>\(\begin{pmatrix}1&0\\0&e^{i\lambda}\end{pmatrix}\)</td><td>Adds phase λ to |1⟩. Equals R<sub>z</sub>(λ) up to a global phase. The QFT is built from these.</td></tr>
+      <tr><td><b>U(θ,φ,λ)</b></td><td>\(\begin{pmatrix}\cos\frac\theta2&-e^{i\lambda}\sin\frac\theta2\\e^{i\varphi}\sin\frac\theta2&e^{i(\varphi+\lambda)}\cos\frac\theta2\end{pmatrix}\)</td><td>The general one-qubit gate: any rotation at all.</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.5–6, s.10</span><span class="ref">Team 2 Ch2 · p.8</span><span class="ref">Team 3 · s.09</span></div>
+  <p>Gate tables often include a <b>"Native?"</b> column. Native gates are the ones the hardware can do directly (on IBM chips: X, √X, R<sub>z</sub> and a two-qubit gate). Everything else, including H, is <b>compiled</b> into native gates by the <b>transpiler</b> before running. That's the "compilation / transpilation" step you'll see in Chapter 3.</p>
+
+  <div class="lab" id="lab-bloch">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Qubit playground: gates on the Bloch sphere</h4></div>
+    <div class="lab-body">
+      <div class="grid2">
+        <div style="min-width:0;display:grid;gap:8px;justify-items:center">
+          <canvas id="bl-canvas" width="300" height="300" aria-label="Bloch sphere"></canvas>
+          <div class="row small muted">x → |+⟩ · y → |i⟩ · z → |0⟩</div>
+        </div>
+        <div style="min-width:0;display:grid;gap:10px;align-content:start">
+          <div class="row" aria-label="Gates">
+            <button class="btn gate" data-g="H">H</button><button class="btn gate" data-g="X">X</button><button class="btn gate" data-g="Y">Y</button><button class="btn gate" data-g="Z">Z</button>
+            <button class="btn gate" data-g="S">S</button><button class="btn gate" data-g="SDG">S†</button><button class="btn gate" data-g="T">T</button><button class="btn gate" data-g="TDG">T†</button><button class="btn gate" data-g="SX">√X</button>
+          </div>
+          <div class="row">
+            <label class="ctl" for="bl-ang">Angle</label><input type="range" id="bl-ang" min="0" max="360" step="15" value="90"><b class="mono" id="bl-angv">90°</b>
+          </div>
+          <div class="row">
+            <button class="btn gate" data-g="RX">Rx</button><button class="btn gate" data-g="RY">Ry</button><button class="btn gate" data-g="RZ">Rz</button><button class="btn gate" data-g="P">P</button>
+          </div>
+          <div class="row">
+            <span class="small muted">Start from:</span>
+            <button class="btn" data-s="0">|0⟩</button><button class="btn" data-s="1">|1⟩</button><button class="btn" data-s="+">|+⟩</button><button class="btn" data-s="-">|−⟩</button><button class="btn" data-s="i">|i⟩</button>
+          </div>
+          <div class="row"><button class="btn primary" id="bl-shots">Measure 100× (no collapse)</button><button class="btn" id="bl-meas">Measure once (collapses)</button></div>
+          <div class="readout" id="bl-out"></div>
+          <div id="bl-chart" class="svgwrap"></div>
+        </div>
+      </div>
+      <p class="small muted">Things to try: H then H (back to |0⟩). H then Z then H (lands on |1⟩). H then S then S (S twice = Z). Ry at 60° from |0⟩ (a 75/25 coin).</p>
+    </div>
+  </div>
+  </section>
+
+  <section class="sub" id="c2-gates2">
+  <h3>2.6 Multi-qubit gates</h3>
+  <p>Single-qubit gates can never link two qubits together. For that, we need gates that act on two or three qubits at once. They're written as bigger matrices on the combined (tensor-product) state.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Gate</th><th>Plain rule</th><th>Truth table on basis states</th></tr></thead>
+    <tbody>
+      <tr><td><b>CNOT</b> (CX)</td><td>Flip the <b>target</b> only if the <b>control</b> is 1</td><td class="mono">00→00 · 01→01 · 10→11 · 11→10</td></tr>
+      <tr><td><b>CZ</b></td><td>Put a minus sign on |11⟩ only</td><td class="mono">|11⟩ → −|11⟩, others unchanged</td></tr>
+      <tr><td><b>SWAP</b></td><td>Exchange the two qubits</td><td class="mono">01↔10</td></tr>
+      <tr><td><b>Toffoli</b> (CCX)</td><td>Flip the target if <b>both</b> controls are 1</td><td class="mono">110→111 · 111→110</td></tr>
+      <tr><td><b>Fredkin</b> (CSWAP)</td><td>Swap the two targets if the control is 1</td><td class="mono">101→110 · 110→101</td></tr>
+    </tbody></table></div>
+  <div class="math">\[ \mathrm{CNOT}=\begin{pmatrix}1&0&0&0\\0&1&0&0\\0&0&0&1\\0&0&1&0\end{pmatrix}\qquad \mathrm{SWAP}=\begin{pmatrix}1&0&0&0\\0&0&1&0\\0&1&0&0\\0&0&0&1\end{pmatrix} \]</div>
+  <p class="say">CNOT's matrix is the identity on the top half (control = 0: do nothing) and an X on the bottom half (control = 1: flip). The Toffoli matrix is the same idea, 8×8, with X only in the last 2×2 block.</p>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <p>CNOT is how we create <b>entanglement</b> (next section). Toffoli is a reversible AND gate: with the target starting at 0, it computes target = a AND b. That proves a quantum computer can do anything a classical one can, so arithmetic inside Shor's algorithm is built from gates like these.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.7–8, s.11</span><span class="ref">Team 2 Ch2 · p.8</span></div>
+  </section>
+
+  <section class="sub" id="c2-super">
+  <h3>2.7 Superposition</h3>
+  <p>Let's look at each phenomenon from three angles: quantum mechanics, physics, and its role in algorithms.</p>
+  <ul>
+    <li><b>Quantum mechanics:</b> any isolated system can be a linear combination of basis states, \(\alpha|0\rangle+\beta|1\rangle\). The qubit is not secretly 0 or 1 that we just don't know. It really is in both until measured.</li>
+    <li><b>The math behind it:</b> <i>linearity</i> of Hilbert space. If |a⟩ and |b⟩ are allowed states, then \(c_1|a\rangle + c_2|b\rangle\) is also allowed.</li>
+    <li><b>Physics:</b> a photon polarised at 45° is a superposition of horizontal and vertical. In IBM's chips, a superconducting circuit's two lowest energy levels (from a Josephson junction) form the |0⟩ and |1⟩.</li>
+    <li><b>Algorithms:</b> applying H to each of n qubits creates an equal superposition of all \(2^n\) inputs:</li>
+  </ul>
+  <div class="math">\[ H^{\otimes n}|0\rangle^{\otimes n} = \frac{1}{\sqrt{2^n}}\sum_{x=0}^{2^n-1}|x\rangle \]</div>
+  <p class="say">"H on every qubit turns all-zeros into an equal mix of every number from 0 to 2ⁿ−1." With 3 qubits that's |000⟩ through |111⟩, each with amplitude 1/√8. This is the starting move of Deutsch–Jozsa, Grover, Bernstein–Vazirani, QPE and Shor.</p>
+  <div class="grid2">
+    <div style="min-width:0">
+  <figure class="fig xs"><span class="frame"><img src="assets/qc/c2-super.webp" width="278" height="385" loading="lazy" alt="A red |0⟩ sphere and a blue |1⟩ sphere combine into one sphere that is a blend of both"></span><figcaption><span class="ref">Teacher Ch2 · s.13</span>Two basis states combine into one blended state.</figcaption></figure>
+  </div>
+    <div style="min-width:0">
+  <figure class="fig "><span class="frame"><img src="assets/qc/c1-cat.webp" width="1152" height="668" loading="lazy" alt="Schrödinger&#x27;s cat in a box with a radioactive source, a hammer and a vial of poison, drawn both alive and dead"></span><figcaption><span class="ref">Teacher Ch1 · s.16</span>Schrödinger's 1935 thought experiment. He meant it to show how strange this gets if you scale it up to a cat.</figcaption></figure>
+  </div>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.13–14</span><span class="ref">Team 2 Ch2 · p.5</span><span class="ref">Team 3 · s.07</span></div>
+  </section>
+
+  <section class="sub" id="c2-ent">
+  <h3>2.8 Entanglement</h3>
+  <p><b>Definition:</b> a multi-qubit state is <b>entangled</b> if it <i>cannot</i> be written as a product of individual qubit states. You can't describe each qubit on its own.</p>
+  <div class="math">\[ |\Phi^+\rangle = \tfrac{1}{\sqrt2}\big(|00\rangle + |11\rangle\big) \neq |a\rangle\otimes|b\rangle \]</div>
+  <p class="say">This is the <b>Bell state</b> (also called an EPR pair). Try to factor it: you'd need a product that gives |00⟩ and |11⟩ but no |01⟩ or |10⟩. Impossible. So the two qubits share one joint state.</p>
+  <h4>Building a Bell pair</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Step</th><th>State of q0 q1</th><th>What happened</th></tr></thead>
+    <tbody>
+      <tr><td>Start</td><td>\(|00\rangle\)</td><td>Both qubits at 0</td></tr>
+      <tr><td>1. H on q0</td><td>\(\tfrac{1}{\sqrt2}(|00\rangle+|10\rangle)\)</td><td>q0 is now a 50/50 blend</td></tr>
+      <tr><td>2. CNOT (q0 controls q1)</td><td>\(\tfrac{1}{\sqrt2}(|00\rangle+|11\rangle)\)</td><td>In each branch, q1 copies q0</td></tr>
+    </tbody></table></div>
+  <p>Measure both: you get 00 or 11, each 50% of the time, and <b>never</b> 01 or 10. Each result on its own is random, but the two always match.</p>
+  <p>There are four Bell states, and they form a complete basis for two qubits:</p>
+  <div class="math">\[ |\Phi^\pm\rangle=\tfrac{1}{\sqrt2}(|00\rangle\pm|11\rangle),\qquad |\Psi^\pm\rangle=\tfrac{1}{\sqrt2}(|01\rangle\pm|10\rangle) \]</div>
+  <div class="call warn"><span class="tag">Careful: no faster-than-light messages</span>
+    <p>Measuring one qubit instantly tells you what the other will show, even across the galaxy. But you can't choose your result, so you can't send a message with it. The correlation only becomes visible when both sides compare notes over a normal (light-speed) channel.</p>
+  </div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>A pair of magic dice that always land on the same number, wherever they are rolled. Each roll is still random. You can't make your friend's die show 6, but when you meet later you'll see you always matched. (Real entanglement is even stranger than this: Bell tests prove no hidden "pre-agreed" answer can explain it.)</p>
+  </div>
+  <p><b>Physics:</b> entanglement comes from interactions, e.g. spin–spin coupling, or a crystal splitting one photon into an entangled pair (spontaneous parametric down-conversion). <b>Algorithms:</b> it enables teleportation, superdense coding, QKD, and VQE.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Einstein called this "spooky action at a distance" and suspected the particles had secretly agreed on their answers in advance, like the magic dice being rigged. John Bell worked out in 1964 that this could be tested, and experiments kept showing no such hidden agreement. The 2022 Nobel Prize in Physics went to Aspect, Clauser and Zeilinger for those experiments. So the circuit you're about to run is built on an effect that took a Nobel to confirm.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.15–16</span><span class="ref">Team 2 Ch2 · p.9–10</span><span class="ref">Team 3 · s.07</span><span class="ref">Team 3 Ch3 · s.12</span><span class="ref">Team 5 Ch3 · s.5–6</span></div>
+
+  <div class="lab" id="lab-circuit">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Mini circuit simulator</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="cb-preset">Load example</label>
+        <select id="cb-preset"></select>
+        <label class="ctl" for="cb-n">Qubits</label>
+        <select id="cb-n"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+      </div>
+      <div class="status" id="cb-desc"></div>
+      <div class="row">
+        <label class="ctl" for="cb-gate">Gate</label>
+        <select id="cb-gate">
+          <option>H</option><option>X</option><option>Y</option><option>Z</option><option>S</option><option value="SDG">S†</option><option>T</option><option value="TDG">T†</option><option value="SX">√X</option>
+          <option>RX</option><option>RY</option><option>RZ</option><option value="P">P (phase)</option>
+          <option value="CX">CNOT</option><option>CZ</option><option value="CP">CP (controlled phase)</option><option>SWAP</option><option value="CCX">Toffoli</option>
+        </select>
+        <label class="ctl" for="cb-t">target</label><select id="cb-t"></select>
+        <label class="ctl" for="cb-c">control</label><select id="cb-c"></select>
+        <label class="ctl" for="cb-c2">control 2</label><select id="cb-c2"></select>
+        <label class="ctl" for="cb-ang">angle°</label><input type="number" id="cb-ang" value="90" step="15" style="width:72px">
+      </div>
+      <div class="row"><button class="btn primary" id="cb-add">Add gate</button><button class="btn" id="cb-undo">Undo</button><button class="btn" id="cb-clear">Clear</button><button class="btn" id="cb-shots">Run 1024 shots</button></div>
+      <div class="status" id="cb-status"></div>
+      <div class="svgwrap" id="cb-svg"></div>
+      <div class="grid2">
+        <div style="min-width:0"><b class="small">State (amplitudes)</b><div class="readout" id="cb-state"></div></div>
+        <div style="min-width:0"><b class="small" id="cb-hist-title">Measurement probabilities</b><div id="cb-hist" class="svgwrap"></div></div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <section class="sub" id="c2-int">
+  <h3>2.9 Interference</h3>
+  <p>Here's the rule that makes quantum computers different from "just randomness":</p>
+  <div class="call key"><span class="tag">The rule</span>
+    <p><b>Add the amplitudes first, then square.</b> When two paths lead to the same outcome:</p>
+    <div class="math">\[ \psi_{\text{total}} = \psi_1 + \psi_2, \qquad P = |\psi_1 + \psi_2|^2 \]</div>
+    <p>Same sign (in phase): they add up, <b>constructive</b> interference. Opposite sign (phase difference π): they cancel, <b>destructive</b> interference.</p>
+  </div>
+  <p>Classical probability would add the squares instead, \(|\psi_1|^2 + |\psi_2|^2\), and nothing could ever cancel.</p>
+  <h4>Worked example: H twice</h4>
+  <p>Start with |0⟩. After one H: \(\tfrac{1}{\sqrt2}(|0\rangle+|1\rangle)\). Apply H again. Each of the two branches splits again:</p>
+  <ul>
+    <li>|0⟩ branch → \(\tfrac12|0\rangle + \tfrac12|1\rangle\)</li>
+    <li>|1⟩ branch → \(\tfrac12|0\rangle - \tfrac12|1\rangle\)</li>
+  </ul>
+  <p>Now add: |0⟩ gets ½ + ½ = <b>1</b>, |1⟩ gets ½ − ½ = <b>0</b>. You always read 0. The two paths to |1⟩ cancelled, just like the dark stripes in the double slit. Put a Z between the two H's and the minus sign moves, so you always read 1 instead.</p>
+
+  <div class="lab" id="lab-phase">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Two paths, one outcome</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="ph-d">Phase difference Δφ</label><input type="range" id="ph-d" min="0" max="360" value="0" step="5"><b class="mono" id="ph-dv">0°</b>
+        <button class="btn" data-ph="0">0° (H·H)</button><button class="btn" data-ph="180">180° (H·Z·H)</button></div>
+      <div class="grid2">
+        <div class="svgwrap" id="ph-svg"></div>
+        <div class="readout" id="ph-out"></div>
+      </div>
+    </div>
+  </div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p><b>Noise-cancelling headphones.</b> The headphones play a sound wave that is the exact opposite (phase-shifted by 180°) of the noise. Peak meets trough, and they cancel into silence. Quantum algorithms do this to wrong answers.</p>
+  </div>
+  <p><b>Algorithmic role:</b> the Quantum Fourier Transform uses interference to isolate frequencies, and Grover's algorithm amplifies the right answer by constructive interference.</p>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.17–19</span><span class="ref">Team 2 Ch2 · p.11 (worked example)</span><span class="ref">Team 3 · s.07</span></div>
+  </section>
+
+  <section class="sub" id="c2-clone">
+  <h3>2.10 The no-cloning theorem</h3>
+  <p><b>Statement:</b> there is no operation (no unitary U) that copies an <i>unknown</i> quantum state:</p>
+  <div class="math">\[ \nexists\, U \text{ such that } U\big(|\psi\rangle\otimes|0\rangle\big) = |\psi\rangle\otimes|\psi\rangle \text{ for every } |\psi\rangle \]</div>
+  <p><b>Why (a 4-line proof):</b> suppose such a U existed. It must copy the basis states: \(U|0\rangle|0\rangle = |00\rangle\) and \(U|1\rangle|0\rangle = |11\rangle\). Gates are linear, so for \(|\psi\rangle=\alpha|0\rangle+\beta|1\rangle\):</p>
+  <div class="math">\[ U|\psi\rangle|0\rangle = \alpha|00\rangle + \beta|11\rangle \quad\text{but a real copy is}\quad |\psi\rangle|\psi\rangle = \alpha^2|00\rangle + \alpha\beta|01\rangle + \alpha\beta|10\rangle + \beta^2|11\rangle \]</div>
+  <p>These only match when α or β is 0. So no machine can copy a general superposition. (Notice the left side is the Bell state: CNOT "tries to copy" and produces entanglement instead.)</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Classical info is like printed text: reading it doesn't change it, so photocopying is free. Quantum info is like super-delicate wet paint: to learn it well enough to copy it, you have to touch (measure) it, and touching smudges the very details you wanted.</p>
+  </div>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c2-clone.webp" width="1200" height="335" loading="lazy" alt="A person using a photocopier, next to a copier trying to copy a glowing atom"></span><figcaption><span class="ref">Teacher Ch2 · s.21</span>Copying a page is easy. Copying a quantum state isn't possible.</figcaption></figure>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <p><b>Quantum Key Distribution.</b> An eavesdropper on a quantum channel can't copy the qubits passing by. Any attempt to measure them disturbs them and introduces detectable errors. This also blocks counterfeiting in "quantum money".</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.20–21</span><span class="ref">Team 2 Ch2 · p.13</span></div>
+  </section>
+
+  <section class="sub" id="c2-rand">
+  <h3>2.11 Randomness</h3>
+  <p>Measurement outcomes are probabilistic by the Born rule, \(P(0)=|\alpha|^2,\ P(1)=|\beta|^2\). A photon polarised at 45° gives random horizontal/vertical results. That's fundamentally unpredictable, and Bell tests rule out "hidden variables" that secretly decide the answer.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Dice roll</th><th>Qubit in |+⟩</th></tr></thead>
+    <tbody><tr><td>Only <i>looks</i> random. In theory its motion decides the result.</td><td>Truly random. Even with perfect knowledge of the state, you can't predict which outcome you'll get.</td></tr></tbody></table></div>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <p>QRNGs: Monte Carlo simulations, cryptographic key generation, blockchain security, fair lotteries.</p>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Encryption keys are only as good as their randomness, and computers are bad at producing it. So Cloudflare films a wall of lava lamps at its San Francisco office and feeds the footage in as a source of unpredictability. A quantum generator gets there from physics directly. It's small enough now that a phone can have one: Samsung's Galaxy A Quantum (2020) shipped with a quantum random number chip.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.22</span><span class="ref">Team 2 Ch2 · p.7</span></div>
+  </section>
+
+  <section class="sub" id="c2-tele">
+  <h3>2.12 Quantum teleportation</h3>
+  <p><b>What it does:</b> moves a qubit's <i>state</i> from Alice to Bob <b>without sending the particle itself</b>.</p>
+  <p><b>What you need:</b> one shared entangled pair (Alice holds one half, Bob the other), and a normal phone or internet line to send <b>2 classical bits</b>.</p>
+  <h4>How it works, step by step</h4>
+  <ol class="body">
+    <li>Alice has a mystery state |ψ⟩ on q0. Alice and Bob share a Bell pair on q1 (Alice) and q2 (Bob).</li>
+    <li>Alice applies CNOT (q0 → q1), then H on q0. This is a <b>Bell measurement</b> set-up: it rotates her two qubits so that measuring them in the normal basis tells her which Bell state they were in.</li>
+    <li>Alice measures q0 and q1, getting two random bits m0 m1. Her original state is destroyed (as no-cloning requires).</li>
+    <li>She phones Bob the two bits.</li>
+    <li>Bob fixes his qubit: if m1 = 1 apply X; if m0 = 1 apply Z. His qubit is now exactly |ψ⟩.</li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th>Alice's bits m0 m1</th><th>00</th><th>01</th><th>10</th><th>11</th></tr></thead>
+    <tbody><tr><td>Bob applies</td><td>nothing (I)</td><td>X</td><td>Z</td><td>X then Z</td></tr></tbody></table></div>
+
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c2-tele.webp" width="1200" height="294" loading="lazy" alt="The teleportation circuit: a shared EPR pair, Alice&#x27;s encoding and measurement, and Bob&#x27;s corrections, shown as a diagram and in a circuit editor"></span><figcaption><span class="ref">Teacher Ch2 · s.24</span>The steps above as a circuit: encode, measure, send 2 bits, decode.</figcaption></figure>
+  <div class="lab" id="lab-tele">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Teleport a qubit, one step at a time</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <span class="small muted">State to send: cos(θ/2)|0⟩ + e<sup>iφ</sup>sin(θ/2)|1⟩</span>
+        <label class="ctl" for="tp-th">θ</label><input type="range" id="tp-th" min="0" max="180" value="60" step="5"><b class="mono" id="tp-thv">60°</b>
+        <label class="ctl" for="tp-ph">φ</label><input type="range" id="tp-ph" min="0" max="360" value="45" step="5"><b class="mono" id="tp-phv">45°</b>
+      </div>
+      <div class="row"><button class="btn primary" id="tp-next">Next step</button><button class="btn" id="tp-all">Run all</button><button class="btn" id="tp-reset">Reset</button></div>
+      <ol class="steps" id="tp-steps">
+        <li>Prepare: q0 = |ψ⟩, q1 = q2 = |0⟩.</li>
+        <li>H on q1.</li>
+        <li>CNOT q1 → q2. Now q1 (Alice) and q2 (Bob) share a Bell pair.</li>
+        <li>CNOT q0 → q1.</li>
+        <li>H on q0.</li>
+        <li>Alice measures q0 and q1, then sends the 2 bits to Bob.</li>
+        <li>Bob applies X (if m1 = 1) and Z (if m0 = 1).</li>
+      </ol>
+      <div class="svgwrap" id="tp-svg"></div>
+      <div class="readout" id="tp-out"></div>
+    </div>
+  </div>
+  <div class="call key"><span class="tag">Key points</span>
+    <ul>
+      <li><b>No faster-than-light:</b> Bob can't do anything useful until the 2 classical bits arrive.</li>
+      <li><b>No copying:</b> Alice's original is gone. The state moved; it wasn't duplicated. That's how teleportation "works around" no-cloning.</li>
+      <li><b>Why it's useful:</b> it's the basic "send-a-qubit" tool for quantum networks and distributed quantum computing (linking several QPUs).</li>
+    </ul>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.23–24</span><span class="ref">Team 2 Ch2 · p.14</span></div>
+  </section>
+
+  <section class="sub" id="c2-sdc">
+  <h3>2.13 Superdense coding</h3>
+  <p><b>What it does:</b> Alice sends <b>2 classical bits</b> to Bob by transmitting only <b>1 qubit</b>. It's teleportation's mirror image.</p>
+  <ol class="body">
+    <li><b>Share:</b> Alice and Bob share a Bell pair in advance (q0 Alice, q1 Bob).</li>
+    <li><b>Encode:</b> Alice applies one of four gates to her qubit: 00 → I, 01 → X, 10 → Z, 11 → X then Z (often written "XZ"). This turns the pair into one of the four Bell states.</li>
+    <li><b>Send:</b> Alice physically sends her one qubit to Bob.</li>
+    <li><b>Decode:</b> Bob applies CNOT (q0 → q1) then H on q0, and measures both. He reads Alice's two bits exactly.</li>
+  </ol>
+
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c2-sdc.webp" width="1200" height="260" loading="lazy" alt="The superdense coding circuit with Bob&#x27;s and Alice&#x27;s parts labelled, beside the same circuit in an editor"></span><figcaption><span class="ref">Teacher Ch2 · s.26</span>The superdense coding circuit.</figcaption></figure>
+  <div class="lab" id="lab-sdc">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Send two bits with one qubit</h4></div>
+    <div class="lab-body">
+      <div class="row"><span class="small muted">Alice's message:</span>
+        <button class="btn" data-b="00">00</button><button class="btn" data-b="01">01</button><button class="btn on" data-b="10">10</button><button class="btn" data-b="11">11</button></div>
+      <div class="svgwrap" id="sd-svg"></div>
+      <div class="readout" id="sd-out"></div>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Feature</th><th>Teleportation</th><th>Superdense coding</th></tr></thead>
+    <tbody>
+      <tr><td>Goal</td><td>Send a quantum state</td><td>Send two classical bits</td></tr>
+      <tr><td>What's sent</td><td>2 classical bits</td><td>1 qubit</td></tr>
+      <tr><td>Requires</td><td>1 pre-shared Bell pair</td><td>1 pre-shared Bell pair</td></tr>
+      <tr><td>What arrives</td><td>The exact qubit state</td><td>Two classical bits</td></tr>
+      <tr><td>Why it's cool</td><td>Moves a qubit state safely</td><td>Doubles the info per qubit sent</td></tr>
+    </tbody></table></div>
+  <p>They are <i>mirror images</i>. Each trades one resource for the other, and both only work because entanglement was shared in advance. Without that pre-shared pair, one qubit can carry at most one classical bit (Holevo's bound).</p>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.25–27</span><span class="ref">Team 2 Ch2 · p.15–16</span></div>
+  </section>
+
+  <section class="sub" id="c2-lab">
+  <h3>2.14 Summary table and the Bell-state lab</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Concept</th><th>Quantum definition</th><th>Example</th><th>Used in</th></tr></thead>
+    <tbody>
+      <tr><td>Superposition</td><td>Linear combination of basis states</td><td>Hadamard state</td><td>H gate, every algorithm</td></tr>
+      <tr><td>Entanglement</td><td>Non-separable multi-qubit state</td><td>EPR / Bell pairs</td><td>Teleportation, QKD, VQE</td></tr>
+      <tr><td>Interference</td><td>Phase-dependent amplitude addition</td><td>Double slit, phase gates</td><td>Grover, QFT</td></tr>
+      <tr><td>No-cloning</td><td>No unitary duplicates an unknown state</td><td>QKD eavesdrop test</td><td>Information security</td></tr>
+      <tr><td>Randomness</td><td>Measurement obeys the Born rule</td><td>QRNG</td><td>Cryptography</td></tr>
+      <tr><td>Teleportation</td><td>State transfer via entanglement + 2 bits</td><td>Teleportation circuit</td><td>Quantum networks</td></tr>
+      <tr><td>Superdense coding</td><td>2 classical bits via 1 qubit</td><td>Bell-pair communication</td><td>Quantum internet links</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.28</span></div>
+  <h4>The lab: "Simulate a Bell state, explain the histogram, then insert one more H"</h4>
+  <p>In The Quantum Land you set the number of qubits, drag gates onto wires, the site translates your circuit to <b>QASM code</b> (a text format for circuits), sends it to a server that runs it many times (shots), and draws the averaged results as a histogram. Use the <a href="#lab-circuit">circuit simulator above</a> to check your reasoning; pick the "Lab" examples from its list.</p>
+  <ul>
+    <li><b>Bell state histogram:</b> two bars, 00 and 11, each about 50%. Why: after H + CNOT the state is \(\tfrac{1}{\sqrt2}(|00\rangle+|11\rangle)\); the Born rule gives ½ each, and 01/10 have amplitude 0.</li>
+    <li><b>Add H on q0 at the end:</b> the state becomes \(\tfrac12(|00\rangle+|01\rangle+|10\rangle-|11\rangle)\). All four bars at 25%. The correlation looks gone in this measurement, but it's hiding in the minus sign on |11⟩ (a phase you can't see in a histogram).</li>
+    <li><b>Add the extra H on q0 <i>before</i> the CNOT instead:</b> H·H = I by interference, so q0 is back to |0⟩, the CNOT does nothing, and you get 00 with 100%. Where you put a gate matters.</li>
+  </ul>
+  <div class="call warn"><span class="tag">Careful: bit order in the tools</span>
+    <p>The Quantum Land and Qiskit label bits as q[3] q[2] q[1] q[0], with q0 on the right. For symmetric results like 00/11 it doesn't matter, but for 01 vs 10 it does. The Grover lab code even reverses its strings with <code>k[::-1]</code> to fix this.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch2 · s.12, s.29</span><span class="ref">Team 7 Ch3 · s.18–19 (same lab)</span></div>
+  </section>
+
+  <div class="recap">
+    <h3 style="margin-top:0">Chapter 2 in ten lines</h3>
+    <ul>
+      <li>State: α|0⟩ + β|1⟩, with |α|² + |β|² = 1.</li>
+      <li>Born rule: P(0) = |α|², P(1) = |β|². Measuring collapses the state.</li>
+      <li>Bloch sphere: every qubit is a point; gates are rotations.</li>
+      <li>Gates are unitary (U†U = I), so they're reversible.</li>
+      <li>H makes superpositions; H⊗ⁿ gives all 2ⁿ inputs at once.</li>
+      <li>CNOT + H makes the Bell state (|00⟩+|11⟩)/√2, which is entangled.</li>
+      <li>Interference: add amplitudes, then square. They can cancel.</li>
+      <li>No-cloning: unknown states can't be copied (linearity).</li>
+      <li>Teleportation: 1 Bell pair + 2 bits moves 1 qubit state.</li>
+      <li>Superdense coding: 1 Bell pair + 1 qubit carries 2 bits.</li>
+    </ul>
+  </div>
+  <h3 id="quiz2">Check yourself: Chapter 2</h3>
+  <div class="quiz" data-quiz="2"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 3 -->
+<section class="chapter" id="ch3">
+  <div class="chapter-head">
+    <span class="num">Chapter 3</span>
+    <h2>Quantum Algorithms</h2>
+  </div>
+  <div class="refs"><span class="ref">Group 4 · Ch3</span><span class="ref">Team 3 · Ch3 deck</span><span class="ref">Team 5 · Ch3 deck</span><span class="ref">Team 1 · Ch3 deck</span><span class="ref">Team 7 · Ch3 deck</span><span class="ref">Teacher Ch4 · s.4–5, s.26–33</span></div>
+
+  <section class="sub" id="c3-what">
+  <h3>3.1 What is a quantum algorithm?</h3>
+  <p>Definition: <i>a quantum algorithm is a set of instructions written to run on a quantum computer. It uses superposition, entanglement, and interference to solve problems in ways classical logic cannot.</i> The goal: <i>measuring at the end gives the correct answer with high probability.</i> The work breaks into four steps:</p>
+  <ol class="boxes">
+    <li><b>Initialize qubits:</b> prepare the starting state, often |0⟩.</li>
+    <li><b>Apply quantum gates:</b> transform the state (H, CNOT, phase gates, an oracle).</li>
+    <li><b>Use quantum interference:</b> design operations so useful outcomes become more likely and unwanted ones less likely.</li>
+    <li><b>Measure the qubits:</b> get classical results (0s and 1s) and interpret them.</li>
+  </ol>
+  <p>A point that's easy to miss: <i>the circuit is only one part of the algorithm.</i> The full cycle is Initialize → Operate → Measure → <b>Interpret</b>. Classical set-up before the circuit and classical post-processing after it (like the gcd step in Shor) can matter just as much.</p>
+  <div class="refs"><span class="ref">Group 4 · Page 01, 04</span><span class="ref">Team 3 Ch3 · s.05</span></div>
+  <h4>Why quantum algorithms matter now</h4>
+  <ul>
+    <li><b>Unlocking quantum potential:</b> hardware is useless without algorithms that give it problems to solve.</li>
+    <li><b>Quantum speed-up:</b> Shor's and Grover's algorithms show real advantages over classical approaches. Shor breaks public-key crypto (RSA, ECC); Grover speeds up brute-force search, which weakens symmetric keys like AES.</li>
+    <li><b>Future innovation:</b> better hardware enables more experiments, which leads to better algorithms.</li>
+  </ul>
+  <p>The best one-line summary of the whole field:</p>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>"A quantum algorithm is a program that <b>choreographs complex probability amplitudes</b> so that right answers interfere constructively and wrong answers cancel out."</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Feature</th><th>Classical algorithm</th><th>Quantum algorithm</th></tr></thead>
+    <tbody>
+      <tr><td>Unit</td><td>Bit: 0 or 1, definite</td><td>Qubit: superposition</td></tr>
+      <tr><td>State space</td><td>n bits = one of 2ⁿ states</td><td>n qubits = 2ⁿ amplitudes simultaneously</td></tr>
+      <tr><td>Operations</td><td>Deterministic logic gates</td><td>Unitary gates (probabilistic at measurement)</td></tr>
+      <tr><td>Output</td><td>Same input → same output</td><td>Same input → a distribution of outputs</td></tr>
+    </tbody></table></div>
+  <p>Or put simply: <i>"Think of it as a program built for quantum hardware, not magic or a faster answer to every problem."</i></p>
+  <div class="refs"><span class="ref">Group 4 · Page 03</span><span class="ref">Team 1 Ch3 · p.4–5</span><span class="ref">Team 7 · s.4</span><span class="ref">Teacher Ch4 · s.4</span></div>
+  <p>Sorting the famous algorithms: The ones covered in this course are Deutsch–Jozsa, Bernstein–Vazirani, Grover, QPE, Shor and VQE. Others you'll hear about: QAOA (optimisation), Simon's algorithm, HHL (linear equations) and quantum walks.</p>
+  </section>
+
+  <section class="sub" id="c3-process">
+  <h3>3.2 How a quantum algorithm is developed</h3>
+  <p>Think of it as a winding road with these stops. It's a cycle: when results are inaccurate or noisy, you go round again. A useful split: <b>steps 1–4 happen on paper and on a perfect simulator; steps 5–7 happen on a real, noisy chip.</b></p>
+  <ol class="steps">
+    <li><b>Problem framing:</b> define the goal, inputs and outputs.</li>
+    <li><b>Algorithm design:</b> map the math to quantum primitives (superposition, oracle, QFT…).</li>
+    <li><b>Circuit construction:</b> write the circuit with gates and measurements (Qiskit).</li>
+    <li><b>Validation on an ideal simulator:</b> check amplitudes and probabilities with no noise.</li>
+    <li><b>Compilation / transpilation:</b> rewrite for a specific chip's native gates and wiring; optimise.</li>
+    <li><b>Noise modelling and fake back-end:</b> emulate realistic errors with a fake device (e.g. FakePerth).</li>
+    <li><b>Execution:</b> run on the chosen back-end with a chosen number of shots.</li>
+    <li><b>Result analysis:</b> collect counts, compute metrics (accuracy, fidelity).</li>
+    <li><b>Iterate and optimise:</b> reduce circuit depth, refactor sub-circuits.</li>
+  </ol>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c3-process.webp" width="1200" height="552" loading="lazy" alt="A winding road map of the development stages from problem framing through to iterating and optimising"></span><figcaption><span class="ref">Teacher Ch3 · s.5</span>The winding road, from the slide.</figcaption></figure>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c3-sim.webp" width="1200" height="367" loading="lazy" alt="Two histograms for a Bell state: an ideal simulator gives only two bars, and a fake device adds small bars from noise"></span><figcaption><span class="ref">Teacher Ch3 · s.9</span>The same Bell circuit twice. The small extra bars on the right are noise, and they're why step 6 exists.</figcaption></figure>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.5</span><span class="ref">Group 4 · Page 16</span><span class="ref">Team 7 · s.5</span></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Normal software development (design → code → test → deploy → monitor), except the "test" step has two levels: a perfect simulator first (unit test), then a noisy fake chip (staging), then the real chip (production).</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c3-transpile">
+  <h3>3.3 Why we transpile: the chip's wiring</h3>
+  <p>Now the step most beginners skip: <b>transpilation</b>. Your circuit assumes any qubit can talk to any other, using any gate. A real chip can't do that, for two reasons:</p>
+  <ul>
+    <li><b>Wiring:</b> qubits are only connected to their neighbours. The map of which qubits are wired together is the <b>coupling map</b>.</li>
+    <li><b>Native gates:</b> the chip only understands a few gates. IBM Heron chips: <b>CZ, RZ, SX and X</b>. Everything else (H, CNOT, Toffoli…) must be rewritten in those.</li>
+  </ul>
+  <p>Example: IBM's 7-qubit chip. You want a CNOT between qubit 0 and qubit 6, but they aren't wired together. The transpiler moves qubit 0's state step by step with SWAP gates along the route 0 → 1 → 3 → 5, so it ends up next to 6. That's <b>3 SWAPs</b>, and since each SWAP = 3 CNOTs, that's 9 extra noisy gates. Click two qubits below to see the route.</p>
+  <div class="lab" id="lab-chip">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Route a CNOT on a 7-qubit chip</h4></div>
+    <div class="lab-body">
+      <div class="grid2">
+        <div class="svgwrap" id="chip-svg"></div>
+        <div style="min-width:0;display:grid;gap:8px;align-content:start">
+          <p class="small">Click a <b>control</b> qubit, then a <b>target</b> qubit.</p>
+          <div class="readout" id="chip-out"></div>
+          <div class="row"><button class="btn" id="chip-ex">Example: 0 → 6</button><button class="btn" id="chip-reset">Reset</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c3-route.webp" width="1200" height="341" loading="lazy" alt="A 7-qubit chip&#x27;s coupling map and a larger device map with error rates, used for routing"></span><figcaption><span class="ref">Teacher Ch3 · s.15</span>A real coupling map. Only joined qubits can talk.</figcaption></figure>
+  <h4>The 6 phases of transpilation</h4>
+  <p>Every circuit is rewritten in six phases before it runs:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Phase</th><th>What it does</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>1. Virtual optimization</b></td><td>Simplify before thinking about the chip: delete gates that cancel, merge neighbouring rotations</td><td>H then H = nothing; CNOT then CNOT = nothing</td></tr>
+      <tr><td><b>2. Gate decomposition</b></td><td>Break 3-qubit gates into 1- and 2-qubit gates (chips can't do more)</td><td>Toffoli → 6 CNOTs + single-qubit gates</td></tr>
+      <tr><td><b>3. Placement (layout)</b></td><td>Give each circuit qubit (q0, q1…) a physical qubit; pick wired, low-error ones</td><td>Good placement = fewer SWAPs later</td></tr>
+      <tr><td><b>4. Routing</b></td><td>Add SWAPs when two qubits in a gate aren't neighbours</td><td>Each SWAP = 3 CNOTs, so each one adds noise</td></tr>
+      <tr><td><b>5. Translation</b></td><td>Rewrite every gate into the chip's native gates</td><td>H, CNOT → CZ, RZ, SX, X on IBM Heron</td></tr>
+      <tr><td><b>6. Physical optimization</b></td><td>Clean up again now the real layout is known: cut depth and 2-qubit gates</td><td>Qiskit <code>optimization_level</code> 0–3</td></tr>
+    </tbody></table></div>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c3-transpile.webp" width="1200" height="364" loading="lazy" alt="A circuit passes through six labelled phases from virtual optimization to physical optimization and comes out changed"></span><figcaption><span class="ref">Teacher Ch3 · s.10</span>The six phases in order.</figcaption></figure>
+  <p>That's exactly the line <code>transpile(qc, simulator)</code> in every lab, and the Grover lab uses <code>optimization_level=3</code>. IBM's own tests show the best level depends on the circuit, so compare them.</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Translating a speech for a foreign audience. First you cut the repetition (phase 1), split long sentences (2), assign who reads which part (3), arrange seats so speakers who need to talk to each other sit together, or pass notes along the row (4), translate into the local language (5), then polish the final text (6). Every extra note passed is a chance for a mistake.</p>
+  </div>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c3-noise.webp" width="1200" height="369" loading="lazy" alt="Bar chart of fidelity for twelve circuits on an ideal simulator, a fake device and a real device. Real device bars drop to about 0.4 on ghz_state and multiply"></span><figcaption><span class="ref">Teacher Ch3 · s.18</span>The same circuits on all three. Real hardware drops to about 0.4 fidelity on ghz_state and multiply, and that loss is what a good transpile tries to limit.</figcaption></figure>
+  <div class="refs"><span class="ref">Group 4 · Page 17–24</span></div>
+  </section>
+
+  <section class="sub" id="c3-par">
+  <h3>3.4 Oracles and quantum parallelism</h3>
+  <h4>The oracle</h4>
+  <p>A <b>quantum oracle</b> is a <i>black-box operation used to evaluate a function or check properties of an input without revealing its internal mechanism.</i> You can't look inside; you can only query it. We compare algorithms by counting <b>queries</b>. Think of a locked vending machine: you only learn about it by pressing buttons.</p>
+  <p>There's a catch: quantum operations must be <b>reversible</b>. A function like AND isn't: if AND outputs 0, you can't tell whether the input was 00, 01 or 10. So the standard oracle keeps the input x and <b>XORs</b> the answer into an extra qubit y:</p>
+  <div class="math">\[ U_f\,|x\rangle|y\rangle = |x\rangle\,|y\oplus f(x)\rangle \]</div>
+  <p class="say">"The oracle preserves x and writes f(x) into y using XOR." Applying it twice gives back the original (y ⊕ f ⊕ f = y), so it's its own inverse and a valid unitary. That's why we need the auxiliary qubit.</p>
+  <div class="refs"><span class="ref">Group 4 · Page 06–07</span><span class="ref">Team 5 Ch3 · s.7</span></div>
+  <h4>Quantum parallelism</h4>
+  <p><i>Quantum parallelism is the ability of a quantum computer to apply an operation to multiple inputs simultaneously by using a superposition of quantum states.</i> Put H on every input qubit, then call the oracle once, with y = 0:</p>
+  <div class="math">\[ U_f\Big(\frac{1}{\sqrt{2^n}}\sum_x |x\rangle\Big)|0\rangle = \frac{1}{\sqrt{2^n}}\sum_x |x\rangle|f(x)\rangle \]</div>
+  <p>One call to \(U_f\), and the state now "contains" f(x) for every x. Example with f = AND on 2 bits: after H⊗H and one oracle call the state is \(\tfrac12\big(|00\rangle|0\rangle + |01\rangle|0\rangle + |10\rangle|0\rangle + |11\rangle|1\rangle\big)\). That's all 4 rows of the AND truth table after one call; classically that takes 4 calls.</p>
+  <div class="call warn"><span class="tag">The catch</span>
+    <ul>
+      <li><b>Outcome ≠ result:</b> measuring gives you <i>one</i> random pair (x, f(x)). You can't read all the values out.</li>
+      <li><b>Not an O(1) speedup:</b> parallelism doesn't mean solving problems instantly.</li>
+      <li><b>A building block:</b> it only helps when followed by <b>interference</b> that turns a <i>global property</i> of f (is it constant? what's its period?) into a measurable answer.</li>
+    </ul>
+    <p>Concretely: measuring the AND state above gives one random row, (00, 0), (01, 0), (10, 0) or (11, 1), each with 25%. <i>"One measurement = one random row. No better than one classical query."</i> The fix is to make f(x) show up as a <b>phase</b> (+ or −) instead of a bit flip, so it can interfere. That's phase kickback, next.</p>
+  </div>
+  <div class="refs"><span class="ref">Group 4 · Page 05</span><span class="ref">Team 7 · s.11</span><span class="ref">Team 5 Ch3 · s.8</span></div>
+  </section>
+
+  <section class="sub" id="c3-kick">
+  <h3>3.5 Phase kickback: the trick behind the oracles</h3>
+  <p><i>Phase kickback is a quantum effect where a controlled operation transfers phase information from the target qubit to the control qubit's superposition.</i> In three steps: control in superposition → controlled operation → relative phase changes. It sounds backwards, but it's how oracles "write" their answer into the qubits we measure. And it's useful because <i>quantum computers can transform phase information into measurable outcomes through interference.</i></p>
+  <div class="refs"><span class="ref">Group 4 · Page 08</span></div>
+  <p>The key fact: the state \(|-\rangle = \tfrac{1}{\sqrt2}(|0\rangle-|1\rangle)\) is unchanged by X except for a sign, \(X|-\rangle = -|-\rangle\). So:</p>
+  <div class="math">\[ U_f\,|x\rangle|-\rangle = (-1)^{f(x)}\,|x\rangle|-\rangle \]</div>
+  <p class="say">If f(x) = 1, the oracle flips the target, which just multiplies everything by −1. That minus sign "belongs" to |x⟩. The target is untouched; the information jumped ("kicked back") into the phase of the input register.</p>
+  <p>A two-line derivation shows it directly with the XOR oracle on target |−⟩:</p>
+  <div class="math">\[ f(x)=0:\ \tfrac{1}{\sqrt2}\big(|0\rangle-|1\rangle\big) \to \tfrac{1}{\sqrt2}\big(|0\rangle-|1\rangle\big) = +|-\rangle \qquad f(x)=1:\ \tfrac{1}{\sqrt2}\big(|0\rangle-|1\rangle\big) \to \tfrac{1}{\sqrt2}\big(|1\rangle-|0\rangle\big) = -|-\rangle \]</div>
+  <div class="tbl"><table>
+    <thead><tr><th>Protocol</th><th>Goal</th><th>What's transmitted</th><th>Role of entanglement</th></tr></thead>
+    <tbody>
+      <tr><td>Phase kickback</td><td>Encode f's value into the control qubit</td><td>A relative phase shift</td><td>Indirect (via the controlled oracle)</td></tr>
+      <tr><td>Superdense coding</td><td>Send 2 classical bits with 1 qubit</td><td>1 physical qubit</td><td>Pre-shared Bell pair required</td></tr>
+      <tr><td>Teleportation</td><td>Send 1 unknown quantum state</td><td>2 classical bits</td><td>Pre-shared Bell pair required</td></tr>
+    </tbody></table></div>
+  <p class="small muted">In short: teleportation and superdense coding move data between people; phase kickback works <i>inside</i> a circuit to compute.</p>
+  <h4>A demo</h4>
+  <ol class="body">
+    <li><b>Preparation:</b> q0: H → |+⟩. q1: X then H → |−⟩.</li>
+    <li><b>Kickback:</b> CNOT (q0 control, q1 target). The control changes from |+⟩ to |−⟩.</li>
+    <li><b>Measurement:</b> H on q0 turns |−⟩ into |1⟩. Result: 1 (100%).</li>
+  </ol>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c3-qpk.webp" width="1200" height="366" loading="lazy" alt="A two-qubit circuit: H on the input, X then H on the helper, the oracle U_f, then H and measurement on the input qubit"></span><figcaption><span class="ref">Teacher Ch3 · s.29</span>The pattern every oracle algorithm repeats.</figcaption></figure>
+  <p>Load "Phase kickback" in the <a href="#lab-circuit">circuit simulator</a> to see this.</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Pushing off a wall on roller skates. You push the wall (the target), but the wall doesn't move; you do. The control qubit "pushes" on the target and gets the recoil.</p>
+  </div>
+  <div class="refs"><span class="ref">Team 7 · s.14–15</span><span class="ref">Team 5 Ch3 · s.9–10</span><span class="ref">Teacher Ch4 · s.20</span></div>
+  </section>
+
+  <section class="sub" id="c3-dj">
+  <h3>3.6 Deutsch and Deutsch–Jozsa</h3>
+  <h4>The problem</h4>
+  <p>You're given a black-box function f that takes bits and returns 0 or 1. You're promised it's one of two kinds:</p>
+  <ul>
+    <li><b>Constant:</b> same output for every input (all 0s, or all 1s).</li>
+    <li><b>Balanced:</b> exactly half the inputs give 0, half give 1.</li>
+  </ul>
+  <p>Which kind is it?</p>
+  <h4>Deutsch (1 bit, 1985)</h4>
+  <p>With one input bit there are four possible functions: f(0)=f(1)=0 and f(0)=f(1)=1 are constant; f(x)=x and f(x)=NOT x are balanced. Classically you must test <b>twice</b> (x = 0 and x = 1). Quantum needs <b>once</b>:</p>
+  <ol class="body">
+    <li>Prepare 2 qubits as |0⟩|1⟩.</li>
+    <li>Apply H to both: \(|+\rangle|-\rangle\).</li>
+    <li>Apply the oracle. Phase kickback gives \(\tfrac{1}{\sqrt2}\big((-1)^{f(0)}|0\rangle + (-1)^{f(1)}|1\rangle\big)|-\rangle\).</li>
+    <li>Apply H to the first qubit and measure: you get \(|f(0)\oplus f(1)\rangle\). <b>0 = constant, 1 = balanced.</b></li>
+  </ol>
+  <p class="say">⊕ means XOR: it's 0 if f(0) and f(1) are equal (constant), 1 if they differ (balanced). One query answered a question about <i>both</i> values. That's interference at work.</p>
+  <h4>Deutsch–Jozsa (n bits, 1992)</h4>
+  <p>Same idea with n input bits. Classically, in the worst case you must check \(2^{n-1}+1\) inputs (more than half) to be sure. Quantum: <b>one query</b>. After H⊗ⁿ, oracle, H⊗ⁿ, the amplitude of the all-zero outcome is:</p>
+  <div class="math">\[ \text{amp}\big(|0\cdots0\rangle\big) = \frac{1}{2^n}\sum_{x}(-1)^{f(x)} = \begin{cases}\pm1 & \text{constant}\\ 0 & \text{balanced}\end{cases} \]</div>
+  <p class="say">If f is constant, all the signs agree and add up to ±1: you see 00…0 with certainty. If balanced, half are + and half are −, so they cancel to exactly 0: you <i>never</i> see 00…0.</p>
+  <p>The circuit as five boxes (the states ψ₀ to ψ₃ sit between the steps):</p>
+  <ol class="boxes">
+    <li><b>Initialize</b> n input qubits to |0⟩ and one target to |1⟩</li>
+    <li><b>Create superposition:</b> H on all (target becomes |−⟩)</li>
+    <li><b>Apply the oracle</b> \(U_f\): phase \((-1)^{f(x)}\) kicks back</li>
+    <li><b>Apply H</b> to the input qubits (interference)</li>
+    <li><b>Measure:</b> all 0s → constant, otherwise balanced</li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th class="num">Input bits n</th><th class="num">Classical worst case \(2^{n-1}+1\)</th><th class="num">Quantum</th></tr></thead>
+    <tbody>
+      <tr><td class="num">3</td><td class="num">5 queries</td><td class="num">1 query</td></tr>
+      <tr><td class="num">10</td><td class="num">513 queries</td><td class="num">1 query</td></tr>
+      <tr><td class="num">32</td><td class="num">2,147,483,649 queries</td><td class="num">1 query</td></tr>
+      <tr><td class="num">64</td><td class="num">≈ 9.2 × 10¹⁸ (over 9 quintillion)</td><td class="num">1 query</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Group 4 · Page 09–11</span><span class="ref">Team 5 Ch3 · s.11–13</span></div>
+
+  <div class="lab" id="lab-dj">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Constant or balanced?</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="dj-n">Input bits n</label>
+        <select id="dj-n"><option value="1">1 (Deutsch)</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select>
+        <label class="ctl" for="dj-f">Secret function</label>
+        <select id="dj-f"><option value="mystery">Mystery (random)</option><option value="c0">Constant 0</option><option value="c1">Constant 1</option><option value="bal">Balanced (random)</option></select>
+        <button class="btn" id="dj-new">New function</button>
+      </div>
+      <div class="row"><button class="btn" id="dj-classic">Solve classically</button><button class="btn primary" id="dj-quantum">Solve with 1 quantum query</button><button class="btn" id="dj-reveal">Reveal f</button></div>
+      <div class="readout" id="dj-out">A secret function is loaded. Solve it either way.</div>
+      <div id="dj-chart" class="svgwrap"></div>
+    </div>
+  </div>
+  <div class="call use"><span class="tag">Why it matters</span>
+    <p>Nobody needs to know whether a function is constant or balanced. Deutsch–Jozsa matters because it was the first clean <b>proof</b> that a quantum computer can beat a classical one at <i>something</i> (an exponential gap in queries for an exact answer). Its structure (H, oracle, H, measure) is the template for later algorithms. The family tree:</p>
+    <ul>
+      <li><b>Deutsch–Jozsa (1992):</b> first deterministic separation between classical and quantum; pioneered phase kickback.</li>
+      <li><b>Bernstein–Vazirani (1993/97):</b> finds a hidden n-bit string in 1 query instead of n (Chapter 4).</li>
+      <li><b>Simon's algorithm (1994):</b> finds a hidden period with exponential speed-up; it directly inspired Shor.</li>
+      <li><b>Shor (1994) and Grover (1996):</b> the real-world impact, factoring and search.</li>
+    </ul>
+  </div>
+  <div class="refs"><span class="ref">Team 1 Ch3 · p.6–9</span><span class="ref">Team 7 · s.16–17</span><span class="ref">Team 5 Ch3 · s.14</span></div>
+  </section>
+
+  <section class="sub" id="c3-grover">
+  <h3>3.7 Grover's search algorithm</h3>
+  <p><b>The problem:</b> find a marked item in an <b>unsorted</b> collection of N items. Formally, find x₀ where</p>
+  <div class="math">\[ f(x) = \begin{cases}1 & x = x_0\\ 0 & \text{otherwise}\end{cases} \]</div>
+  <p>Picture 1,000 closed boxes, one holds a prize. Classically you open them one by one: about N/2 on average, N in the worst case, so O(N). Grover (1996, Lov Grover) needs only about \(\sqrt N\) queries: a <b>quadratic</b> speed-up. For a million boxes, that's ~785 steps instead of ~500,000.</p>
+  <h4>The four steps</h4>
+  <ol class="body">
+    <li><b>Initialise:</b> H on every qubit. All N items get equal amplitude \(1/\sqrt N\).</li>
+    <li><b>Oracle:</b> flips the <b>sign</b> of the marked item's amplitude (multiplies it by −1) and leaves the rest alone. Probabilities don't change yet, because \((-a)^2 = a^2\). It just <i>marks</i> the answer.</li>
+    <li><b>Diffusion</b> ("inversion about the mean"): compute the average amplitude, then reflect every amplitude around it: \(a \to 2\bar a - a\). Because the marked one is now negative, it sits far below the mean and gets flung far above it. The others shrink slightly.</li>
+    <li><b>Repeat</b> steps 2–3 about \(\frac{\pi}{4}\sqrt{N}\) times, then <b>measure</b>.</li>
+  </ol>
+  <div class="math">\[ k_{\text{opt}} \approx \Big\lfloor \frac{\pi}{4}\sqrt{N} \Big\rfloor, \qquad P_{\text{success}} = \sin^2\!\big((2k+1)\,\theta\big),\quad \sin\theta = \tfrac{1}{\sqrt N} \]</div>
+  <p class="say">Each oracle + diffusion pair rotates the state a little closer to the answer, by angle 2θ. After about (π/4)√N turns, you're pointing at it. With M marked items, use \(\frac{\pi}{4}\sqrt{N/M}\).</p>
+  <h4>Worked example with real numbers (8 boxes, target |110⟩)</h4>
+  <ol class="body">
+    <li><b>Initialise:</b> 3 qubits, 8 states, each amplitude \(1/\sqrt8 \approx 0.354\), probability 12.5%.</li>
+    <li><b>Oracle:</b> |110⟩'s amplitude becomes −0.354. Every probability is still 12.5%.</li>
+    <li><b>Mean:</b> \(\bar a = \frac{7(0.354) - 0.354}{8} \approx 0.265\).</li>
+    <li><b>Reflect about the mean (\(2\bar a - a\)):</b> wrong answers become \(2(0.265) - 0.354 \approx 0.177\); the target becomes \(2(0.265) + 0.354 \approx 0.884\).</li>
+    <li><b>Probabilities:</b> target \(0.884^2 \approx\) <b>78.1%</b>; each other state \(0.177^2 \approx 3.1\%\).</li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th>Iterations</th><th class="num">0</th><th class="num">1</th><th class="num">2</th><th class="num">3</th></tr></thead>
+    <tbody><tr><td>P(target), N = 8</td><td class="num">12.5%</td><td class="num">78.1%</td><td class="num"><b>94.5%</b></td><td class="num">33.0%</td></tr></tbody></table></div>
+  <p>Two iterations is the sweet spot (\(\frac\pi4\sqrt8 \approx 2.22 \to 2\)). A third overshoots and the probability crashes to 33%. Reproduce every number above in the lab below (3 qubits, marked item 110).</p>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c2-grover.webp" width="1200" height="345" loading="lazy" alt="Grover&#x27;s circuit: Hadamards, then an oracle and diffuser block repeated about the square root of N times"></span><figcaption><span class="ref">Teacher Ch2 · s.19</span>The steps as a circuit: the oracle and diffuser block repeats.</figcaption></figure>
+  <div class="refs"><span class="ref">Team 3 Ch3 · s.14–21</span></div>
+
+  <div class="lab" id="lab-grover">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Watch the amplitudes move</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="gv-n">Qubits</label>
+        <select id="gv-n"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select>
+        <label class="ctl" for="gv-t">Marked item</label><select id="gv-t"></select>
+      </div>
+      <div class="row">
+        <button class="btn" id="gv-oracle">1 · Oracle (flip sign)</button>
+        <button class="btn" id="gv-diff">2 · Diffusion (reflect about mean)</button>
+        <button class="btn primary" id="gv-iter">Full iteration</button>
+        <button class="btn" id="gv-opt">Run to optimum</button>
+        <button class="btn" id="gv-reset">Reset</button>
+      </div>
+      <div class="status" id="gv-status"></div>
+      <div id="gv-chart" class="svgwrap"></div>
+      <p class="small muted">Bars show amplitudes: teal above the line is positive, coral below is negative. The dashed gold line is the mean. Keep pressing past the optimum and watch the probability fall again.</p>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful: more is not better</span>
+    <p>Grover <b>overshoots</b>. Past the optimal number of iterations, the success probability goes back down (the probability oscillates). So you must know roughly how many solutions there are. With 2 qubits (N = 4), one iteration gives exactly 100% (try target 10).</p>
+  </div>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <ul>
+      <li>Speeding up any brute-force search: constraint problems, SAT solvers, database lookups by condition.</li>
+      <li><b>Cryptography:</b> Grover could search a key space of size N in √N steps. That's why AES-128 is considered weakened (to ~64-bit strength) and AES-256 is recommended for the post-quantum world.</li>
+      <li>Its generalisation, <b>amplitude amplification</b>, is the core of quantum Monte Carlo for finance.</li>
+    </ul>
+  </div>
+  <div class="refs"><span class="ref">Team 7 · s.6–10</span><span class="ref">Team 1 Ch3 · p.10–13</span><span class="ref">Team 2 Ch2 · p.12</span><span class="ref">Teacher Ch4 · s.26–29</span></div>
+  </section>
+
+  <section class="sub" id="c3-shor">
+  <h3>3.8 Shor's algorithm</h3>
+  <p>Peter Shor, 1994: a quantum algorithm that factors a composite integer N into its primes in <b>polynomial</b> time. It uses <b>Quantum Phase Estimation</b> and the <b>Quantum Fourier Transform</b> to find the period of a modular arithmetic function.</p>
+  <div class="refs"><span class="ref">Group 4 · Page 12</span></div>
+  <figure class="fig xs"><span class="frame"><img src="assets/qc/c4-shor.webp" width="1134" height="968" loading="lazy" alt="Portrait of Peter Shor with his arms crossed in front of a chalkboard"></span><figcaption><span class="ref">Team 2 Ch4 · s.17</span>Peter Shor. From Team 2's deck.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Best classical (General Number Field Sieve)</th><th>Shor (quantum)</th></tr></thead>
+    <tbody><tr><td>Time</td><td>\(O\!\left(e^{c\,(\log N)^{1/3}(\log\log N)^{2/3}}\right)\), sub-exponential</td><td>\(O\big((\log N)^3\big)\), polynomial</td></tr></tbody></table></div>
+  <div class="call use"><span class="tag">This is why everyone cares</span>
+    <p><b>RSA encryption</b> (used in HTTPS, banking, SSH, digital signatures) is safe only because multiplying two big primes p × q = N is easy, while recovering p and q from N is astronomically hard for classical computers. A large fault-tolerant quantum computer running Shor would break it. The same algorithm also breaks elliptic-curve crypto. That's why NIST standardised post-quantum algorithms in 2024, and why governments worry about "harvest now, decrypt later" (recording encrypted traffic today to decrypt it in the future).</p>
+  </div>
+  <h4>How close is the threat?</h4>
+  <p>Estimates of how many qubits it would take to break RSA-2048 keep shrinking as algorithms improve, while chips keep growing:</p>
+  <div class="svgwrap" id="rsa-svg"></div>
+  <p>The gap is still huge (thousands of times) and the estimates assume <i>noisy</i> qubits with heavy error correction. In short: Shor breaks RSA/ECC (HTTPS, banking, software updates) because it solves their math fast, but <b>not yet</b>: it needs an error-corrected machine.</p>
+  <div class="refs"><span class="ref">Group 4 · Page 15</span></div>
+  <h4>The big idea: turn factoring into period finding</h4>
+  <p>Pick a random number a. Look at the powers of a, mod N: \(a^1, a^2, a^3, \dots \pmod N\). This sequence <b>repeats</b>. The length of the repeat is the <b>period</b> (or <b>order</b>) r: the smallest r with \(a^r \equiv 1 \pmod N\). If you know r, a little classical arithmetic gives the factors.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>N</td><td>The number you want to factor (e.g. 15)</td></tr>
+      <tr><td>a</td><td>A random number you pick, 1 &lt; a &lt; N (e.g. 7)</td></tr>
+      <tr><td>r</td><td>The period: smallest positive integer with \(a^r \equiv 1 \pmod N\). Found by the quantum part</td></tr>
+      <tr><td>p, q</td><td>The two factors you're looking for, with p × q = N</td></tr>
+    </tbody></table></div>
+  <h4>Part 1: classical setup and reduction</h4>
+  <ol class="body">
+    <li>Pick a random a. Compute gcd(a, N). If it isn't 1, you got lucky: that's already a factor.</li>
+    <li>Hand a and N to Part 2 to find r.</li>
+    <li>If r is odd, or \(a^{r/2} \equiv -1 \pmod N\), pick a new a and retry.</li>
+    <li>Otherwise the factors are \(\gcd(a^{r/2}-1,\,N)\) and \(\gcd(a^{r/2}+1,\,N)\).</li>
+  </ol>
+  <p class="say">Why it works: \(a^r - 1 = (a^{r/2}-1)(a^{r/2}+1)\) is a multiple of N, but (thanks to the checks) neither bracket alone is. So each bracket must share a factor with N, and gcd pulls it out. gcd (greatest common divisor) is fast to compute with Euclid's algorithm.</p>
+  <h4>Part 2: quantum order-finding</h4>
+  <ol class="body">
+    <li>Put all exponents x into one superposition (H gates on a "control register").</li>
+    <li>Compute \(a^x \bmod N\) into a second register for all x at once (controlled modular exponentiation, \(U_a^{2^j}\) gates). The registers become entangled.</li>
+    <li>Apply the <b>inverse Quantum Fourier Transform</b> to the control register. It turns the repeating pattern into sharp peaks (Chapter 4).</li>
+    <li>Measure: you get a number m with \(m / 2^t \approx s/r\) for some random s. The <b>continued fractions</b> algorithm turns that fraction into r.</li>
+  </ol>
+  <p>Here's <i>why</i> this is phase estimation. Define the gate "multiply by a": \(M_a|x\rangle = |a x \bmod N\rangle\). Its eigenvalues are \(e^{2\pi i k/r}\) for k = 0 … r−1, so its phases are fractions k/r with the period hidden in the denominator. And the easy start state |1⟩ is an equal mix of all those eigenvectors:</p>
+  <div class="math">\[ M_a|u_k\rangle = e^{2\pi i k/r}|u_k\rangle, \qquad |1\rangle = \frac{1}{\sqrt r}\sum_{k=0}^{r-1}|u_k\rangle \;\Rightarrow\; \text{QPE measures } \frac{y}{2^m} \approx \frac{k}{r} \]</div>
+  <p><b>How many control qubits?</b> \(m = 2\lceil\log_2 N\rceil + 1\). Example: suppose r = 6, so the phase to find is 1/6. With m = 5, the best approximation is y = 5 out of 32 (about a 68% chance), and 32/5 = 6.4 rounds to 6, which is correct. With m = 4, the best is 3/16, and 16/3 = 5.33 rounds to 5, which is wrong. Too few qubits give a wrong period.</p>
+  <p><b>Cost and success:</b> each controlled \(M_a^{2^j}\) costs O(n²) gates (n = number of bits in N) and there are O(n) of them, so O(n³) in total. One run fails (r odd, or trivial gcd) with probability at most ½, so a few repeats are enough. The powers \(a^2, a^4, \dots \bmod N\) are computed on a normal computer first.</p>
+  <div class="refs"><span class="ref">Team 3 Ch3 · s.31–36</span><span class="ref">Group 4 · Page 13</span></div>
+  <h4>Worked example: factoring 15</h4>
+  <p>N = 15, pick a = 7. gcd(7, 15) = 1, so no lucky shortcut. Powers of 7 mod 15:</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="num">x</th><th class="num">7ˣ</th><th class="num">7ˣ mod 15</th></tr></thead>
+    <tbody><tr><td class="num">1</td><td class="num">7</td><td class="num">7</td></tr><tr><td class="num">2</td><td class="num">49</td><td class="num">4</td></tr><tr><td class="num">3</td><td class="num">343</td><td class="num">13</td></tr><tr><td class="num">4</td><td class="num">2401</td><td class="num"><b>1</b> → r = 4</td></tr></tbody></table></div>
+  <p>r = 4 is even. \(7^{2} = 49\). Then \(\gcd(48, 15) = 3\) and \(\gcd(50, 15) = 5\). So <b>15 = 3 × 5</b>.</p>
+  <h4>Same number, different a</h4>
+  <p>Now use a = 2. <b>Step 1:</b> gcd(2, 15) = 1, so use order finding. <b>Step 2:</b> 2¹ = 2, 2² = 4, 2³ = 8, 2⁴ = 16 ≡ 1 (mod 15), so r = 4. <b>Step 3:</b> x = 2^{r/2} = 2² = 4. <b>Step 4:</b> gcd(4 − 1, 15) = <b>3</b> and gcd(4 + 1, 15) = <b>5</b>. Different a, same period, same factors. (This is exactly what the Shor lab prints for N = 15.)</p>
+  <div class="refs"><span class="ref">Group 4 · Page 14</span><span class="ref">Team 1 Ch3 · p.21–22</span></div>
+
+  <div class="lab" id="lab-shor">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Shor's recipe on any small number</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="sh-N">N</label><input type="number" id="sh-N" value="15" min="4" max="2000" style="width:90px">
+        <label class="ctl" for="sh-a">a</label><input type="number" id="sh-a" value="7" min="2" style="width:80px">
+        <button class="btn" id="sh-rand">Random a</button>
+        <button class="btn primary" id="sh-run">Run</button>
+        <span class="small muted">Try 15, 21, 35, 55, 77, 91, 143</span>
+      </div>
+      <div class="readout" id="sh-out"></div>
+      <div><b class="small">The power sequence aˣ mod N (the pattern the quantum computer finds)</b><div id="sh-seq" class="svgwrap"></div></div>
+      <div><b class="small">What the quantum measurement would look like (8 counting qubits after inverse QFT)</b><div id="sh-qpe" class="svgwrap"></div></div>
+      <div class="readout" id="sh-cf"></div>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful: a common mix-up</span>
+    <p>It's tempting to say "r = (p−1)(q−1)". That number is Euler's totient φ(N), which RSA uses to build its private key. The period r that Shor finds is the order of a specific a, which <i>divides</i> φ(N) but is usually smaller. For N = 15: φ(15) = 2 × 4 = 8, while the order of 7 is 4. The conclusion is the same: find r, break RSA.</p>
+  </div>
+  <div class="refs"><span class="ref">Team 1 Ch3 · p.16–22</span><span class="ref">Team 7 · s.12–13</span><span class="ref">Teacher Ch4 · s.30–32</span></div>
+  </section>
+
+  <section class="sub" id="c3-vqe">
+  <h3>3.9 Algorithms for today's chips: VQE and QAOA</h3>
+  <p>Shor and Grover need big, error-corrected machines. What can we run <i>now</i>, on 50 to a few hundred noisy qubits where circuits must stay short? The answer is the <b>hybrid loop</b>:</p>
+  <ol class="boxes">
+    <li><b>Quantum chip</b> runs a short circuit with some rotation angles θ and measures a cost</li>
+    <li><b>Classical computer</b> (an optimizer) picks better angles</li>
+    <li><b>Repeat</b> until the cost stops improving</li>
+  </ol>
+  <ul>
+    <li><b>VQE (Variational Quantum Eigensolver):</b> finds the lowest energy (the "ground state") of a molecule.</li>
+    <li><b>QAOA (Quantum Approximate Optimization Algorithm):</b> finds good answers to optimisation problems like routing and scheduling.</li>
+  </ul>
+  <h4>VQE in detail</h4>
+  <p><b>Input:</b> a <b>Hamiltonian</b> H (the energy operator of the system) and a <b>parametrized circuit</b> (the "ansatz" or variational form) that prepares a trial state \(|\psi(\theta)\rangle\). <b>Cost:</b> the energy of that trial state:</p>
+  <div class="math">\[ C(\theta) = \langle\psi(\theta)|\,H\,|\psi(\theta)\rangle \]</div>
+  <p class="say">"The average energy you'd measure in the state the circuit makes." By the variational principle, it can never be lower than the true ground energy, so pushing it down gets you closer to the answer.</p>
+  <ol class="body">
+    <li>Start from |0⟩ and prepare a reference state (IBM's example: X on qubit 0).</li>
+    <li>Apply the variational form \(U_V(\theta)\) (IBM's example: RZ and RY on each qubit plus one CX, 8 angles in total).</li>
+    <li>Estimate C(θ) on the quantum computer. H is written as a weighted sum of parts (e.g. weights 2, −2, 3, −3); each part is measured and the results are added up.</li>
+    <li>A classical optimizer (e.g. <b>COBYLA</b>) picks the next angles.</li>
+    <li>Repeat until it converges.</li>
+  </ol>
+  <p>In IBM's run, the simulator found a cost of about −6.0 after 136 evaluations; the real hardware ended several percent off after 96. Every new set of angles means running the circuit again, so IBM groups all runs in one <b>session</b> to queue only once.</p>
+  <div class="lab" id="lab-vqe">
+    <div class="lab-head"><span class="tag">Try it</span><h4>A one-qubit VQE</h4></div>
+    <div class="lab-body">
+      <p class="small">Hamiltonian \(H = Z + 0.8\,X\). Trial state \(R_y(\theta)|0\rangle\), so the cost is \(C(\theta) = \cos\theta + 0.8\sin\theta\). Move θ yourself, or let the "classical optimizer" take gradient steps.</p>
+      <div class="row">
+        <label class="ctl" for="vq-th">θ</label><input type="range" id="vq-th" min="0" max="360" value="20"><b class="mono" id="vq-thv">20°</b>
+        <button class="btn primary" id="vq-step">Optimizer step</button><button class="btn" id="vq-run">Run 25 steps</button><button class="btn" id="vq-reset">Reset</button>
+      </div>
+      <div id="vq-chart" class="svgwrap"></div>
+      <div class="readout" id="vq-out"></div>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>Timeline: <b>now (NISQ)</b> is VQE, QAOA and simulation; <b>later (error-corrected)</b> is Shor and Grover, with IBM targeting about 2029. VQE and QAOA can get stuck in local minima or "barren plateaus", so their advantage over classical methods is not yet proven.</p>
+  </div>
+  <div class="refs"><span class="ref">Group 4 · Page 25</span><span class="ref">Team 3 Ch3 · s.37–43</span></div>
+  </section>
+
+  <section class="sub" id="c3-limits">
+  <h3>3.10 Limitations and comparison</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Algorithm</th><th>Classical</th><th>Quantum</th><th>Speed-up</th></tr></thead>
+    <tbody>
+      <tr><td>Deutsch–Jozsa</td><td>Up to \(2^{n-1}+1\) queries to be sure</td><td>1 query</td><td>Exponential (in queries)</td></tr>
+      <tr><td>QFT</td><td>Fast Fourier Transform: about \(n\cdot2^n\) steps</td><td>About \(n^2\) gates</td><td>Exponential (but output is hidden in amplitudes)</td></tr>
+      <tr><td>Grover</td><td>About N steps</td><td>About \(\sqrt N\) steps</td><td>Quadratic</td></tr>
+      <tr><td>Shor</td><td>GNFS: sub-exponential</td><td>Polynomial, \(O((\log N)^3)\)</td><td>Exponential</td></tr>
+    </tbody></table></div>
+  <h4>Two families of algorithms</h4>
+  <div class="grid2">
+    <div class="panel" style="min-width:0"><b>Fault-tolerant</b><br>Shor, Grover, QPE (phase estimation), HHL (linear equations).<br><span class="muted small">Clear theoretical speed-ups, but they need a big, reliable machine that doesn't exist yet.</span></div>
+    <div class="panel" style="min-width:0"><b>NISQ</b><br>VQE (chemistry), QAOA (optimisation).<br><span class="muted small">Small noisy machines working with a normal computer. They run today, but their advantage over classical methods is unproven.</span></div>
+  </div>
+  <h4>Hardware limits</h4>
+  <ul>
+    <li><b>Noise:</b> qubits lose their state quickly, and gates make errors.</li>
+    <li><b>Error correction:</b> one logical qubit may need hundreds to thousands of physical qubits.</li>
+    <li><b>Scale:</b> today's machines have hundreds to a few thousand qubits. Shor on RSA-2048 needs close to a million noisy qubits (Gidney, 2025, "less than a million").</li>
+  </ul>
+  <h4>Algorithm challenges</h4>
+  <ul>
+    <li><b>Few real speed-ups:</b> only structured problems benefit. Grover's quadratic gain is often eaten by slow quantum clock speeds and error-correction overhead.</li>
+    <li><b>Input and output:</b> loading classical data into qubits can cost as much as the speed-up saves, and each measurement gives very little information.</li>
+    <li><b>No guarantees:</b> VQE and QAOA can get stuck in local minima and "barren plateaus" (flat landscapes where training stalls). Classical methods keep matching claimed advantages.</li>
+    <li><b>Practical limits:</b> deep circuits are destroyed by noise, qubit connectivity is limited, and debugging is hard (you can't peek at a state without destroying it).</li>
+  </ul>
+  <h4>Five limits</h4>
+  <ol class="boxes">
+    <li><b>Noise</b> limits circuit size; reliable machines around 2029</li>
+    <li><b>Speed-ups</b> only for special problems, not everything</li>
+    <li><b>Measurement</b> gives one answer per shot</li>
+    <li><b>Loading</b> big data into qubits is slow</li>
+    <li><b>Expensive:</b> extreme cooling (near −273 °C), many physical qubits per logical qubit</li>
+  </ol>
+  <h4>Side by side</h4>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Grover</th><th>QPE</th><th>Shor</th><th>VQE</th></tr></thead>
+    <tbody>
+      <tr><td><b>Problem</b></td><td>Find one item in an unsorted list</td><td>Find the rotation (phase) of a gate</td><td>Break a number into factors</td><td>Find the lowest energy of a system</td></tr>
+      <tr><td><b>Key gates</b></td><td>H, oracle, diffusion</td><td>H, controlled-U, inverse QFT</td><td>QPE with U = multiply by a (mod N)</td><td>X, RZ, RY, CX</td></tr>
+      <tr><td><b>Output</b></td><td>The marked item</td><td>The phase</td><td>The order r, then the factors</td><td>The lowest energy and best angles</td></tr>
+      <tr><td><b>Hardware needs</b></td><td>Repeat oracle + diffusion a fixed number of times</td><td>Deep: controlled-U count doubles per extra qubit</td><td>Many qubits, deep circuits (≈ n³)</td><td>Short circuit, many repeated runs with a classical optimizer</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Team 1 Ch3 · p.23–26</span><span class="ref">Group 4 · Page 26</span><span class="ref">Team 3 Ch3 · s.45</span></div>
+  </section>
+
+  <div class="recap">
+    <h3 style="margin-top:0">Chapter 3 in twelve lines</h3>
+    <ul>
+      <li>Initialize → gates → interference → measure (→ interpret). Wrong answers cancel.</li>
+      <li>Development: frame, design, build, simulate, transpile, fake-noise, run, analyse, iterate.</li>
+      <li>Transpiling: optimize, decompose, place, route (SWAPs), translate to native gates, optimize.</li>
+      <li>Oracle: \(U_f|x\rangle|y\rangle = |x\rangle|y\oplus f(x)\rangle\), reversible thanks to XOR.</li>
+      <li>VQE/QAOA: hybrid loop of a short circuit plus a classical optimizer; runs on NISQ today.</li>
+      <li>Parallelism evaluates f on all inputs, but you can only read one: you need interference.</li>
+      <li>Phase kickback: \(U_f|x\rangle|-\rangle = (-1)^{f(x)}|x\rangle|-\rangle\).</li>
+      <li>Deutsch–Jozsa: constant vs balanced in 1 query (classical: \(2^{n-1}+1\)).</li>
+      <li>Grover: oracle flips sign, diffusion reflects about mean; ~(π/4)√N iterations.</li>
+      <li>Grover overshoots if you iterate too long.</li>
+      <li>Shor: factoring → finding the period r of aˣ mod N.</li>
+      <li>Factors = gcd(a^{r/2} ± 1, N); retry if r is odd or a^{r/2} ≡ −1.</li>
+      <li>Fault-tolerant algorithms (Shor, Grover, QPE, HHL) vs NISQ (VQE, QAOA).</li>
+    </ul>
+  </div>
+  <h3 id="quiz3">Check yourself: Chapter 3</h3>
+  <div class="quiz" data-quiz="3"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 4 -->
+<section class="chapter" id="ch4">
+  <div class="chapter-head">
+    <span class="num">Chapter 4</span>
+    <h2>Quantum Fourier Transform</h2>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.1–35</span><span class="ref">Labs: QPE, Grover, Shor</span><span class="ref">Team 1 Ch3 · p.14–15</span></div>
+  <p>Chapter 4 does two jobs. It introduces the <b>Quantum Fourier Transform (QFT)</b>, the engine inside Shor and phase estimation. Then it revisits the algorithms as hands-on <b>labs</b>: QFT-3, BV-8, QPE, Grover on 3 qubits, and Shor. Let's open with a game.</p>
+
+  <section class="sub" id="c4-beat">
+  <h3>4.1 Game: find the hidden beat</h3>
+  <p><b>Goal:</b> discover the "hidden period" in a repeating pattern, just like the QFT finds hidden periodicities in quantum data. Listen (or watch the dots), then guess how many claps make up one repeat. The loud clap marks the start of each repeat.</p>
+  <div class="lab" id="lab-beat">
+    <div class="lab-head"><span class="tag">Play</span><h4>Find the Hidden Beat!</h4></div>
+    <div class="lab-body">
+      <div class="row"><button class="btn primary" id="bt-play">Play pattern</button><button class="btn" id="bt-new">New pattern</button><label class="ctl"><input type="checkbox" id="bt-sound" checked> Sound</label></div>
+      <div class="dots" id="bt-dots" aria-label="Beat pattern"></div>
+      <div class="row" id="bt-guess"><span class="small muted">Period =</span></div>
+      <div class="status" id="bt-status">Press "Play pattern".</div>
+    </div>
+  </div>
+  <p>When the period is 3, you hear it instantly. When it's 10, you need to concentrate. And if the pattern is long and noisy, your ears give up. The QFT is a mathematical ear that finds the period of a pattern hidden inside 2ⁿ amplitudes, using only about n² gates.</p>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.6–9</span></div>
+  </section>
+
+  <section class="sub" id="c4-ft">
+  <h3>4.2 The classical Fourier transform</h3>
+  <p>The <b>Fourier Transform (FT)</b> expresses a signal as a sum of sine waves with different frequencies. It converts a signal from the <b>time domain</b> ("what happens when") into the <b>frequency domain</b> ("which rhythms are in it").</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>A smoothie and its recipe. The time signal is the blended smoothie. The Fourier transform un-blends it and tells you: 50% banana, 30% mango, 20% milk. In sound: a chord goes in, and out come the individual notes.</p>
+  </div>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-fourier.webp" width="1200" height="589" loading="lazy" alt="A jagged red signal over time splits into separate waves, and those waves become bars on a frequency axis"></span><figcaption><span class="ref">Team 2 Ch4 · s.4</span>One messy signal, split into its waves, read off as frequencies. From Team 2's deck.</figcaption></figure>
+  <p>For a list of N numbers \(x = (x_0, \dots, x_{N-1})\), the <b>Discrete Fourier Transform (DFT)</b> produces a new list \(y = (y_0, \dots, y_{N-1})\):</p>
+  <div class="math">\[ y_k = \frac{1}{\sqrt N}\sum_{j=0}^{N-1} x_j\, e^{2\pi i\, jk/N} \]</div>
+  <p class="say">For each frequency k, walk through the signal, spin each sample \(x_j\) by angle \(2\pi jk/N\), and add everything up. If the signal really repeats at that frequency, the spins line up and add to something big. If not, they point in random directions and cancel. Interference again.</p>
+  <div class="call use"><span class="tag">Where it's used (classically, everywhere)</span>
+    <p>MP3 and JPEG compression, Shazam song recognition, Wi-Fi and 4G/5G signals, MRI image reconstruction, audio equalisers, earthquake analysis. The fast algorithm for it, the <b>FFT</b>, is one of the most important algorithms ever written.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.10</span><span class="ref">Team 1 Ch3 · p.14</span></div>
+  </section>
+
+  <section class="sub" id="c4-qft">
+  <h3>4.3 The Quantum Fourier Transform</h3>
+  <p>In quantum computing, the amplitudes \(\alpha_j\) of the basis states \(|j\rangle\) play the role of the classical numbers \(x_j\). The QFT does the DFT on those amplitudes. On a single basis state:</p>
+  <div class="math">\[ \mathrm{QFT}\,|j\rangle = \frac{1}{\sqrt N}\sum_{k=0}^{N-1} e^{2\pi i\, jk/N}\,|k\rangle, \qquad N = 2^n \]</div>
+  <p class="say">Every output |k⟩ gets the same size, 1/√N, so a single input becomes a perfectly even superposition. The information is in the <b>phases</b>: output k's arrow is turned by j·k/N of a full circle.</p>
+  <ul>
+    <li><b>N</b>: total number of basis states (2ⁿ for n qubits). <b>j</b>: input basis-state index. <b>k</b>: index of each output state.</li>
+    <li><b>1/√N</b>: normalisation, keeps total probability = 1.</li>
+    <li><b>\(e^{2\pi ijk/N}\)</b>: the phase factor applied to each output state.</li>
+  </ul>
+  <p>It changes the <b>computational basis</b> (|0⟩, |1⟩, …) into the <b>Fourier basis</b> (states with evenly spaced phases). And the QFT matrix is unitary (\(U^\dagger U = I\)), so it's a valid quantum gate.</p>
+  <p>For one qubit (N = 2) the QFT is just the Hadamard gate. For two qubits (N = 4, and \(e^{2\pi i/4} = i\)):</p>
+  <div class="math">\[ \mathrm{QFT}_4 = \frac12\begin{pmatrix}1&1&1&1\\1&i&-1&-i\\1&-1&1&-1\\1&-i&-1&i\end{pmatrix} \]</div>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-phases.webp" width="1200" height="251" loading="lazy" alt="Four dials for QFT|01⟩: |00⟩ at 0 degrees, |01⟩ at 90, |10⟩ at 180 and |11⟩ at 270"></span><figcaption><span class="ref">Team 2 Ch4 · s.8</span>QFT|01⟩: every output has the same size, and only the dial turns. Team 2's picture of what you're about to play with.</figcaption></figure>
+  <p>Below, each dial is one output amplitude. Pick an input |j⟩ and watch how fast the hands turn as k increases. The bigger j, the faster they spin. That "spin speed" encodes j.</p>
+  <div class="lab" id="lab-clocks">
+    <div class="lab-head"><span class="tag">Try it</span><h4>QFT phase clocks (3 qubits)</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="ck-j">Input |j⟩</label><select id="ck-j"></select>
+        <label class="ctl"><input type="checkbox" id="ck-inv"> Inverse QFT (negative phases)</label></div>
+      <div class="clocks" id="ck-dials"></div>
+      <div class="readout" id="ck-out"></div>
+    </div>
+  </div>
+  <h4>The product form: why it's cheap</h4>
+  <p>The QFT output turns out to be a product of single-qubit states, one per qubit:</p>
+  <div class="math">\[ \mathrm{QFT}\,|j\rangle = \bigotimes_{l=1}^{n} \frac{|0\rangle + e^{2\pi i\, j/2^{l}}\,|1\rangle}{\sqrt2} \]</div>
+  <p class="say">Each output qubit is an equal blend of |0⟩ and |1⟩ with its own phase. One qubit turns j/2 of a circle, the next j/4, the next j/8, like the hands of a clock: second hand, minute hand, hour hand. Because each qubit only needs one H and a few phase rotations, the whole circuit is small.</p>
+  <p><b>"Exponential compression"</b>: the QFT acts on all 2ⁿ amplitudes at once using only ~n² gates, while the classical FFT needs ~n·2ⁿ steps. But remember the catch from Chapter 3: you can't read all the amplitudes out. The QFT is only useful as a step inside algorithms where one measurement is enough, like period finding.</p>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.10–11</span><span class="ref">Team 1 Ch3 · p.15</span></div>
+  </section>
+
+  <section class="sub" id="c4-circuit">
+  <h3>4.4 Building the QFT circuit, and its inverse</h3>
+  <p><b>Goal:</b> analyse the periodicity (repeating patterns) encoded in quantum states. The construction for n qubits:</p>
+  <ol class="body">
+    <li>For each qubit j from 0 to n−1:
+      <ul><li>Apply H to qubit j.</li>
+      <li>For each later qubit k &gt; j: apply a <b>controlled rotation</b> \(R_m\) with qubit k as control and j as target, where \(m = k - j + 1\).</li></ul></li>
+    <li>Finally, reverse the order of the qubits with SWAPs (the "bit reversal").</li>
+  </ol>
+  <div class="math">\[ R_m = \begin{pmatrix}1&0\\0&e^{2\pi i/2^m}\end{pmatrix} = P\!\left(\tfrac{2\pi}{2^m}\right) \]</div>
+  <p class="say">R₂ is a 90° phase (π/2), R₃ is 45° (π/4), R₄ is 22.5°, and so on: smaller and smaller twists.</p>
+  <h4>The 2-qubit QFT</h4>
+  <ol class="body"><li>H on q0</li><li>Controlled-P(π/2) from q1 → q0</li><li>H on q1</li><li>SWAP q0 and q1</li></ol>
+  <div class="svgwrap" id="qft2-svg"></div>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c4-circ3.webp" width="1200" height="337" loading="lazy" alt="A 3-qubit QFT circuit: H, controlled phases, H, controlled phase, H, then a swap of the outer qubits"></span><figcaption><span class="ref">Team 2 Ch4 · s.11</span>The same recipe with 3 qubits. From Team 2's deck.</figcaption></figure>
+  <p><b>Gate count:</b> n Hadamards + n(n−1)/2 controlled rotations + about n/2 swaps = <b>O(n²)</b>. For 3 qubits: 3 H + 3 CP + 1 SWAP.</p>
+  <h4>Inverse QFT (QFT⁻¹ or QFT†)</h4>
+  <div class="math">\[ \mathrm{QFT}^{-1}|k\rangle = \frac{1}{\sqrt N}\sum_{j=0}^{N-1} e^{-2\pi i\, jk/N}\,|j\rangle \]</div>
+  <ul>
+    <li>Same as the QFT but with <b>negative</b> phase rotations.</li>
+    <li>Circuit: <b>reverse</b> the gate order of the QFT, and replace each \(R_k\) by \(R_k^\dagger\) (negative angle). Swaps go at the start (they're their own inverse).</li>
+    <li>\(R_k R_k^\dagger = I\), and \(\mathrm{QFT}\cdot\mathrm{QFT}^{-1} = I\).</li>
+  </ul>
+  <p>Lab demo: build the 2-qubit QFT and verify the inverse. QFT then QFT⁻¹ on |00⟩ gives |00⟩ with 100%: a single bar of 1024 counts. Load "QFT then inverse QFT" in the <a href="#lab-circuit">circuit simulator</a> to confirm.</p>
+  <div class="call key"><span class="tag">Why we usually need the inverse</span>
+    <p>In Shor and QPE, the information arrives as <b>phases</b> on the control qubits (via phase kickback), in exactly the "Fourier basis" form. The inverse QFT converts those phases back into a plain binary number you can measure. So in practice, QFT⁻¹ is the one you'll actually use most.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.12, 14–18</span></div>
+  </section>
+
+  <section class="sub" id="c4-period">
+  <h3>4.5 Finding a hidden period with the QFT</h3>
+  <p>Example: the repeating sequence <span class="mono">[1, 2, 3, 1, 2, 3, 1, 2, 3, …]</span> has true period r = 3. In a quantum computer, we encode a period like this: a state that has equal amplitude on every r-th basis state (e.g. |0⟩, |3⟩, |6⟩, …) and zero elsewhere. Apply the QFT, and the output has sharp peaks at multiples of N/r.</p>
+  <div class="math">\[ \text{input: } \sum_{m} |x_0 + m r\rangle \;\xrightarrow{\;\mathrm{QFT}\;}\; \text{peaks at } k \approx 0,\ \tfrac{N}{r},\ \tfrac{2N}{r},\ \dots \]</div>
+  <p class="say">Measure, and you get one of those peaks. From the spacing between peaks (or from k/N ≈ s/r) you work out r. The offset x₀ only changes phases, not where the peaks are, which is why it doesn't matter where the pattern starts.</p>
+  <div class="lab" id="lab-qftp">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Period finder</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="qp-n">Qubits n</label><select id="qp-n"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option></select>
+        <label class="ctl" for="qp-r">Period r</label><input type="range" id="qp-r" min="1" max="16" value="4"><b class="mono" id="qp-rv">4</b>
+        <label class="ctl" for="qp-o">Offset x₀</label><input type="range" id="qp-o" min="0" max="3" value="0"><b class="mono" id="qp-ov">0</b>
+      </div>
+      <div><b class="small">Input: probability of each |x⟩ (the periodic pattern)</b><div id="qp-in" class="svgwrap"></div></div>
+      <div><b class="small">After the QFT: probability of measuring each |k⟩</b><div id="qp-out" class="svgwrap"></div></div>
+      <div class="readout" id="qp-txt"></div>
+    </div>
+  </div>
+  <h4>Does the number of qubits matter? Yes.</h4>
+  <p>Running the QFT on n qubits means working in a space of size N = 2ⁿ. The peaks land at multiples of N/r, so you need N to be big enough compared with r. For period r = 4:</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="num">Qubits n</th><th class="num">N = 2ⁿ</th><th class="num">Period r</th><th class="num">N / r</th><th>What you see</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="num">2</td><td class="num">4</td><td class="num">0.5</td><td>Too small: the pattern doesn't even fit once</td></tr>
+      <tr><td class="num">2</td><td class="num">4</td><td class="num">4</td><td class="num">1</td><td>Only one repeat: a single peak at 0, no information</td></tr>
+      <tr><td class="num">3</td><td class="num">8</td><td class="num">4</td><td class="num">2</td><td>Peaks at 0, 2, 4, 6</td></tr>
+      <tr><td class="num">4</td><td class="num">16</td><td class="num">4</td><td class="num">4</td><td>Peaks at 0, 4, 8, 12</td></tr>
+      <tr><td class="num">5</td><td class="num">32</td><td class="num">4</td><td class="num">8</td><td>Peaks at 0, 8, 16, 24</td></tr>
+    </tbody></table></div>
+  <p><b>What if N isn't a multiple of r</b> (like r = 3 with N = 16)? The peaks get <b>blurry</b>: probability leaks into neighbouring k's. More qubits make the peaks sharper and the estimate of r more accurate. That's exactly why Shor uses about 2·log₂N counting qubits. Try r = 3 above with 3 qubits and then 7 qubits.</p>
+  <p><b>What if we don't know the period?</b> One last example, <span class="mono">[1,2,3,1,2,3,1,2,3,1, 1,2,3,…]</span>, hides a bigger repeat (length 10) inside a smaller one. The QFT still finds it: it reveals every rhythm present, which is something your ears struggled with in the game.</p>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.13, s.19</span><span class="ref">Lab practice · s.17–18 (QFT-3 with periods 2, 3, 4)</span></div>
+  </section>
+
+  <section class="sub" id="c4-bv">
+  <h3>4.6 Bernstein–Vazirani (BV)</h3>
+  <p><b>The problem:</b> a black box hides a secret bit string a. When you query it with x, it returns the <b>dot product mod 2</b>:</p>
+  <div class="math">\[ f(x) = a\cdot x \bmod 2 = (a_1x_1 + a_2x_2 + \dots + a_nx_n) \bmod 2 \]</div>
+  <p class="say">It counts how many positions are 1 in both a and x, and tells you whether that count is odd.</p>
+  <ul>
+    <li><b>Classical:</b> n queries. Ask x = 100…0 to learn a₁, then 010…0 to learn a₂, etc. One bit per query.</li>
+    <li><b>Quantum:</b> <b>1 query</b>, no matter how long a is.</li>
+  </ul>
+  <h4>Circuit</h4>
+  <ol class="body">
+    <li>Initialise \(|0\rangle^{\otimes n}|1\rangle\) and apply H to all qubits (the last one becomes |−⟩).</li>
+    <li>Apply \(U_f\): a CNOT from each input qubit where \(a_i = 1\) to the last qubit. Phase kickback gives \(\frac{1}{\sqrt{2^n}}\sum_x (-1)^{a\cdot x}|x\rangle\).</li>
+    <li>Apply H again to the first n qubits and measure. The result is exactly a.</li>
+  </ol>
+  <p class="say">Why: H⊗ⁿ is its own inverse, and H⊗ⁿ|a⟩ is exactly \(\frac{1}{\sqrt{2^n}}\sum_x (-1)^{a\cdot x}|x\rangle\). So the last H's turn the state back into |a⟩. Interference concentrates 100% of the probability on the secret.</p>
+  <p>The lab example uses <span class="mono">secret_number = '1011001'</span> (7 bits), so 7 + 1 = 8 qubits and 7 classical bits. That's the "BV-8" lab. BV is an extension of Deutsch–Jozsa: both use an oracle and phase kickback.</p>
+  <div class="lab" id="lab-bv">
+    <div class="lab-head"><span class="tag">Try it</span><h4>BV-8: type a secret and recover it in one query</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="bv-s">secret_number</label><input type="text" id="bv-s" value="1011001" maxlength="10" style="width:150px"><button class="btn primary" id="bv-run">Build and run</button><span class="small muted">1–10 bits of 0/1</span></div>
+      <div class="status" id="bv-status"></div>
+      <div class="svgwrap" id="bv-svg"></div>
+      <div class="grid2">
+        <div style="min-width:0"><b class="small">Classical: n queries</b><div class="readout" id="bv-classic"></div></div>
+        <div style="min-width:0"><b class="small">Quantum: 1 query</b><div class="readout" id="bv-quantum"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful: bit order again</span>
+    <p>In a Qiskit drawing for '1011001', the CNOTs come from q0, q3, q4 and q6. That's because Qiskit reads the string right-to-left (q0 = last character). Here I draw q0 = first character, so the CNOTs sit on q0, q2, q3, q6. Both are correct, just mirrored.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.20–23</span></div>
+  </section>
+
+  <section class="sub" id="c4-qpe">
+  <h3>4.7 Quantum Phase Estimation (QPE)</h3>
+  <p><b>The problem:</b> you have a gate U and one of its <b>eigenstates</b> |ψ⟩, a special state that U doesn't change except for a phase:</p>
+  <div class="math">\[ U|\psi\rangle = e^{2\pi i\varphi}\,|\psi\rangle, \qquad 0 \le \varphi \lt 1 \]</div>
+  <p>Find φ. (Eigen = "own" in German: |ψ⟩ is U's "own" state, and \(e^{2\pi i\varphi}\) is its eigenvalue.)</p>
+  <h4>The circuit</h4>
+  <ol class="body">
+    <li>Two registers: n <b>counting</b> qubits in |0⟩ and the target register in |ψ⟩: \(|0\rangle^{\otimes n}\otimes|\psi\rangle\).</li>
+    <li>H on every counting qubit.</li>
+    <li>For each counting qubit j (0 to n−1): apply \(U^{2^j}\) to the target, controlled by qubit j. By phase kickback, counting qubit j picks up phase \(e^{2\pi i\,2^j\varphi}\).</li>
+    <li>Apply the <b>inverse QFT</b> to the counting register.</li>
+    <li>Measure: you get an integer m, and \(\varphi \approx m/2^n\).</li>
+  </ol>
+  <p class="say">After step 3 the counting register is exactly in "QFT form" with j replaced by \(2^n\varphi\). The inverse QFT un-does it and hands you \(2^n\varphi\) as a binary number. With n counting qubits you get φ to n binary digits.</p>
+  <p><b>The lab:</b> U = P(2π·0.25), target |1⟩, so φ = 0.25. With n = 4 counting qubits the result is <span class="mono">0100</span> = 4, and 4/16 = <b>0.25</b>. Exact, because 0.25 = 0.0100 in binary fits in 4 bits.</p>
+  <div class="lab" id="lab-qpe">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Estimate a phase</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="qe-phi">φ</label><input type="range" id="qe-phi" min="0" max="999" value="250"><b class="mono" id="qe-phiv">0.250</b>
+        <label class="ctl" for="qe-n">Counting qubits</label><select id="qe-n"><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>
+      </div>
+      <div class="row"><button class="btn" data-phi="250" data-n="4">0.25 (lab, 4 qubits)</button><button class="btn" data-phi="125" data-n="3">T gate: 1/8 (3 qubits)</button><button class="btn" data-phi="333">1/3</button><button class="btn" data-phi="800">0.8</button></div>
+      <div id="qe-chart" class="svgwrap"></div>
+      <div class="readout" id="qe-out"></div>
+    </div>
+  </div>
+  <p><b>Example: finding the T gate's rotation.</b> The T gate turns |1⟩ by 1/8 of a full circle (\(e^{i\pi/4} = e^{2\pi i\cdot 1/8}\)). Can QPE find 1/8? Step 1: an X gate turns the target into |1⟩. Step 2: H on 3 counting qubits. Step 3: apply controlled-T 1, 2 and 4 times (1/8, 2/8, 4/8 of a turn). Step 4: the inverse QFT turns those rotations into bits. Measured <span class="mono">001</span> = 1, and 1/8 = φ. Try the "T gate" button.</p>
+  <p><b>Accuracy and cost:</b> when φ doesn't fit in n bits (try 1/3), the histogram spreads, and QPE returns the closest n-bit value at least ~40% of the time (exactly \(4/\pi^2 \approx 40.5\%\)). So run it several times and take the most common answer. More counting qubits give a sharper peak, but the number of controlled-U applications <b>doubles</b> with each extra qubit, and deep circuits suffer on noisy hardware. Classically, estimating a phase to n bits this way would take about 2ⁿ uses of U; QPE needs O(n) qubits.</p>
+  <div class="refs"><span class="ref">Team 3 Ch3 · s.23–29</span></div>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <ul>
+      <li><b>Shor's algorithm:</b> order-finding <i>is</i> QPE, with U = "multiply by a mod N". Its phases are s/r, so QPE reveals the period r.</li>
+      <li><b>Quantum chemistry:</b> with U = time evolution under a molecule's Hamiltonian (energy operator), the phases are the molecule's <b>energy levels</b>. That's the fault-tolerant way to compute reaction energies for drugs and catalysts (Chapter 7).</li>
+      <li><b>HHL</b> (solving linear equations) uses QPE to invert a matrix.</li>
+    </ul>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.24–25</span><span class="ref">Lab · QPE</span></div>
+  </section>
+
+  <section class="sub" id="c4-grover">
+  <h3>4.8 Grover in the lab</h3>
+  <p>You know how Grover works from Chapter 3. Here's how the lab actually builds it for 3 qubits with <span class="mono">marked_state = "101"</span>.</p>
+  <h4>The oracle (flip the sign of |101⟩ only)</h4>
+  <ol class="body">
+    <li>Apply X to every qubit where the target bit is 0. This maps |101⟩ to |111⟩.</li>
+    <li>Apply a multi-controlled Z on |111⟩, built as H · MCX (multi-controlled X, Toffoli for 3 qubits) · H on the last qubit.</li>
+    <li>Undo the X gates.</li>
+  </ol>
+  <h4>The diffuser (inversion about the mean)</h4>
+  <p>H on all → X on all → (H · MCX · H on the last qubit) → X on all → H on all. Mathematically this is \(2|s\rangle\langle s| - I\), where |s⟩ is the equal superposition: "reflect about the average".</p>
+  <h4>How many iterations?</h4>
+  <div class="math">\[ k = \Big\lfloor \tfrac{\pi}{4}\sqrt{8} \Big\rfloor = \lfloor 2.22 \rfloor = 2 \;\Rightarrow\; P(101) = \sin^2(5\theta) \approx 0.945 \]</div>
+  <p>So about 945 of 1024 shots land on 101. The lab prints "Optimal Grover iterations: 2" and then reverses each result string (<code>k[::-1]</code>) to undo Qiskit's bit order before plotting.</p>
+  <p>Plot success probability against the fraction of marked items M/N: classical random guessing is a straight line, while Grover with one iteration (\(\sin^2 3\theta\), with \(\sin^2\theta = M/N\)) reaches 100% at M/N = ¼ and drops back to 0 at ¾. With too many solutions, Grover can do worse than guessing.</p>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.26–29</span><span class="ref">Lab · Grover</span></div>
+  </section>
+
+  <section class="sub" id="c4-shor">
+  <h3>4.9 Shor in the lab</h3>
+  <p>The full recipe:</p>
+  <ol class="body">
+    <li>Choose a random a &lt; N with gcd(a, N) = 1.</li>
+    <li>Define the periodic function \(f(x) = a^x \bmod N\).</li>
+    <li>Find the period r with a quantum circuit: Hadamards → controlled modular exponentiation (\(U_a^{2^0}, U_a^{2^1}, \dots\)) → inverse QFT → measure.</li>
+    <li>Compute r from the measurement by classical post-processing (continued fractions).</li>
+    <li>Factors: \(p = \gcd(a^{r/2}-1, N)\), \(q = \gcd(a^{r/2}+1, N)\).</li>
+  </ol>
+  <p>Look closely and you'll see step 3 is exactly QPE, with U = multiplication by a mod N. That's why the lab's <code>quantum_order_estimation</code> is literally a QPE circuit: H on 6 counting qubits, phase rotations \(2\pi\cdot 2^q/r\), inverse QFT, measure. (It "cheats" by computing the true r classically to set the phases, since a full modular-exponentiation circuit is too big for a lab.)</p>
+  <h4>Reading the lab output</h4>
+  <div class="readout">Factoring N = 15
+Attempt 1: using a = 2
+Estimated period (r) = 4
+Factors found: (3, 5)
+
+Factoring N = 55
+Attempt 1: using a = 36    Estimated period (r) = 5   → r is odd, retrying...
+Attempt 2: using a = 39    Estimated period (r) = 11  → r is odd, retrying...
+Found trivial factor: 5    → Factors found: (5, 11)</div>
+  <ul>
+    <li>For 15 with a = 2: \(2^4 = 16 \equiv 1\), so r = 4. \(2^2 = 4\); gcd(3, 15) = 3, gcd(5, 15) = 5.</li>
+    <li>For 55 with a = 36: the true order is 5 (odd), so it retries. For a = 39 the true order is 10, but 6 counting qubits estimated 11. Estimates can be wrong, and that's one reason Shor is a repeat-until-success algorithm. In the end, a random a happened to share a factor with 55 (the "lucky gcd" step), giving 5 × 11.</li>
+  </ul>
+  <p>Compare the number of operations against the number of digits: the classical curve shoots up towards 10³⁰ for 300-digit numbers, while Shor's stays low and nearly flat. That gap is the exponential speed-up.</p>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.30–32</span><span class="ref">Lab · Shor</span></div>
+  </section>
+
+  <section class="sub" id="c4-compare">
+  <h3>4.10 Comparison and lab summary</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Algorithm</th><th>Problem</th><th>Classical</th><th>Quantum</th><th>Output / insight</th></tr></thead>
+    <tbody>
+      <tr><td><b>QFT</b></td><td>Change basis of quantum amplitudes</td><td>FFT: O(n·2ⁿ)</td><td>O(n²) = O((log N)²) gates</td><td>Basis change; reveals periods</td></tr>
+      <tr><td><b>BV</b></td><td>Find hidden bit string a</td><td>n queries</td><td>1 query</td><td>Reveals a</td></tr>
+      <tr><td><b>QPE</b></td><td>Estimate eigenphase φ in \(U|\psi\rangle = e^{2\pi i\varphi}|\psi\rangle\)</td><td>~2ⁿ applications for n bits</td><td>O(n) counting qubits</td><td>Controlled-U + inverse QFT</td></tr>
+      <tr><td><b>Grover</b></td><td>Search unsorted data</td><td>O(N)</td><td>O(√N), quadratic</td><td>Target found with high probability</td></tr>
+      <tr><td><b>Shor</b></td><td>Factor N via period finding</td><td>Sub-exponential in log N</td><td>Polynomial in log N, exponential speed-up</td><td>Prime factors of N</td></tr>
+    </tbody></table></div>
+  <h4>Lab summary</h4>
+  <ul>
+    <li><b>Lab 1, QFT-3:</b> build a 3-qubit QFT; create hidden periods 2, 3, 4; simulate; plot histograms (use the period finder above to predict them).</li>
+    <li><b>Lab 2, BV-8:</b> 7-bit secret + 1 ancilla; let the user type the secret; check the output equals it.</li>
+    <li><b>Lab 3, Grover on 3 qubits:</b> oracle, diffuser, 2 iterations, histogram.</li>
+    <li><b>Lab 4, Shor's factoring:</b> choose a, find r with QPE, compute factors of a user-supplied N.</li>
+    <li><b>Bonus:</b> run each on <code>FakePerth</code> (a noisy copy of IBM's 7-qubit Perth chip) vs. the ideal simulator and compare <b>fidelity</b>: how close the noisy histogram is to the ideal one. Expect bars to "leak" into wrong answers on the fake device. That's Chapter 5 (errors and noise) knocking.</li>
+  </ul>
+  <div class="refs"><span class="ref">Teacher Ch4 · s.16–18, 22–23, 25, 28–29, 32–34</span></div>
+  </section>
+
+  <div class="recap">
+    <h3 style="margin-top:0">Chapter 4 in ten lines</h3>
+    <ul>
+      <li>The FT turns "when" into "which rhythms"; the DFT formula is \(y_k = \frac{1}{\sqrt N}\sum_j x_j e^{2\pi ijk/N}\).</li>
+      <li>QFT does the same to amplitudes: \(|j\rangle \to \frac{1}{\sqrt N}\sum_k e^{2\pi ijk/N}|k\rangle\).</li>
+      <li>On 1 qubit, QFT = H. Circuit: H + controlled-R<sub>k</sub> + swaps, O(n²) gates.</li>
+      <li>Inverse QFT: reverse order, negative angles. QFT·QFT⁻¹ = I.</li>
+      <li>Periodic input → peaks at multiples of N/r. More qubits = sharper peaks.</li>
+      <li>BV: f(x) = a·x mod 2; finds a in 1 query (classical: n).</li>
+      <li>QPE: H, controlled-U^{2^j}, inverse QFT; φ ≈ m/2ⁿ.</li>
+      <li>Grover lab: X-sandwiched multi-controlled Z oracle; diffuser = reflect about mean; ⌊π/4·√N⌋ iterations.</li>
+      <li>Shor's quantum part is QPE on "multiply by a mod N".</li>
+      <li>Test on FakePerth to see noise reduce fidelity.</li>
+    </ul>
+  </div>
+  <h3 id="quiz4">Check yourself: Chapter 4</h3>
+  <div class="quiz" data-quiz="4"></div>
+</section>
+
+<!-- ======================================================= SHEET -->
+<section class="chapter" id="sheet">
+  <div class="chapter-head">
+    <span class="num">Cheat sheet</span>
+    <h2>Formula sheet and glossary</h2>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>What</th><th>Formula</th></tr></thead>
+    <tbody>
+      <tr><td>Qubit state</td><td>\(|\psi\rangle=\alpha|0\rangle+\beta|1\rangle,\ |\alpha|^2+|\beta|^2=1\)</td></tr>
+      <tr><td>Born rule</td><td>\(P(0)=|\alpha|^2,\ P(1)=|\beta|^2\)</td></tr>
+      <tr><td>Bloch form</td><td>\(\cos\frac\theta2|0\rangle+e^{i\varphi}\sin\frac\theta2|1\rangle\)</td></tr>
+      <tr><td>Euler</td><td>\(e^{i\theta}=\cos\theta+i\sin\theta\)</td></tr>
+      <tr><td>Unitary</td><td>\(U^\dagger U=I\)</td></tr>
+      <tr><td>Hadamard</td><td>\(H|0\rangle=|+\rangle,\ H|1\rangle=|-\rangle,\ H^2=I\)</td></tr>
+      <tr><td>All inputs at once</td><td>\(H^{\otimes n}|0\rangle^{\otimes n}=\frac{1}{\sqrt{2^n}}\sum_x|x\rangle\)</td></tr>
+      <tr><td>Bell state</td><td>\(|\Phi^+\rangle=\frac{1}{\sqrt2}(|00\rangle+|11\rangle)\)</td></tr>
+      <tr><td>Interference</td><td>\(P=|\psi_1+\psi_2|^2\)</td></tr>
+      <tr><td>Phase kickback</td><td>\(U_f|x\rangle|-\rangle=(-1)^{f(x)}|x\rangle|-\rangle\)</td></tr>
+      <tr><td>Deutsch–Jozsa</td><td>\(\text{amp}(0^n)=\frac{1}{2^n}\sum_x(-1)^{f(x)}\)</td></tr>
+      <tr><td>Grover</td><td>\(k\approx\frac\pi4\sqrt N,\ P=\sin^2((2k+1)\theta),\ \sin\theta=\frac{1}{\sqrt N}\)</td></tr>
+      <tr><td>Shor</td><td>\(a^r\equiv1 \pmod N\); factors \(\gcd(a^{r/2}\pm1,N)\)</td></tr>
+      <tr><td>DFT</td><td>\(y_k=\frac{1}{\sqrt N}\sum_j x_je^{2\pi ijk/N}\)</td></tr>
+      <tr><td>QFT / inverse</td><td>\(|j\rangle\to\frac{1}{\sqrt N}\sum_k e^{\pm2\pi ijk/N}|k\rangle,\ N=2^n\)</td></tr>
+      <tr><td>Controlled rotation</td><td>\(R_m=\mathrm{diag}(1,e^{2\pi i/2^m})\)</td></tr>
+      <tr><td>Bernstein–Vazirani</td><td>\(f(x)=a\cdot x \bmod 2\)</td></tr>
+      <tr><td>QPE</td><td>\(U|\psi\rangle=e^{2\pi i\varphi}|\psi\rangle,\ \varphi\approx m/2^n\)</td></tr>
+    </tbody></table></div>
+  <h3>Glossary</h3>
+  <div class="tbl"><table>
+    <tbody>
+      <tr><td><b>Amplitude</b></td><td>The complex number in front of a basis state; its squared size is a probability.</td></tr>
+      <tr><td><b>Ancilla</b></td><td>A helper qubit (e.g. the |−⟩ qubit in BV and Deutsch–Jozsa).</td></tr>
+      <tr><td><b>Basis state</b></td><td>|0⟩, |1⟩ for one qubit; |00⟩…|11⟩ for two; the "plain" states.</td></tr>
+      <tr><td><b>Collapse</b></td><td>After measurement, the state becomes the outcome you saw.</td></tr>
+      <tr><td><b>Decoherence</b></td><td>The environment leaking into qubits and destroying superposition.</td></tr>
+      <tr><td><b>Eigenstate</b></td><td>A state that a gate only multiplies by a phase.</td></tr>
+      <tr><td><b>Fidelity</b></td><td>How close an actual result or state is to the ideal (1 = perfect).</td></tr>
+      <tr><td><b>gcd</b></td><td>Greatest common divisor; fast with Euclid's algorithm.</td></tr>
+      <tr><td><b>Logical vs physical qubit</b></td><td>An error-corrected qubit built from many noisy hardware qubits.</td></tr>
+      <tr><td><b>NISQ</b></td><td>Noisy Intermediate-Scale Quantum: today's 50–1,000 qubit devices.</td></tr>
+      <tr><td><b>Oracle</b></td><td>A black-box gate that computes a function you're trying to learn about.</td></tr>
+      <tr><td><b>Phase</b></td><td>The angle of an amplitude's arrow; invisible in one measurement, crucial for interference.</td></tr>
+      <tr><td><b>QASM</b></td><td>A text language for quantum circuits (OpenQASM).</td></tr>
+      <tr><td><b>Shots</b></td><td>How many times a circuit is run to build a histogram.</td></tr>
+      <tr><td><b>Transpile</b></td><td>Rewrite a circuit into a specific chip's native gates and wiring.</td></tr>
+      <tr><td><b>Unitary</b></td><td>A reversible, probability-preserving operation; all quantum gates are unitary.</td></tr>
+    </tbody></table></div>
+  <p class="foot">Simulations on this page run a small, exact quantum state simulator in your browser. Figures are cropped from the teacher's decks and from Team 2's Chapter 4 deck, as credited under each one. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
+</section>
+</main>
+</div>
+<script src="lecture.js"></script>
+
+<script>
+/* ---------- Figures: tap to enlarge, flip through slide sequences ---------- */
+(function(){
+  var d=document.createElement("dialog");d.className="zoom";d.innerHTML='<img alt=""><button class="btn" type="button">Close</button>';document.body.appendChild(d);
+  var big=d.querySelector("img");
+  function open(i){if(!d.showModal)return;big.src=i.currentSrc||i.src;big.alt=i.alt;d.showModal();}
+  document.addEventListener("click",function(e){var i=e.target.closest&&e.target.closest(".fig img");if(i)open(i);});
+  document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.matches&&e.target.matches(".fig img"))open(e.target);});
+  d.addEventListener("click",function(){d.close();});
+  document.querySelectorAll(".fig img").forEach(function(i){i.tabIndex=0;i.setAttribute("role","button");});
+  document.querySelectorAll("[data-flip]").forEach(function(f){
+    var im=[].slice.call(f.querySelectorAll("img")),caps=f.dataset.caps.split("||"),at=0,cap=f.querySelector("[data-cap]"),pos=f.querySelector(".flipnav span"),pv=f.querySelector("[data-d='-1']"),nx=f.querySelector("[data-d='1']");
+    function draw(){im.forEach(function(x,k){x.hidden=k!==at;});cap.innerHTML=caps[at]||"";pos.textContent="Slide "+(at+1)+" of "+im.length;pv.disabled=at===0;nx.disabled=at===im.length-1;}
+    f.addEventListener("click",function(e){var b=e.target.closest("button[data-d]");if(!b)return;at=Math.max(0,Math.min(im.length-1,at+(+b.dataset.d)));draw();});
+    draw();
+  });
+})();
+</script>
+<script>
+(function(){var K="hub-progress-quantum",best=0,t=null;try{best=parseInt(localStorage.getItem(K),10)||0;}catch(e){}
+function save(){t=null;var h=document.documentElement.scrollHeight-innerHeight,p=h>0?Math.min(100,Math.round(scrollY/h*100)):0;if(p>best){best=p;try{localStorage.setItem(K,String(p));}catch(e){}}}
+addEventListener("scroll",function(){if(!t)t=setTimeout(save,500);},{passive:true});})();
+</script>
+<script>
+/* ---------- Phones and tablets: tap the progress bar for the menu ---------- */
+(function(){
+  var mq=matchMedia("(max-width:960px)"),body=document.body,pill=document.getElementById("pp"),nav=document.getElementById("toc-nav"),scrim=document.getElementById("toc-scrim"),closeBtn=document.getElementById("toc-close"),d=document.getElementById("toc-d");
+  function isOpen(){return body.classList.contains("nav-open");}
+  function setOpen(o,refocus){
+    body.classList.toggle("nav-open",o);pill.setAttribute("aria-expanded",o?"true":"false");
+    if(o){
+      var a=nav.querySelector("a.active");
+      if(a){var r=a.getBoundingClientRect(),n=nav.getBoundingClientRect();nav.scrollTop+=r.top-n.top-(n.height+110)/2;}else nav.scrollTop=0;
+      closeBtn.focus({preventScroll:true});
+    }else if(refocus)pill.focus({preventScroll:true});
+  }
+  function sync(){
+    if(mq.matches){pill.removeAttribute("tabindex");pill.removeAttribute("aria-hidden");pill.setAttribute("aria-label","Open menu: contents, dark mode and all subjects");d.open=true;}
+    else{pill.tabIndex=-1;pill.setAttribute("aria-hidden","true");pill.removeAttribute("aria-label");setOpen(false);}
+  }
+  pill.addEventListener("click",function(){if(mq.matches)setOpen(!isOpen());});
+  closeBtn.addEventListener("click",function(){setOpen(false,true);});
+  scrim.addEventListener("click",function(){setOpen(false,true);});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&isOpen())setOpen(false,true);});
+  nav.addEventListener("click",function(e){if(!mq.matches)return;if(e.target.closest("summary"))e.preventDefault();else if(e.target.closest("a"))setOpen(false);});
+  if(mq.addEventListener)mq.addEventListener("change",sync);else mq.addListener(sync);
+  sync();
+})();
+</script>
+</body></html>

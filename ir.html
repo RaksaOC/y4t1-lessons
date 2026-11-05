@@ -1,0 +1,1979 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+
+<title>From Substring to NDCG</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: black-and-white lecture-slide style. Condensed bold capitals for headings, thin rules, bordered boxes, sticky contents rail. */
+:root{
+  --bg:#ffffff; --surface-2:#f1f1f1; --ink:#000000; --muted:#3d3d3d; --line:#d0d0d0;
+  --neg:#9b9b9b; --dim:#bdbdbd; --faint:#e2e2e2;
+  --f-display:"Anton","Oswald","Impact","Arial Narrow",sans-serif;
+  --f-body:"Inter","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e0e; --surface-2:#1d1d1d; --ink:#f2f2f2; --muted:#b8b8b8; --line:#363636;
+    --neg:#7d7d7d; --dim:#4d4d4d; --faint:#2a2a2a; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e0e; --surface-2:#1d1d1d; --ink:#f2f2f2; --muted:#b8b8b8; --line:#363636;
+  --neg:#7d7d7d; --dim:#4d4d4d; --faint:#2a2a2a; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:56px;max-width:1180px;margin:0 auto;padding-block:32px 96px}
+@media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr);gap:16px;padding-block:16px 64px}}
+
+/* TOC */
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;max-height:calc(100vh - 40px);overflow:auto;font-size:13.5px;padding-right:4px}
+.toc summary{font-family:var(--f-display);font-size:18px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;padding:4px 0;border-bottom:2px solid var(--ink)}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc .chap{margin-top:14px}
+.toc .chap > a{font-weight:800;color:var(--ink);text-transform:uppercase;font-size:12.5px;letter-spacing:.04em}
+.toc .chap ol{margin:4px 0 0 0;padding-left:10px;border-left:1px solid var(--ink)}
+.toc a{color:var(--muted);text-decoration:none;display:block;padding:2px 6px;line-height:1.35}
+.toc a:hover{color:var(--ink);text-decoration:underline}
+.toc a.active{color:var(--bg);background:var(--ink)}
+@media (max-width:960px){.toc{position:static;max-height:none;border:2px solid var(--ink);padding:4px 14px 10px}.toc summary{border-bottom:0}}
+
+/* Type */
+main{min-width:0}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:400;text-wrap:balance;line-height:1.08;margin:0;color:var(--ink)}
+h1{font-size:clamp(2.6rem,6vw,4.4rem);text-transform:uppercase;letter-spacing:.005em}
+h2{font-size:clamp(2rem,4.4vw,3rem);text-transform:uppercase;letter-spacing:.01em}
+h3{font-size:clamp(1.5rem,2.6vw,1.9rem);margin-top:3rem;padding-bottom:6px;border-bottom:1.5px solid var(--ink);scroll-margin-top:24px;letter-spacing:.005em}
+h4{font-family:var(--f-body);font-weight:800;font-size:1.02rem;margin-top:1.6rem;text-transform:uppercase;letter-spacing:.04em}
+p,ul,ol.body{max-width:44rem}
+p{margin:.85rem 0}
+ul,ol.body{padding-left:1.3rem;margin:.6rem 0}
+li{margin:.25rem 0}
+strong,b{font-weight:700}
+a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+code{background:var(--surface-2);padding:1px 5px}
+.lede{font-size:1.12rem;max-width:42rem}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+mark{background:var(--ink);color:var(--bg);padding:0 2px}
+
+/* Hero */
+.hero{display:grid;gap:14px}
+.slidebar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);padding:6px 0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+
+/* Chapter divider */
+.chapter{scroll-margin-top:16px;padding-top:5rem}
+.chapter-head{display:grid;gap:6px;justify-items:center;text-align:center;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:30px 0 26px;margin-bottom:10px}
+.chapter-head .num{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+section.sub{scroll-margin-top:16px}
+
+/* Callouts */
+.call{max-width:44rem;padding:12px 16px;margin:1.2rem 0;border:2px solid var(--ink);background:var(--bg)}
+.call > .tag{display:inline-block;font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;padding:1px 7px;border:1.5px solid var(--ink)}
+.call p{margin:.35rem 0}
+.call ul{margin:.3rem 0}
+.call.use{background:var(--surface-2)}
+.call.warn > .tag{background:var(--ink);color:var(--bg)}
+.call.key{border-width:3px}
+.call.analogy{border-style:dashed}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border:2px solid var(--ink);background:var(--bg)}
+.chip.dash{border-style:dashed}
+.chip.fill{background:var(--surface-2)}
+.chip.inv{background:var(--ink);color:var(--bg)}
+.chip.thick{border-width:3px}
+.chip.lab{border-style:double;border-width:4px}
+.ref{display:inline-block;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;padding:1px 7px;border:1px solid var(--ink);color:var(--ink);background:var(--bg);white-space:nowrap;vertical-align:1px}
+.ref.g{background:var(--ink);color:var(--bg)}
+.refs{display:flex;flex-wrap:wrap;gap:6px;margin:.4rem 0 .2rem}
+
+/* Math */
+.math{max-width:44rem;overflow-x:auto;overflow-y:hidden;padding:6px 0;margin:.6rem 0}
+.say{max-width:44rem;font-size:.95rem;color:var(--muted);border-left:3px solid var(--ink);padding:2px 0 2px 12px;margin:.2rem 0 1rem}
+
+/* Tables */
+.tbl{max-width:100%;overflow-x:auto;margin:1rem 0;border:1.5px solid var(--ink);background:var(--bg)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;text-transform:uppercase;font-size:.78rem;letter-spacing:.05em;background:var(--ink);color:var(--bg);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td code{white-space:nowrap}
+
+/* Lab boxes: "In the lab" (from the notebook) and "Try it" (live) */
+.lab{background:var(--bg);border:2px solid var(--ink);margin:1.8rem 0;overflow:hidden}
+.lab.nb{border-style:double;border-width:5px}
+.lab-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:10px 16px;border-bottom:2px solid var(--ink)}
+.lab-head .tag{font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:2px 8px}
+.lab-head h4{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.3rem;text-transform:none;letter-spacing:.01em}
+.lab-body{padding:14px 16px 16px;display:grid;gap:12px}
+.lab-body p{margin:.2rem 0}
+pre.code{margin:0;font-family:var(--f-mono);font-size:13px;line-height:1.55;background:var(--surface-2);padding:10px 12px;overflow-x:auto;border-left:3px solid var(--ink)}
+pre.out{margin:0;font-family:var(--f-mono);font-size:12.5px;line-height:1.5;padding:8px 12px;overflow-x:auto;border:1px dashed var(--ink);color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:700px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.btn{font:inherit;font-size:13.5px;font-weight:700;padding:6px 12px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;line-height:1.3;border-radius:0}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--ink);color:var(--bg)}
+.btn.on{background:var(--ink);color:var(--bg)}
+.btn.sm{font-size:12px;padding:3px 8px}
+.btn:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+label.ctl{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:5px 8px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);max-width:100%;border-radius:0}
+input[type=text]{font-family:var(--f-mono);min-width:0;flex:1 1 220px}
+input[type=range]{accent-color:var(--ink);width:180px;max-width:100%}
+.readout{font-family:var(--f-mono);font-size:13px;background:var(--surface-2);padding:10px 12px;overflow-x:auto;line-height:1.55;white-space:pre-wrap;word-break:break-word;border-left:3px solid var(--ink)}
+.status{font-size:14px;color:var(--muted);min-height:1.3em}
+.hits{display:grid;gap:4px;font-size:14.5px}
+.hits div{padding:4px 8px;border-left:3px solid var(--line)}
+.hits div.rel{border-left-color:var(--ink)}
+.hits .id{font-family:var(--f-mono);font-weight:700;margin-right:6px}
+.toks{display:flex;flex-wrap:wrap;gap:4px}
+.toks span{font-family:var(--f-mono);font-size:13px;border:1.5px solid var(--ink);padding:1px 6px}
+.toks span.gone{border-style:dashed;color:var(--neg);text-decoration:line-through}
+.toks span.chg{background:var(--ink);color:var(--bg)}
+.stage{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px;align-items:start}
+.stage > b{font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding-top:3px}
+@media (max-width:600px){.stage{grid-template-columns:minmax(0,1fr)}}
+.plist{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.plist span{font-family:var(--f-mono);font-size:13px;border:1.5px solid var(--ink);padding:2px 6px;min-width:40px;text-align:center}
+.plist span.ptr{background:var(--ink);color:var(--bg)}
+.plist span.done{color:var(--neg);border-color:var(--neg)}
+.plist span.ans{border-width:3px}
+.plist .lbl{font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.05em;min-width:70px;border:0}
+.svgwrap{overflow-x:auto;max-width:100%}
+svg text{font-family:var(--f-mono)}
+svg.chart{width:100%;height:auto;display:block;max-width:640px}
+.c-axis{stroke:var(--ink);stroke-width:1}
+.c-grid{stroke:var(--line);stroke-width:1}
+.c-txt{fill:var(--muted);font-size:11px}
+.c-lin{fill:none;stroke:var(--neg);stroke-width:2;stroke-dasharray:6 4}
+.c-curve{fill:none;stroke:var(--ink);stroke-width:2.5}
+.c-cap{stroke:var(--ink);stroke-width:1;stroke-dasharray:2 3}
+.c-dot{fill:var(--ink)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:1rem 0;max-width:none;list-style:none;padding:0;counter-reset:bx}
+.boxes li{border:2px solid var(--ink);padding:10px 12px;margin:0;font-size:.93rem;counter-increment:bx}
+.boxes li::before{content:counter(bx) ". ";font-weight:800}
+.pipe{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:1rem 0;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+.pipe span{border:2px solid var(--ink);padding:5px 10px}
+.pipe i{font-style:normal}
+.mrow{display:grid;grid-template-columns:28px 52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow .rk{font-family:var(--f-display);font-size:20px}
+.mrow .id{font-family:var(--f-mono);font-weight:700}
+.mrow .tx{font-size:13.5px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .ct{display:flex;gap:4px;flex-wrap:wrap}
+@media (max-width:600px){.mrow{grid-template-columns:24px 46px minmax(0,1fr)}.mrow .ct{grid-column:2 / -1}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.kpi{border:2px solid var(--ink);padding:6px 10px}
+.kpi b{display:block;font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+
+/* Quiz */
+.quiz{display:grid;gap:14px}
+.q{border:2px solid var(--ink);padding:12px 14px;background:var(--bg)}
+.q p.qt{margin:0 0 8px;font-weight:800}
+.q .opts{display:grid;gap:6px}
+.q button.opt{text-align:left;font:inherit;font-size:15px;padding:7px 11px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;border-radius:0}
+.q button.opt:hover{background:var(--surface-2)}
+.q button.opt.right{background:var(--ink);color:var(--bg)}
+.q button.opt.right::after{content:"  ✓ correct";font-weight:800}
+.q button.opt.wrong{color:var(--muted);text-decoration:line-through;border-style:dashed}
+.q .why{margin-top:8px;font-size:15px;color:var(--muted)}
+
+/* Players (Run / Step / Speed) */
+.player{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.player .pos{color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.player input[type=range]{width:110px}
+.msg{font-size:14.5px;min-height:2.6em;padding:8px 12px;background:var(--surface-2);border-left:3px solid var(--ink)}
+.msg b{font-weight:800}
+
+/* Scan rows */
+.scan{position:relative;max-height:380px;overflow:auto;border:1.5px solid var(--ink);padding:4px 0}
+.srow{display:grid;grid-template-columns:62px minmax(0,1fr) 22px;gap:8px;padding:3px 10px;border-left:4px solid transparent;font-size:14px;line-height:1.45}
+.srow .id{font-family:var(--f-mono);font-weight:700}
+.srow .relb{font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ink);padding:0 3px;margin-left:4px;vertical-align:2px}
+.srow.pend{color:var(--neg)}
+.srow.miss{color:var(--muted)}
+.srow.hit{border-left-color:var(--ink)}
+.srow.cur{background:var(--surface-2);outline:2px solid var(--ink);outline-offset:-2px}
+.srow .mk{font-weight:800;text-align:center}
+
+/* Pipeline */
+.stg{display:grid;grid-template-columns:130px minmax(0,1fr);gap:10px;align-items:start;padding:8px 10px;border:1.5px solid var(--line)}
+.stg > b{font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding-top:3px}
+.stg.act{border:2px solid var(--ink)}
+.stg.wait{opacity:.35}
+@media (max-width:600px){.stg{grid-template-columns:minmax(0,1fr)}}
+.sw{background:var(--faint);border-bottom:2px dashed var(--ink);padding:0 2px}
+.numx{text-decoration:line-through;color:var(--neg)}
+.toks span.cur{outline:3px solid var(--ink);outline-offset:1px}
+.toks span.stopw{background:var(--faint);border-style:dashed}
+.toks span.pend{color:var(--neg);border-color:var(--line)}
+.toks s{color:var(--neg);text-decoration-thickness:2px}
+.toks span.chg s{color:var(--bg);opacity:.6}
+.stoplist{display:flex;flex-wrap:wrap;gap:4px}
+.stoplist span{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);padding:0 5px;color:var(--muted)}
+.stoplist span.lit{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stoplist span.now{outline:3px solid var(--ink);outline-offset:1px}
+@keyframes pop{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+.pop{animation:pop .35s ease-out}
+@media (prefers-reduced-motion: reduce){.pop{animation:none}}
+
+/* Index build */
+.ixgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:14px}
+@media (max-width:760px){.ixgrid{grid-template-columns:minmax(0,1fr)}}
+.doccard{border:2px solid var(--ink);padding:10px 12px;display:grid;gap:8px;align-content:start}
+.doccard .id{font-family:var(--f-display);font-size:24px;line-height:1}
+.ptable{display:grid;gap:3px}
+.prow{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
+.prow > b{font-family:var(--f-mono);font-weight:700;text-align:right}
+.prow.hot > b{background:var(--ink);color:var(--bg);padding:0 4px}
+.prow .plist span{font-size:12px;padding:1px 4px;min-width:34px}
+.prow .plist span.new{background:var(--ink);color:var(--bg)}
+
+/* Race bars */
+.race{display:grid;gap:2px;border:1.5px solid var(--ink);padding:6px 10px}
+.rrow{display:grid;grid-template-columns:26px 40px minmax(0,1fr) 54px;gap:6px;align-items:center;font-size:12.5px;font-family:var(--f-mono)}
+.rrow .trk{height:12px;background:var(--faint);position:relative}
+.rrow .bar{position:absolute;inset:0 auto 0 0;background:var(--ink);transition:width .3s ease}
+.rrow.cur{outline:2px solid var(--ink);outline-offset:1px}
+.rrow.z{opacity:.35}
+.rrow.wait{opacity:.5}
+.rrow .v{text-align:right;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion: reduce){.rrow .bar{transition:none}}
+.lk{font:inherit;font-family:var(--f-mono);font-weight:700;background:none;border:0;border-bottom:1.5px solid var(--ink);color:var(--ink);cursor:pointer;padding:0}
+.lk.sel{background:var(--ink);color:var(--bg)}
+.why{display:grid;gap:10px}
+.cbar{height:10px;background:var(--ink);display:block}
+
+/* Bench bars */
+.gbars{display:grid;gap:4px}
+.gb{display:grid;grid-template-columns:26px minmax(0,1fr) 64px;gap:8px;align-items:center;font-size:12.5px;font-family:var(--f-mono)}
+.gb .tr{height:16px;position:relative}
+.gb .g{position:absolute;inset:0 auto 0 0;border:1.5px solid var(--ink);background:var(--bg)}
+.gb .c{position:absolute;inset:3px auto 3px 3px;background:var(--ink)}
+.gb.wait{opacity:.3}
+.gb .v{text-align:right}
+.mrow.cur{background:var(--surface-2);outline:2px solid var(--ink);outline-offset:-2px}
+
+/* Quiz carousel */
+.qc{border:2px solid var(--ink);padding:14px 16px;display:grid;gap:12px}
+.qc .eyebrow{font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.qnav{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1.5px solid var(--ink);padding-top:10px}
+.qnav .btn{min-width:56px;font-size:18px;padding:4px 14px}
+.qnav .btn:disabled{opacity:.3;cursor:default}
+.qdots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.qdots button{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);background:var(--bg);padding:0;cursor:pointer}
+.qdots button.now{outline:2px solid var(--ink);outline-offset:2px}
+.qdots button.ok{background:var(--ink)}
+.qdots button.bad{border-style:dashed;background:var(--faint)}
+.qscore{font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}
+
+/* Recap */
+.recap{border:2px solid var(--ink);margin-top:3rem;padding:14px 18px}
+.recap h3{border-bottom:0;padding-bottom:0;margin-top:0}
+.recap ul{columns:2;column-gap:32px;max-width:none}
+.recap li{break-inside:avoid}
+@media (max-width:700px){.recap ul{columns:1}}
+.foot{margin-top:5rem;font-size:13.5px;color:var(--muted);border-top:1.5px solid var(--ink);padding-top:16px}
+
+.theme-btn{width:100%;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.theme-btn .ico{font-family:var(--f-mono);font-weight:400}
+
+.progress-pill{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 14px);right:calc(max(16px,env(safe-area-inset-right,0px)));
+  display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 10px;max-width:min(300px,calc(100vw - 32px));
+  background:var(--bg);color:var(--ink);border:2px solid var(--ink);padding:8px 12px 10px;box-shadow:4px 4px 0 var(--ink);
+  opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+.progress-pill.show{opacity:1;transform:none}
+.progress-pill b{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.progress-pill span{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.progress-pill i{grid-column:1 / -1;height:4px;background:var(--faint);display:block}
+.progress-pill s{display:block;height:100%;background:var(--ink);text-decoration:none;width:0}
+@media (prefers-reduced-motion: reduce){.progress-pill{transition:opacity .15s linear;transform:none}}
+
+html,body{overflow-x:clip}
+main > *,.lab-body > *,.grid2 > *,.call{min-width:0}
+mjx-container{max-width:100%}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;margin:.4em 0 !important}
+@media (max-width:600px){
+  body{font-size:15.5px;line-height:1.65}
+  .chapter{padding-top:3.5rem}
+  .chapter-head{padding:22px 0 18px}
+  h3{margin-top:2.4rem}
+  .lab-head{padding:9px 12px}
+  .lab-body{padding:12px}
+  .call{padding:10px 12px}
+  th,td{padding:7px 9px}
+  table{font-size:.85rem}
+  th{white-space:normal}
+  .recap{padding:12px}
+  .boxes{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:380px){.boxes{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+<script>
+try{var t=localStorage.getItem("qc-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code','svg','select','button','input']}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+
+<style>
+/* ---- Added: figures from the slides, real-world boxes ---- */
+.fig{margin:1.3rem 0;max-width:44rem;min-width:0}
+.fig .frame{display:block;background:#fff;border:1.5px solid var(--ink);padding:10px}
+.fig img{display:block;width:100%;height:auto;cursor:zoom-in}
+.fig.xs{max-width:17rem}.fig.sm{max-width:25rem}.fig.md{max-width:34rem}.fig.lg{max-width:44rem}
+.fig figcaption{font-size:.88rem;line-height:1.45;color:var(--muted);margin-top:6px}
+.fig figcaption .ref{margin-right:6px}
+.grid2 .fig{margin:.4rem 0}
+.flipnav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px}
+.flipnav .btn{min-width:52px;font-size:17px;padding:3px 12px}
+.flipnav .btn:disabled{opacity:.3;cursor:default}
+.flipnav span{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.call.real{border-left-width:10px}
+.call.real > .tag{background:var(--surface-2)}
+.chip.real{border-left-width:9px}
+dialog.zoom{border:2px solid var(--ink);background:#fff;padding:12px;max-width:min(96vw,1200px);max-height:94vh;overflow:auto}
+dialog.zoom::backdrop{background:rgba(0,0,0,.72)}
+dialog.zoom img{display:block;max-width:100%;height:auto;margin:0 auto}
+dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
+</style>
+<style>
+/* Phones and tablets: the progress bar stays on screen and opens the menu */
+.progress-pill{font:inherit;text-align:left;border-radius:0}
+.pp-menu,.toc-close,.toc-scrim{display:none}
+.legend .chip{margin:0}
+@media (max-width:960px){
+  .shell{padding-top:calc(env(safe-area-inset-top,0px) + 66px)}
+  main [id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 66px)}
+  .progress-pill{top:0;left:0;right:0;width:100%;max-width:none;z-index:30;opacity:1;transform:none;pointer-events:auto;cursor:pointer;transition:none;
+    grid-template-columns:auto minmax(0,1fr) auto;gap:0 10px;border:0;border-bottom:2px solid var(--ink);box-shadow:none;
+    padding:calc(env(safe-area-inset-top,0px) + 8px) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));-webkit-tap-highlight-color:transparent}
+  .progress-pill b{font-size:22px}
+  .progress-pill span{-webkit-line-clamp:1;word-break:break-all}
+  .progress-pill i{position:absolute;left:0;right:0;bottom:0;height:4px}
+  .pp-menu{display:block;font-style:normal;font-weight:800;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border:1.5px solid var(--ink);padding:4px 9px}
+  .toc{position:fixed;top:0;bottom:0;left:0;z-index:40;align-self:stretch;width:min(86vw,360px);max-height:none;background:var(--bg);border:0;border-right:2px solid var(--ink);
+    padding:0 16px calc(env(safe-area-inset-bottom,0px) + 28px) max(16px,env(safe-area-inset-left,0px));
+    overflow-y:auto;overscroll-behavior:contain;
+    transform:translateX(-105%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
+  .nav-open .toc{transform:none;visibility:visible;transition:transform .22s ease}
+  .toc-scrim{display:block;position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .22s ease}
+  .nav-open .toc-scrim{opacity:1;pointer-events:auto}
+  body.nav-open{overflow:hidden}
+  .toc-close{display:block}
+  .toc-top{position:sticky;top:0;z-index:1;background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 14px) 0 12px;border-bottom:2px solid var(--ink);margin-bottom:12px}
+  .toc .toc-top a.hub-back{margin:0;align-self:stretch;display:flex;align-items:center}
+  .toc-top .theme-btn{margin:0;grid-column:1 / -1}
+  .toc summary{list-style:none;cursor:default;border-bottom:2px solid var(--ink)}
+  .toc summary::-webkit-details-marker{display:none}
+  .toc a{padding:7px 8px;font-size:14.5px}
+  .toc .chap > a{font-size:12.5px}
+  .refs .ref{max-width:100%;white-space:normal}
+}
+@media (max-width:960px) and (prefers-reduced-motion: reduce){.toc,.toc-scrim{transition:none}}
+</style>
+<style>.toc a.hub-back{display:block;padding:6px 12px;margin-bottom:8px;border:1.5px solid var(--ink);color:var(--ink);font-weight:700;font-size:13.5px;text-decoration:none}.toc a.hub-back:hover{background:var(--ink);color:var(--bg)}</style>
+<button class="progress-pill" id="pp" type="button" tabindex="-1" aria-hidden="true" aria-controls="toc-nav" aria-expanded="false"><b id="pp-pct">0%</b><span id="pp-sec"></span><em class="pp-menu" aria-hidden="true">Menu</em><i><s id="pp-bar"></s></i></button>
+<div class="toc-scrim" id="toc-scrim"></div>
+<div class="shell">
+<nav class="toc" id="toc-nav" aria-label="Contents">
+  <div class="toc-top">
+  <a class="hub-back" href="index.html">← All subjects</a>
+  <button class="btn toc-close" id="toc-close" type="button" aria-label="Close menu">Close</button>
+  <button class="btn theme-btn" id="theme-btn" type="button" aria-label="Switch colour theme"><span id="theme-lbl">Dark mode</span><span class="ico" aria-hidden="true">◐</span></button>
+  </div>
+  <details id="toc-d" open>
+    <summary>Contents</summary>
+    <ol>
+      <li class="chap"><a href="#start">Before we begin</a></li>
+      <li class="chap"><a href="#ch1">1 · What is IR?</a>
+        <ol>
+          <li><a href="#c1-what">The definition</a></li>
+          <li><a href="#c1-vocab">Core vocabulary</a></li>
+          <li><a href="#c1-rel">Relevance</a></li>
+          <li><a href="#c1-hard">Why it's hard</a></li>
+          <li><a href="#c1-db">IR vs databases</a></li>
+          <li><a href="#c1-anatomy">Anatomy of a search system</a></li>
+          <li><a href="#c1-pr">A first look at P and R</a></li>
+          <li><a href="#c1-lab">Lab 1: naive search</a></li>
+          <li><a href="#quiz1">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch2">2 · Preprocessing and the index</a>
+        <ol>
+          <li><a href="#c2-pipe">The pipeline</a></li>
+          <li><a href="#c2-tok">Tokenization</a></li>
+          <li><a href="#c2-stop">Stop words</a></li>
+          <li><a href="#c2-stem">Stemming and lemmas</a></li>
+          <li><a href="#c2-try">Try the pipeline</a></li>
+          <li><a href="#c2-index">The inverted index</a></li>
+          <li><a href="#c2-bool">Boolean retrieval and merging</a></li>
+          <li><a href="#c2-lab">Lab 2: index vs scan</a></li>
+          <li><a href="#quiz2">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch3">3 · Ranking: TF-IDF and BM25</a>
+        <ol>
+          <li><a href="#c3-why">Why ranking matters</a></li>
+          <li><a href="#c3-tf">TF, DF and IDF</a></li>
+          <li><a href="#c3-vsm">Vectors and cosine</a></li>
+          <li><a href="#c3-bm25">BM25</a></li>
+          <li><a href="#c3-try">Try both rankers</a></li>
+          <li><a href="#c3-python">The "python" disagreement</a></li>
+          <li><a href="#c3-zipf">Zipf and the limits</a></li>
+          <li><a href="#quiz3">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch4">4 · Evaluation</a>
+        <ol>
+          <li><a href="#c4-why">Why measure</a></li>
+          <li><a href="#c4-coll">Test collections</a></li>
+          <li><a href="#c4-prf">Precision, recall, F1</a></li>
+          <li><a href="#c4-atk">Cutoffs: P@k and R@k</a></li>
+          <li><a href="#c4-ap">AP and MAP</a></li>
+          <li><a href="#c4-ndcg">Graded relevance and NDCG</a></li>
+          <li><a href="#c4-bench">Metrics bench</a></li>
+          <li><a href="#c4-lab">Lab 4: who wins?</a></li>
+          <li><a href="#c4-choose">Choosing a metric</a></li>
+          <li><a href="#quiz4">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+<!-- ======================================================= HERO -->
+<header class="hero" id="start">
+  <div class="slidebar"><span>Information &amp; Web Retrieval Analytics</span><span>Sessions 1–4 · Labs 1–4</span></div>
+  <h1>From Substring to NDCG</h1>
+  <p class="lede">Hi. Let's build a search engine together, one honest mistake at a time. We start with the dumbest thing that could work (look for the query text inside every document), watch it fail, and fix each failure with a real IR idea. By the end you'll be ranking documents with BM25 and proving, with numbers, which ranker is better.</p>
+  <div class="legend" aria-label="How to read the boxes">
+    <span class="chip dash">Think of it like…</span>
+    <span class="chip fill">Where it's used</span>
+    <span class="chip real">Real world</span>
+    <span class="chip thick">Key idea</span>
+    <span class="chip inv">Careful</span>
+    <span class="chip lab">In the lab</span>
+  </div>
+  <p class="small muted"><b>One collection, all the way through.</b> Every example and every live demo on this page uses the same 30 short documents (<code>d01</code>…<code>d30</code>) from the labs: guesthouses in Phnom Penh, a ball python, Java the island, an automobile engine, and so on. Some are planted on purpose to trip up naive search. Numbers quoted from the labs are the ones your notebooks printed.</p>
+  <div class="call key"><span class="tag">The plan</span>
+    <ul>
+      <li><b>Chapter 1</b> asks what IR is and why a database <code>LIKE</code> query is not a search engine. (Lesson 1, Lab 1)</li>
+      <li><b>Chapter 2</b> cleans text into tokens and builds an <b>inverted index</b> so we stop reading every document. (Lesson 2, Lab 2)</li>
+      <li><b>Chapter 3</b> turns a set of matches into a <b>ranked list</b> with TF-IDF and BM25. (Lesson 3, Lab 3)</li>
+      <li><b>Chapter 4</b> measures whether a ranking is any good: P@k, AP, MAP and NDCG. (Lesson 4, Lab 4)</li>
+    </ul>
+  </div>
+</header>
+
+<!-- ======================================================= CHAPTER 1 -->
+<section class="chapter" id="ch1">
+  <div class="chapter-head">
+    <span class="num">Chapter 1</span>
+    <h2>What Is Information Retrieval?</h2>
+  </div>
+  <div class="refs"><span class="ref">Lesson 1 · s.1–18</span><span class="ref g">Lab 1 · Search 101</span></div>
+
+  <section class="sub" id="c1-what">
+  <h3>1.1 The definition</h3>
+  <p>Start with a small experiment from the first lecture: type the same query, say <i>coffee near me</i>, into two different search services and compare the top three results. They won't match. Both engines read the same web, yet they disagree on what's "best". That disagreement is what this course is about.</p>
+  <div class="call key"><span class="tag">Definition</span>
+    <p><b>Information retrieval (IR)</b> is finding material (usually documents) of an <b>unstructured</b> nature (text, images, audio) that satisfies an <b>information need</b>, from <b>large collections</b>.</p>
+  </div>
+  <p>Each of the three bold words carries weight:</p>
+  <ul>
+    <li><b>Unstructured.</b> A sentence has no columns. "Budget guesthouses in Phnom Penh offer clean rooms" doesn't have a <code>price</code> field you can sort by.</li>
+    <li><b>Information need.</b> The thing in the person's head. It is not the same as the words they type.</li>
+    <li><b>Large collections.</b> Millions or billions of documents, so anything that reads every one per query is too slow.</li>
+  </ul>
+  <figure class="fig lg"><span class="frame"><img src="assets/ir/struct.webp" width="1200" height="550" loading="lazy" alt="A neat table of students next to a long Wikipedia page of running text"></span><figcaption><span class="ref">Lesson 1 · s.8</span>The lecture's picture of the difference. The table has columns you can sort. The article doesn't.</figcaption></figure>
+  <p>Search is everywhere: the web, email, your phone, online shops, code search, legal and medical papers, company files. Even chatbots that "read your documents" begin with a retrieval step. That pattern is called <b>RAG</b> (retrieval-augmented generation), and we'll build up to it in Sessions 9–10.</p>
+  <div class="refs"><span class="ref">Lesson 1 · s.3–8</span></div>
+  </section>
+
+  <section class="sub" id="c1-vocab">
+  <h3>1.2 Core vocabulary</h3>
+  <p>The lecture gives one chain of words you should be able to say in your sleep:</p>
+  <div class="pipe" aria-label="Vocabulary chain"><span>Document</span><i>→</i><span>Collection (corpus)</span><i>→</i><span>Information need</span><i>→</i><span>Query</span><i>→</i><span>Relevance</span><i>→</i><span>Ranked results</span></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Term</th><th>Meaning</th><th>In our lab collection</th></tr></thead>
+    <tbody>
+      <tr><td><b>Document</b></td><td>One unit you can return</td><td><code>d12</code>: "Buses run every hour from Phnom Penh to Siem Reap…"</td></tr>
+      <tr><td><b>Collection / corpus</b></td><td>All the documents you search</td><td>The 30 documents</td></tr>
+      <tr><td><b>Information need</b></td><td>What the person actually wants</td><td>N3: "Travel from Phnom Penh to Siem Reap"</td></tr>
+      <tr><td><b>Query</b></td><td>The words they type to express it</td><td><code>travel Phnom Penh Siem Reap</code></td></tr>
+      <tr><td><b>Relevance</b></td><td>Does a document satisfy the <i>need</i>?</td><td><code>d12</code> yes; <code>d29</code> (a museum in Phnom Penh) no</td></tr>
+    </tbody></table></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Asking a librarian. Your need is "I have to get to Siem Reap tonight." What you actually say is "bus Siem Reap?" A good librarian answers the need, not just the words. They might hand you a ferry timetable even though you never said "ferry".</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c1-rel">
+  <h3>1.3 Relevance</h3>
+  <p>Relevance sounds obvious, but it shifts. It depends on the <b>user</b>, the <b>task</b>, the <b>context</b> and even the <b>time</b> (yesterday's bus timetable is useless today).</p>
+  <ul>
+    <li><b>Topical relevance</b> means "it's about the right subject". <b>Usefulness</b> means "it actually helps me". A Wikipedia page about Siem Reap is topical; a page listing tonight's buses is useful.</li>
+    <li>Judgments can be <b>binary</b> (relevant or not) or <b>graded</b> (how relevant, e.g. 0–3). We'll need graded ones in Chapter 4.</li>
+    <li>Judgments are made by <b>people</b>. A computer can't decide relevance for us; that's the whole problem.</li>
+  </ul>
+  <div class="refs"><span class="ref">Lesson 1 · s.9–10</span></div>
+  </section>
+
+  <section class="sub" id="c1-hard">
+  <h3>1.4 Why is it hard?</h3>
+  <p>The biggest single enemy has a name: <b>vocabulary mismatch</b>. People use different words for the same thing, and the same word for different things.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Problem</th><th>Example</th><th>Seen in our collection</th></tr></thead>
+    <tbody>
+      <tr><td><b>Synonyms</b> (different words, same meaning)</td><td>car / automobile / vehicle; cheap / budget / affordable</td><td>Query <code>car</code>: no document says "car". <code>d14</code> says "vehicles", <code>d15</code> says "automobile".</td></tr>
+      <tr><td><b>Ambiguity</b> (same word, different meanings)</td><td>Java, Python, Apple</td><td><code>d04</code> Python the language vs <code>d05</code> a ball python (a snake). <code>d06</code> Java the language vs <code>d07</code> Java the island.</td></tr>
+      <tr><td><b>Short queries, long documents</b></td><td>2 words vs 2,000 words</td><td>Our docs are short (~9.5 tokens), so this hits us in Chapter 3.</td></tr>
+      <tr><td><b>Mixed languages / scripts</b></td><td>Khmer has no spaces between words</td><td><code>d26</code> says exactly this; Lab 1 Part 7 shows it breaking search.</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Lesson 1 · s.11</span></div>
+  </section>
+
+  <section class="sub" id="c1-db">
+  <h3>1.5 IR vs database queries</h3>
+  <p>You already know SQL, so it's tempting to think <code>SELECT … WHERE text LIKE '%cat%'</code> is a search engine. Here's the lecture's comparison:</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>IR</th><th>Database query</th></tr></thead>
+    <tbody>
+      <tr><td><b>Data</b></td><td>Unstructured text</td><td>Structured records</td></tr>
+      <tr><td><b>Query</b></td><td>Keywords or a question</td><td>SQL</td></tr>
+      <tr><td><b>Matching</b></td><td>Partial and approximate</td><td>Exact</td></tr>
+      <tr><td><b>Result</b></td><td>A ranked list</td><td>A set of rows</td></tr>
+      <tr><td><b>Success</b></td><td>Degrees of relevance</td><td>Right or wrong</td></tr>
+    </tbody></table></div>
+  <p>IR shows up in web search, recommender systems, question answering and RAG.</p>
+  <div class="refs"><span class="ref">Lesson 1 · s.12–13</span></div>
+  </section>
+
+  <section class="sub" id="c1-anatomy">
+  <h3>1.6 Anatomy of a search system</h3>
+  <p>Every search engine splits its work into two halves:</p>
+  <div class="grid2">
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Offline (done once, ahead of time)</h4>
+      <ol class="body">
+        <li><b>Collect</b> documents: crawl, feeds, files.</li>
+        <li><b>Preprocess</b>: clean, tokenize, normalize.</li>
+        <li><b>Index</b>: build a structure that makes lookup fast.</li>
+      </ol>
+      <p class="small muted">Why offline? You pay the cost once and then answer many queries quickly.</p>
+    </div>
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Online (every single query)</h4>
+      <ol class="body">
+        <li><b>Interpret</b> the query.</li>
+        <li><b>Match</b> it against the index.</li>
+        <li><b>Score and rank</b>.</li>
+        <li><b>Present</b> results with snippets.</li>
+      </ol>
+      <p class="small muted">Users expect this in a fraction of a second.</p>
+    </div>
+  </div>
+  <figure class="fig sm"><span class="frame"><img src="assets/ir/anatomy.webp" width="504" height="790" loading="lazy" alt="A spider crawls the internet, the search engine server builds an index, and a user&#x27;s search looks it up and gets results back"></span><figcaption><span class="ref">Lesson 1 · s.14</span>Offline, the spider and the indexer do their work. Online, the user searches the index.</figcaption></figure>
+  <p>A third piece closes the loop: <b>feedback</b> from logs, clicks and evaluation tells you what to improve. The course follows this pipeline: Session 2 builds the index, Session 3 the ranking, Session 4 the evaluation, Sessions 5–6 data collection, Session 8 links, Sessions 9–10 neural search and RAG.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>That split into offline and online exists because people won't wait. In 2009 Google slowed its results on purpose by 100 to 400 milliseconds, far too little to notice consciously, and people searched 0.2% to 0.6% less. You can't scan documents in that time budget, so the slow work has to be done ahead of time.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 1 · s.5, s.14–16</span></div>
+  </section>
+
+  <section class="sub" id="c1-pr">
+  <h3>1.7 A first look at precision and recall</h3>
+  <p>How do we know a search engine works? The lecture's example: the collection holds <b>20</b> relevant documents. Your system returns <b>10</b> results, and <b>6</b> of them are relevant.</p>
+  <div class="math">\[ \text{Precision} = \frac{6}{10} = 0.6 \qquad \text{Recall} = \frac{6}{20} = 0.3 \]</div>
+  <p class="say">Precision is about the quality of what you returned. Recall is about what you missed.</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Fishing with a net. Precision is "how much of my catch is actually fish, not boots?" Recall is "how many of the fish in the lake did I catch?" A tiny net gets high precision and low recall. A giant net gets the opposite.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 1 · s.17</span><span class="ref">More in Chapter 4</span></div>
+  </section>
+
+  <section class="sub" id="c1-lab">
+  <h3>1.8 As demonstrated in Lab 1: three naive searches</h3>
+  <p>Lab 1 builds the simplest search engines possible and measures where they break. There are three versions.</p>
+
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 1 · Part 2: substring scan</h4></div>
+    <div class="lab-body">
+      <p>Check whether the query text appears anywhere inside each document.</p>
+<pre class="code">for id, text in docs.items():
+    if query.lower() in text.lower():
+        ids.append(id)</pre>
+<pre class="out">Query: 'cat' -> 4 result(s)
+d06 … enterprise appli<b>cat</b>ions …    d16 Her <b>cat</b> sleeps all day …
+d17 … <b>cat</b>alog … <b>cat</b>egory …      d18 … con<b>cat</b>enate two strings …</pre>
+      <p>Only <code>d16</code> is about a cat. The others contain the <i>letters</i> c-a-t. Substring matching has no idea what a word is.</p>
+    </div>
+  </div>
+
+  <div class="call real"><span class="tag">Real world</span>
+    <p>This exact bug has a famous victim. In 1996 AOL stopped residents of Scunthorpe, a town in England, from creating accounts, because their town's name contains a rude word as a substring. It's now called the <b>Scunthorpe problem</b>, and filters still trip over it. Your <code>cat</code> inside <code>category</code> is the same mistake.</p>
+  </div>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 1 · Parts 3–4: whole words, then SQL LIKE</h4></div>
+    <div class="lab-body">
+      <p>Part 3 splits text into words with <code>re.findall(r"\w+", text.lower())</code> and matches whole words. <code>cat</code> now returns only <code>d16</code>. But <code>travel Phnom Penh Siem Reap</code> gives <b>0</b> results with AND (no document says "travel") and <b>4</b> with OR, listed in id order with no hint which is best.</p>
+      <p>Part 4 loads the same docs into SQLite and runs <code>WHERE text LIKE '%cat%'</code>. The lab checks it against the substring scan for five queries: <b>identical every time</b>. A <code>LIKE</code> query <i>is</i> a substring scan, with the same false matches.</p>
+    </div>
+  </div>
+
+  <p>Try all three yourself. Press <b>Run</b> and watch the scan read every single document, one after another, to answer one query. Matches are highlighted so you can see <i>why</i> each document came back. Documents tagged <span class="ref">rel</span> are the ones Lab 1 judged relevant to the information need.</p>
+
+  <div class="lab" id="lab-naive">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Watch a naive search scan all 30 documents</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="nv-q">Query</label>
+        <input type="text" id="nv-q" value="cat" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="row" role="group" aria-label="Need presets">
+        <span class="small muted">Lab 1 needs:</span>
+        <button class="btn sm" data-nq="N1|cheap hotel">N1 cheap hotel</button>
+        <button class="btn sm" data-nq="N1|budget accommodation">N1 budget accommodation</button>
+        <button class="btn sm" data-nq="N2|python">N2 python</button>
+        <button class="btn sm" data-nq="N3|travel Phnom Penh Siem Reap">N3 travel…</button>
+        <button class="btn sm" data-nq="N4|car">N4 car</button>
+        <button class="btn sm on" data-nq="N5|cat">N5 cat</button>
+        <button class="btn sm" data-nq="N6|running">N6 running</button>
+      </div>
+      <div class="tabs" role="group" aria-label="Method">
+        <button class="btn on" data-nm="sub">Substring / LIKE</button>
+        <button class="btn" data-nm="and">Whole words AND</button>
+        <button class="btn" data-nm="or">Whole words OR</button>
+      </div>
+      <div class="player" id="nv-player"></div>
+      <div class="kpis" id="nv-kpis"></div>
+      <div class="msg" id="nv-msg"></div>
+      <div class="scan" id="nv-scan"></div>
+    </div>
+  </div>
+
+  <h4>What the evaluation table showed</h4>
+  <p>Lab 1 Part 5 judged six information needs by hand and computed precision and recall for every method. Three rows tell the whole story:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Need · query</th><th>Method</th><th class="num">Precision</th><th class="num">Recall</th><th>What went wrong</th></tr></thead>
+    <tbody>
+      <tr><td>N5 · <code>cat</code></td><td>substring</td><td class="num">0.25</td><td class="num">1.00</td><td>Found the cat, plus three "cat-inside-a-word" accidents</td></tr>
+      <tr><td>N4 · <code>car</code></td><td>every method</td><td class="num">n/a</td><td class="num">0.00</td><td>Vocabulary mismatch: relevant docs say "automobile" and "vehicles"</td></tr>
+      <tr><td>N1 · <code>cheap hotel</code></td><td>every method</td><td class="num">1.00</td><td class="num">0.33</td><td>Missed <code>d01</code> "budget guesthouses" and <code>d30</code> "affordable accommodation"</td></tr>
+    </tbody></table></div>
+
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 1 · Part 6: does it scale?</h4></div>
+    <div class="lab-body">
+      <p>The lab timed one scan for <code>"rice"</code> over bigger and bigger synthetic collections:</p>
+<pre class="out">   1,000 docs: scan   0.2 ms      100,000 docs: scan  14.3 ms
+  10,000 docs: scan   1.7 ms      500,000 docs: scan  74.9 ms</pre>
+      <p>Ten times more documents means about ten times more time. That's <b>linear</b> growth, written \(O(N)\). Scaled up to a billion web pages: \(0.0749\,\text{s} \times \frac{10^9}{500{,}000} \approx 150\) seconds, <b>2.5 minutes for one query</b>. Users expect a fraction of a second.</p>
+    </div>
+  </div>
+
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 1 · Part 7: Khmer text</h4></div>
+    <div class="lab-body">
+      <p>Khmer is written without spaces. Splitting <code>ភ្នំពេញជារាជធានីនៃប្រទេសកម្ពុជា</code> on spaces gives one giant "word", so whole-word search finds nothing. After running a segmenter (<code>khmernltk.word_tokenize</code>) you get <code>['ភ្នំពេញ', 'ជា', 'រាជធានី', 'នៃ', 'ប្រទេស', 'កម្ពុជា']</code> and whole-word search works again. Tokenization is a language-specific decision, which is the opening topic of Chapter 2.</p>
+    </div>
+  </div>
+
+  <div class="call key"><span class="tag">Lab 1 in one paragraph</span>
+    <p>A database <code>LIKE</code> query is a substring scan. It matches letters, not words (<code>cat</code> ⊂ <code>category</code>). It can't bridge synonyms (<code>car</code> vs <code>automobile</code>). It returns an unordered set. And it reads every document per query, so its cost grows linearly. Chapter 2 fixes the first and last problems, Chapter 3 fixes ordering, and synonyms wait for later sessions.</p>
+  </div>
+  </section>
+
+  <h3 id="quiz1">Check yourself: Chapter 1</h3>
+  <div class="quiz" data-quiz="1"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 2 -->
+<section class="chapter" id="ch2">
+  <div class="chapter-head">
+    <span class="num">Chapter 2</span>
+    <h2>Preprocessing, the Inverted Index and Boolean Retrieval</h2>
+  </div>
+  <div class="refs"><span class="ref">Lesson 2 · s.1–13</span><span class="ref g">Lab 2 · From text to index</span></div>
+
+  <section class="sub" id="c2-pipe">
+  <h3>2.1 Today's pipeline</h3>
+  <p>The second lecture is one assembly line. Each arrow is one part of Lab 2:</p>
+  <div class="pipe" aria-label="Preprocessing pipeline"><span>Text</span><i>→</i><span>Tokens</span><i>→</i><span>Remove stop words</span><i>→</i><span>Stem / lemmatize</span><i>→</i><span>Inverted index</span><i>→</i><span>Boolean query</span></div>
+  <p>One rule matters more than any single step: <b>the query goes through exactly the same pipeline as the documents</b>. If documents are stemmed and the query isn't, "running" will never meet "run".</p>
+  <div class="refs"><span class="ref">Lesson 2 · s.2</span></div>
+  </section>
+
+  <section class="sub" id="c2-tok">
+  <h3>2.2 Tokenization</h3>
+  <p><b>Tokenization</b> splits raw text into <b>tokens</b>: usually words, usually lowercased.</p>
+  <ul>
+    <li><code>"Cheap hotel deals"</code> → <code>["cheap", "hotel", "deals"]</code></li>
+    <li>Khmer needs a real segmenter: <code>"និស្សិតសាលាស៊ីអេឌីធី"</code> → <code>['និស្សិត', 'សាលា', 'ស៊ី', 'អេឌីធី']</code>. Tools: NLTK for English; <code>khmer-nltk</code> or <code>khmer-segmenter</code> for Khmer.</li>
+  </ul>
+  <p>Tokenization looks mechanical, but it forces decisions:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Decision</th><th>If you keep it</th><th>If you drop it</th></tr></thead>
+    <tbody>
+      <tr><td>Numbers?</td><td>"2 bedrooms" stays searchable</td><td>The <code>2</code> in <code>d20</code> vanishes (Lab 2's tokenizer does this)</td></tr>
+      <tr><td>Split hyphens?</td><td>"tuk-tuk" stays one token</td><td>"hand-written" becomes "hand" + "written"</td></tr>
+      <tr><td>Keep case?</td><td>"Apple" (company) ≠ "apple" (fruit)</td><td>"Python" and "python" merge, which helped in Lab 2</td></tr>
+    </tbody></table></div>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>Every tokenization choice trades <b>recall</b> against <b>precision</b>. Merging more forms together finds more (recall up) but also confuses more (precision down).</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 2 · s.3–4</span><span class="ref">Lab 2 · Part 1</span></div>
+  </section>
+
+  <section class="sub" id="c2-stop">
+  <h3>2.3 Stop words</h3>
+  <p><b>Stop words</b> are very frequent words that carry little meaning on their own: <i>the, is, of, and, to</i>. Removing them shrinks the index and speeds up ranking. In Lab 2 Part 2, removing a 45-word stop list cut the collection from <b>405 tokens to 284</b>, about <b>30% smaller</b>.</p>
+  <p>The lecture walks one sentence through it:</p>
+  <div class="readout">Document:          I do not like apple
+Lowercase:         i do not like apple
+Tokenize:          [i, do, not, like, apple]
+Remove stopwords:  [like, apple]</div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>Look what happened: "I do <b>not</b> like apple" became <code>[like, apple]</code>. The meaning flipped. Stop-word removal also hurts on:</p>
+    <ul>
+      <li><b>Phrase queries:</b> "to be or not to be" becomes nearly empty.</li>
+      <li><b>Names and titles:</b> "The Who" (a band), "Vitamin A".</li>
+      <li><b>Direction:</b> "flights <i>to</i> Phnom Penh" and "flights <i>from</i> Phnom Penh" turn into the same query.</li>
+    </ul>
+  </div>
+  <p>For Khmer there's a community stop-word dictionary (KSWv2) in the lecture notes.</p>
+  <div class="refs"><span class="ref">Lesson 2 · s.5–6</span><span class="ref">Lab 2 · Part 2</span></div>
+  </section>
+
+  <section class="sub" id="c2-stem">
+  <h3>2.4 Stemming and lemmatization</h3>
+  <p>Both are forms of <b>normalization</b>: making different forms of a word look the same so they match.</p>
+  <div class="grid2">
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Stemming cuts words</h4>
+      <p>Rule-based suffix chopping. Fast, no dictionary, and the result isn't always a real word.</p>
+      <div class="readout">playing    → play
+played     → play
+studies    → studi
+connection → connect</div>
+    </div>
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Lemmatization understands words</h4>
+      <p>Uses a dictionary and grammar to find the base form (the <b>lemma</b>). Slower, but handles irregular words.</p>
+      <div class="readout">running → run
+better  → good
+was     → be
+studies → study</div>
+    </div>
+  </div>
+  <h4>The stemming trade-off</h4>
+  <ul>
+    <li><b>Over-stemming:</b> unrelated words collapse together. <i>university</i> and <i>universe</i> both become <code>univers</code>.</li>
+    <li><b>Under-stemming:</b> related words stay apart. <i>ran</i> and <i>running</i> never meet, because "ran" has no suffix to cut.</li>
+  </ul>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 2 · Part 3: the Porter stemmer</h4></div>
+    <div class="lab-body">
+<pre class="code">from nltk.stem import PorterStemmer
+porter = PorterStemmer()
+porter.stem("running")   # 'run'</pre>
+<pre class="out">   running -> run         farms -> farm        categories -> categori
+       ran -> ran       farming -> farm          category -> categori
+   runners -> runner    farmers -> farmer            cats -> cat</pre>
+      <p>Both effects show up at once. <code>categori</code> isn't a word, but that's fine as long as it's consistent. <code>ran</code> stays alone (under-stemming) because only a lemmatizer knows it's the past tense of "run".</p>
+      <p class="small muted">Note: Labs 3 and 4 swap Porter for a 15-rule suffix stemmer to keep things transparent. That one turns <code>running</code> into <code>runn</code>, which is why "running" can't find <code>d12</code>'s "run" in those labs. The live demos on this page use the Lab 3/4 stemmer.</p>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 2 · s.7–8</span><span class="ref">Lab 2 · Part 3</span></div>
+  </section>
+
+  <section class="sub" id="c2-try">
+  <h3>2.5 Try the pipeline</h3>
+  <p>Type any sentence or load a document, then press <b>Run</b>. The pipeline goes one stage at a time: it checks every token against the stop list (stop words are <span class="sw">highlighted</span>, and the matching word lights up in the list below), then shows which suffix rule the stemmer cuts from each word.</p>
+  <div class="lab" id="lab-pipe">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Text → tokens → terms, step by step</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="pp-in">Text</label><input type="text" id="pp-in" value="I do not like apple" autocomplete="off" spellcheck="false"></div>
+      <div class="row">
+        <span class="small muted">Load:</span>
+        <button class="btn sm" data-pp="I do not like apple">"I do not like apple"</button>
+        <button class="btn sm" data-pp="d16">d16 cat</button>
+        <button class="btn sm" data-pp="d19">d19 runners</button>
+        <button class="btn sm" data-pp="d20">d20 2 bedrooms</button>
+        <button class="btn sm" data-pp="to be or not to be">"to be or not to be"</button>
+      </div>
+      <div class="player" id="pp-player"></div>
+      <div class="msg" id="pp-msg"></div>
+      <div id="pp-out" style="display:grid;gap:6px"></div>
+      <div style="display:grid;gap:6px">
+        <b class="small" style="text-transform:uppercase;letter-spacing:.05em">The stop list (all 45 words from the labs) <span class="muted" id="pp-cnt"></span></b>
+        <div class="stoplist" id="pp-stoplist"></div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <section class="sub" id="c2-index">
+  <h3>2.6 The inverted index</h3>
+  <p>Here's the idea that makes search engines fast. Instead of storing "document → words", flip it around and store "word → documents".</p>
+  <div class="call key"><span class="tag">Definition</span>
+    <p>An <b>inverted index</b> is a dictionary: <b>term → sorted list of the ids of documents that contain it</b>. That list is called a <b>postings list</b>.</p>
+  </div>
+  <div class="readout">cheap   → [d02]
+python  → [d04, d05, d18]
+phnom   → [d01, d12, d29]
+season  → [d02, d10, d27]</div>
+  <p>Building it is simple and paid <b>once</b>: for every document, preprocess it, add the document id to the postings list of each unique term, then sort every list.</p>
+  <ul>
+    <li>A <b>common</b> term (e.g. "language") has a <b>long</b> list.</li>
+    <li>A <b>rare</b> term (e.g. "pagerank") has a <b>short, informative</b> list. If a document contains it, that tells you a lot. Hold that thought; it becomes IDF in Chapter 3.</li>
+  </ul>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>The index at the back of a textbook. You don't read the whole book to find "photosynthesis"; you look it up and get "pages 12, 47, 103". Those page numbers are a postings list, and they're sorted.</p>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Lab 1 worked out that scanning a billion pages would take 2.5 minutes per query. Google says its index is well over 100,000,000 gigabytes, and it answers in a fraction of a second. It can do that because a query only touches the postings lists of its own words. The inverted index isn't an optimisation here. It's the reason web search is possible at all.</p>
+  </div>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 2 · Part 4: build_index</h4></div>
+    <div class="lab-body">
+<pre class="code">def build_index(docs):
+    index = {}
+    for doc_id, text in docs.items():
+        for term in set(preprocess(text)):      # set(): one entry per doc
+            index.setdefault(term, []).append(doc_id)
+    for term in index:
+        index[term].sort()                      # sorted lists are the key
+    return index</pre>
+<pre class="out">Vocabulary size: 229 terms (from 405 raw tokens)
+'python' -> ['d04', 'd05', 'd18']     'car' -> []
+'cat'    -> ['d16']                   'automobile' (stem 'automobil') -> ['d15']</pre>
+      <p><code>cat</code> → only <code>d16</code>. The category/catalog problem is gone, fixed by <b>tokenization</b>: "category" is its own token and never equals "cat". But <code>car</code> is still empty. The index can only find words that are literally there.</p>
+    </div>
+  </div>
+
+  <div class="lab" id="lab-build">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Watch the index being built</h4></div>
+    <div class="lab-body">
+      <p class="small muted">Press Run. Each step takes one term from the current document and appends the document id to that term's postings list. The table tracks twelve terms; everything else is counted in the totals. Notice <code>cambodia</code> and <code>cambodian</code> end up as different terms.</p>
+      <div class="player" id="ix-player"></div>
+      <div class="kpis" id="ix-kpis"></div>
+      <div class="ixgrid">
+        <div class="doccard" id="ix-doc"></div>
+        <div class="ptable" id="ix-table"></div>
+      </div>
+      <div class="row"><label class="ctl" for="ix-q">Look up any term</label><input type="text" id="ix-q" value="season" autocomplete="off" spellcheck="false"></div>
+      <div class="readout" id="ix-look"></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 2 · s.9–11</span><span class="ref">Lab 2 · Part 4</span></div>
+  </section>
+
+  <section class="sub" id="c2-bool">
+  <h3>2.7 Boolean retrieval and the merge algorithm</h3>
+  <p><b>Boolean retrieval</b> combines postings lists with AND, OR and NOT into one answer set:</p>
+  <ul>
+    <li><b>A AND B</b>: documents containing both terms (intersection).</li>
+    <li><b>A OR B</b>: documents containing either (union).</li>
+    <li><b>NOT A</b>: every document without A (complement).</li>
+  </ul>
+  <p>Because the lists are <b>sorted</b>, we can intersect two of them in a single left-to-right pass, like zipping two sorted decks of cards. Keep one finger on each list. If the ids match, keep it and move both fingers. Otherwise move the finger on the smaller id. That costs \(O(|p_1| + |p_2|)\), and it never touches document text.</p>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 2 · Part 5: intersect</h4></div>
+    <div class="lab-body">
+<pre class="code">def intersect(p1, p2):
+    answer, i, j = [], 0, 0
+    while i &lt; len(p1) and j &lt; len(p2):
+        if p1[i] == p2[j]:  answer.append(p1[i]); i += 1; j += 1
+        elif p1[i] &lt; p2[j]: i += 1
+        else:               j += 1
+    return answer</pre>
+      <p><code>boolean_and</code> also sorts the lists by length first, so it starts with the shortest. The running answer can never be longer than the shortest list, so every later merge stays small.</p>
+    </div>
+  </div>
+
+  <div class="lab" id="lab-merge">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Step through a merge</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <input type="text" id="mg-a" value="season" aria-label="First term" style="flex:1 1 120px" autocomplete="off" spellcheck="false">
+        <select id="mg-op" aria-label="Operator"><option value="and">AND</option><option value="or">OR</option><option value="not">AND NOT</option></select>
+        <input type="text" id="mg-b" value="rainy" aria-label="Second term" style="flex:1 1 120px" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="row">
+        <span class="small muted">Try:</span>
+        <button class="btn sm" data-mg="season|and|rainy">season AND rainy</button>
+        <button class="btn sm" data-mg="phnom|and|siem">phnom AND siem</button>
+        <button class="btn sm" data-mg="java|not|island">java AND NOT island</button>
+        <button class="btn sm" data-mg="cheap|or|budget">cheap OR budget</button>
+      </div>
+      <div class="player" id="mg-player"></div>
+      <div class="msg" id="mg-msg"></div>
+      <div id="mg-lists" style="display:grid;gap:8px"></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 2 · s.9, s.12</span><span class="ref">Lab 2 · Part 5</span></div>
+  </section>
+
+  <section class="sub" id="c2-lab">
+  <h3>2.8 As demonstrated in Lab 2: is the index worth it?</h3>
+  <p>An index costs time to build. Lab 2 Part 7 measured whether that pays off at 500,000 documents for <code>python AND language</code>:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Approach</th><th class="num">Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Naive scan, per query</td><td class="num">53.7 ms</td></tr>
+      <tr><td>Build the index, once</td><td class="num">51,553 ms (about 52 s)</td></tr>
+      <tr><td>Merge postings, per query</td><td class="num">6.7 ms</td></tr>
+    </tbody></table></div>
+  <p>When does building once beat scanning every time? Set the totals equal for \(q\) queries:</p>
+  <div class="math">\[ q \cdot 53.66 = 51{,}553 + q \cdot 6.73 \;\Rightarrow\; q = \frac{51{,}553}{53.66 - 6.73} \approx 1{,}098 \text{ queries} \]</div>
+  <p class="say">After about eleven hundred queries the index has paid for itself. After that, every query is roughly 8× cheaper. A real engine answers millions of queries a day, so it's an easy win. A collection you search only once, or one that changes constantly, might not be worth indexing.</p>
+  <p>Lab 2 also re-ran Lab 1's six needs through the index. Lowercasing fixed N2 (<code>Python</code> with a capital P now matches), tokenization fixed N5 (<code>cat</code>), and <code>budget accommodation</code> OR found <code>d01</code> and <code>d30</code>. Two needs are still broken:</p>
+  <ul>
+    <li><b>N4 <code>car</code></b>: recall 0. This is a <i>vocabulary</i> problem.</li>
+    <li><b>N3 <code>travel Phnom Penh Siem Reap</code></b>: AND gives nothing, OR gives 4 unordered docs with precision 0.25. This is a <i>ranking</i> problem, and Chapter 3 fixes it.</li>
+  </ul>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 2 recap</h3>
+    <ul>
+      <li>Tokenize, remove stop words, stem. Each step is a trade-off between recall and precision.</li>
+      <li>Queries must go through the same pipeline as documents.</li>
+      <li>An inverted index stores term → sorted postings list.</li>
+      <li>Boolean queries are answered by merging postings, not scanning text.</li>
+      <li>Index build is paid once; Lab 2's break-even was ~1,098 queries.</li>
+      <li>Still broken: synonyms (<code>car</code>) and ordering (Boolean gives a set).</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz2">Check yourself: Chapter 2</h3>
+  <div class="quiz" data-quiz="2"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 3 -->
+<section class="chapter" id="ch3">
+  <div class="chapter-head">
+    <span class="num">Chapter 3</span>
+    <h2>Ranking with TF-IDF, Cosine and BM25</h2>
+  </div>
+  <div class="refs"><span class="ref">Lesson 3 · s.1–18</span><span class="ref g">Lab 3 · Ranking</span></div>
+
+  <section class="sub" id="c3-why">
+  <h3>3.1 Why ranking matters</h3>
+  <p>Recall where Lab 2 left us. Boolean OR for <code>travel Phnom Penh Siem Reap</code> returned <code>d01, d02, d12, d29</code>, and only <code>d12</code> is really about that trip. An unordered set can't tell you which one to read first.</p>
+  <ul>
+    <li><b>Scale:</b> real collections return thousands or millions of Boolean matches.</li>
+    <li><b>Behaviour:</b> people rarely look past the first few results.</li>
+    <li><b>So the core IR problem is:</b> order documents by <i>estimated</i> relevance to the information need.</li>
+  </ul>
+  <p>Ranked retrieval is simple to describe: <b>score every document, sort by score, return the top k</b>. No more hard yes/no matching; every document gets a real-valued score. The rest of this chapter is about how to compute that score.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>How much does order matter? A 2019 Backlinko study of 5 million Google searches found the first organic result took about 32% of clicks, and fewer than 1% of searchers clicked anything on page two. A relevant document at rank 50 might as well not exist. That's why the rest of this chapter is about ordering.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 3 · s.2–3, s.11</span></div>
+  </section>
+
+  <section class="sub" id="c3-tf">
+  <h3>3.2 TF, DF and IDF</h3>
+  <h4>Term frequency</h4>
+  <p>\(tf(t,d)\) is how many times term \(t\) appears in document \(d\). Intuition: if doc A says "python" once and doc B says it 8 times, B is probably more about Python.</p>
+  <h4>The problem with raw TF</h4>
+  <p>Some words are everywhere: stop words, or generic words like "offer" and "system". A high count of a word that's in every document isn't special. We need to scale each term by how <b>rare</b> it is across the collection.</p>
+  <h4>Document frequency and inverse document frequency</h4>
+  <p>\(df(t)\) is the number of documents that contain \(t\) at least once (not the total count). Then:</p>
+  <div class="math">\[ idf(t) = \log\frac{N}{df(t)} \qquad\qquad w(t,d) = tf(t,d) \times idf(t) \]</div>
+  <p class="say">IDF is "log of N over df". Rare term, small df, big IDF. Common term, big df, small IDF. A term that's in every document gets \(\log 1 = 0\): it can't help you tell documents apart.</p>
+  <p>A high TF-IDF weight needs both: the term is frequent <i>in this document</i> and rare <i>across the collection</i>.</p>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 3 · Parts 1–2: df and idf on our 30 docs</h4></div>
+    <div class="lab-body">
+<pre class="code">def idf(term):
+    d = df(term)
+    return 0.0 if d == 0 else math.log(N / d)     # natural log, N = 30</pre>
+      <div class="tbl" style="margin:0"><table>
+        <thead><tr><th>Term</th><th class="num">df</th><th class="num">idf = ln(30/df)</th></tr></thead>
+        <tbody>
+          <tr><td><code>hotel</code>, <code>cheap</code></td><td class="num">1</td><td class="num">3.401</td></tr>
+          <tr><td><code>cambodia</code>, <code>offer</code>, <code>siem</code></td><td class="num">2</td><td class="num">2.708</td></tr>
+          <tr><td><code>python</code>, <code>phnom</code></td><td class="num">3</td><td class="num">2.303</td></tr>
+        </tbody></table></div>
+      <p><code>cambodia</code> and <code>offer</code> get the same IDF because they have the same df. IDF only measures rarity. It has no idea that "cambodia" is a topic word and "offer" is a generic verb.</p>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 3 · s.4–8</span><span class="ref">Lab 3 · Parts 1–2</span></div>
+  </section>
+
+  <section class="sub" id="c3-vsm">
+  <h3>3.3 Documents as vectors, compared by cosine</h3>
+  <p>In the <b>vector space model</b>, every unique term in the collection is one dimension. A document's vector holds its TF-IDF weight in each dimension (0 if the term is absent). A query is treated as a very short document and gets a vector the same way.</p>
+  <figure class="fig xs"><span class="frame"><img src="assets/ir/vectors.webp" width="516" height="391" loading="lazy" alt="Three axes labelled term 1, term 2 and term 3, with arrows for document 1, document 2 and a query pointing out from the origin"></span><figcaption><span class="ref">Lesson 3 · s.9</span>Each term is an axis. Documents and the query are arrows, and the query is closest to whichever arrow points the same way.</figcaption></figure>
+  <p>To compare a query with a document, measure the <b>angle</b> between their vectors, not their lengths:</p>
+  <div class="math">\[ \cos(\vec q,\vec d) = \frac{\vec q\cdot\vec d}{\lVert\vec q\rVert\,\lVert\vec d\rVert}, \qquad \lVert\vec x\rVert = \sqrt{\textstyle\sum_i x_i^2} \]</div>
+  <p class="say">Dot product on top, the two lengths underneath. 1.0 means same direction (very similar). 0.0 means they share no terms.</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Two people pointing. You don't care how long their arms are, only whether they point the same way. Dividing by the lengths removes "arm length", which is roughly how long and wordy a document is.</p>
+  </div>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 3 · Part 3: the ranked list Boolean couldn't give</h4></div>
+    <div class="lab-body">
+<pre class="out">'travel Phnom Penh Siem Reap' ->
+   d12: 0.440  Buses run every hour from Phnom Penh to Siem Reap…
+   d02: 0.280  Cheap hotel deals in Siem Reap…
+   d29: 0.226  The National Museum in Phnom Penh…
+   d01: 0.198  Budget guesthouses in Phnom Penh…</pre>
+      <p>Same four documents as Boolean OR, but now <code>d12</code> is on top. It shares four query terms (phnom, penh, siem, reap); the others share two. "travel" appears in no document, so its IDF is 0 and it adds nothing.</p>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 3 · s.9–11</span><span class="ref">Lab 3 · Part 3</span></div>
+  </section>
+
+  <section class="sub" id="c3-bm25">
+  <h3>3.4 BM25: saturation and length normalization</h3>
+  <p>TF-IDF grows <b>linearly</b> with term frequency: 10 mentions count 10× as much as 1. In practice, repetition matters less and less after the first few mentions. Otherwise a spam page that repeats a keyword 100 times would win. <b>BM25</b> fixes two things.</p>
+  <h4>Fix 1: term saturation (parameter \(k_1\))</h4>
+  <p>The score still grows with tf, but levels off. With length ignored, a term contributes</p>
+  <div class="math">\[ \frac{tf\,(k_1+1)}{tf + k_1} \;\xrightarrow{\;tf\to\infty\;}\; k_1+1 \]</div>
+  <p>\(k_1\) (typically 1.2–2.0) controls how fast it saturates. Higher \(k_1\) means slower saturation, so repetition keeps counting for longer.</p>
+
+  <figure class="fig md"><span class="frame"><img src="assets/ir/sat.webp" width="748" height="507" loading="lazy" alt="Three curves of BM25 score against term frequency, for k1 of 0.5, 1.2 and 2.0, each rising and then flattening at a ceiling"></span><figcaption><span class="ref">Lesson 3 · s.13</span>The lecture's chart. Each curve flattens out at its ceiling. The demo below lets you change \(k_1\) yourself.</figcaption></figure>
+  <div class="lab" id="lab-sat">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Linear TF vs BM25 saturation</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="sat-k">k1</label><input type="range" id="sat-k" min="0.2" max="4" step="0.1" value="1.5"><b class="mono" id="sat-kv">1.5</b></div>
+      <div class="player" id="sat-player"></div>
+      <div class="svgwrap" id="sat-svg"></div>
+      <div class="readout" id="sat-out"></div>
+    </div>
+  </div>
+
+  <h4>Fix 2: length normalization (parameter \(b\))</h4>
+  <p>A match in a <b>short</b> document is stronger evidence than the same match in a long one. BM25 compares the document's length \(|d|\) to the collection average \(avgdl\). \(b = 0\) turns this off; \(b = 1\) normalizes fully; the default is 0.75.</p>
+  <h4>The full formula</h4>
+  <div class="math">\[ \text{BM25}(q,d) = \sum_{t\in q} idf_{BM25}(t)\cdot\frac{tf(t,d)\,(k_1+1)}{tf(t,d) + k_1\left(1 - b + b\,\frac{|d|}{avgdl}\right)} \]</div>
+  <div class="math">\[ idf_{BM25}(t) = \log\!\left(\frac{N - df(t) + 0.5}{df(t) + 0.5} + 1\right) \]</div>
+  <p class="say">For each query term: a rarity weight, times a saturating tf. The bracket under \(k_1\) grows for long documents (dragging the score down) and shrinks for short ones. The "+1" inside the log keeps the IDF positive even for a term in every document.</p>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 3 · Part 4: saturation and bm25_score</h4></div>
+    <div class="lab-body">
+<pre class="out">p1: raw tf =  1  |  BM25 saturation = 1.00
+p2: raw tf =  4  |  BM25 saturation = 1.82
+p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
+<pre class="code">score += idf_bm25(term) * (f * (k1 + 1)) / (f + k1 * (1 - b + b * doc_len[doc_id] / AVGDL))</pre>
+      <p>Ten times the mentions gives about twice the score, not ten times. Keyword stuffing stops paying off.</p>
+    </div>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Early web search leaned heavily on how often a word appeared, so spammers filled pages with hidden repeated keywords. Saturation takes away most of that reward. BM25 itself came from research at City University London in the 1990s, and it's held up well enough that Elasticsearch made it the default ranker in version 5.0. So the formula above isn't only for the exam: you'll likely meet it at work.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 3 · s.12–16</span><span class="ref">Lab 3 · Part 4</span></div>
+  </section>
+
+  <section class="sub" id="c3-try">
+  <h3>3.5 Try both rankers</h3>
+  <p>This runs the exact Lab 3 pipeline in your browser: the same tokenizer, stop list, suffix stemmer, TF-IDF cosine and BM25. With the defaults (\(k_1=1.5, b=0.75\)) you'll get the notebook's numbers.</p>
+  <div class="lab" id="lab-rank">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Boolean OR vs TF-IDF vs BM25</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="rk-q">Query</label><input type="text" id="rk-q" value="travel Phnom Penh Siem Reap" autocomplete="off" spellcheck="false"></div>
+      <div class="row">
+        <span class="small muted">Try:</span>
+        <button class="btn sm" data-rk="travel Phnom Penh Siem Reap">travel Phnom Penh Siem Reap</button>
+        <button class="btn sm" data-rk="python">python</button>
+        <button class="btn sm" data-rk="budget accommodation">budget accommodation</button>
+        <button class="btn sm" data-rk="rice season">rice season</button>
+        <button class="btn sm" data-rk="java language">java language</button>
+        <button class="btn sm" data-rk="car">car</button>
+      </div>
+      <div class="row">
+        <label class="ctl" for="rk-k">k1</label><input type="range" id="rk-k" min="0" max="3" step="0.1" value="1.5"><b class="mono" id="rk-kv">1.5</b>
+        <label class="ctl" for="rk-b" style="margin-left:12px">b</label><input type="range" id="rk-b" min="0" max="1" step="0.05" value="0.75"><b class="mono" id="rk-bv">0.75</b>
+        <button class="btn sm" id="rk-def">Reset to 1.5 / 0.75</button>
+      </div>
+      <div class="readout" id="rk-terms"></div>
+      <div class="tbl" style="margin:0"><table>
+        <thead><tr><th class="num">#</th><th>Boolean OR (id order)</th><th>TF-IDF cosine</th><th>BM25</th></tr></thead>
+        <tbody id="rk-body"></tbody></table></div>
+      <p class="small muted">Click any document id in the table to see exactly how its score was computed.</p>
+      <div class="why" id="rk-why"></div>
+    </div>
+  </div>
+
+  <div class="lab" id="lab-race">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Score every document, then sort</h4></div>
+    <div class="lab-body">
+      <p class="small muted">Ranked retrieval in slow motion, using the query and k1/b from the box above. The ranker visits d01 to d30, gives each one a score, and then sorts. Documents that share no term with the query get 0 and drop to the bottom.</p>
+      <div class="tabs" role="group" aria-label="Ranking model">
+        <button class="btn on" data-rm="bm25">BM25</button>
+        <button class="btn" data-rm="tfidf">TF-IDF cosine</button>
+      </div>
+      <div class="player" id="rc-player"></div>
+      <div class="msg" id="rc-msg"></div>
+      <div class="race" id="rc-rows"></div>
+    </div>
+  </div>
+  </section>
+
+  <section class="sub" id="c3-python">
+  <h3>3.6 The "python" disagreement</h3>
+  <p>Here's the puzzle Lab 3 Part 5 ends on. For the one-word query <code>python</code>, the two models disagree on who's first:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Doc</th><th class="num">Length |d|</th><th class="num">tf(python)</th><th class="num">TF-IDF cosine</th><th class="num">BM25</th></tr></thead>
+    <tbody>
+      <tr><td><code>d04</code> Python is a popular programming language…</td><td class="num">9</td><td class="num">1</td><td class="num"><b>0.285</b> (1st)</td><td class="num">2.231 (3rd)</td></tr>
+      <tr><td><code>d18</code> To concatenate two strings in Python…</td><td class="num">7</td><td class="num">1</td><td class="num">0.274 (2nd)</td><td class="num"><b>2.471</b> (1st)</td></tr>
+      <tr><td><code>d05</code> A ball python is a small, docile snake…</td><td class="num">8</td><td class="num">1</td><td class="num">0.248 (3rd)</td><td class="num">2.345 (2nd)</td></tr>
+    </tbody></table></div>
+  <p>All three mention "python" exactly once, so tf can't separate them. Each model falls back on something else:</p>
+  <ul>
+    <li><b>BM25</b> uses <b>length</b>. Shorter than average (9.5) means a stronger match, so <code>d18</code> (7) &gt; <code>d05</code> (8) &gt; <code>d04</code> (9). Set \(b = 0\) and all three tie at 2.181. Try it with the sliders above.</li>
+    <li><b>Cosine</b> divides by the document's vector length, and that comes from the IDF weights of its <i>other</i> words. <code>d04</code> contains fairly common words (data, science, language), so its vector is shorter and "python" takes up a bigger share of it.</li>
+  </ul>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>BM25 puts the <b>snake</b> (<code>d05</code>) above the programming intro (<code>d04</code>). Neither model knows what "python" <i>means</i>. That's ambiguity, and no amount of tf and length tuning fixes it. Which ranking is actually better? We can't say by looking. Chapter 4 answers it with numbers.</p>
+  </div>
+  <div class="refs"><span class="ref">Lab 3 · Part 5</span><span class="ref">Lesson 4 · s.2</span></div>
+  </section>
+
+  <section class="sub" id="c3-zipf">
+  <h3>3.7 Zipf's law and the limits</h3>
+  <p><b>Zipf's law:</b> in any language, a few terms are extremely frequent and most are rare. Rank the words by frequency, and the frequency falls roughly as 1/rank. That long tail of rare words is <i>why IDF works at all</i>: most terms are rare enough to be informative. Very short documents and queries, like ours, make length normalization (\(b\)) especially important.</p>
+  <div class="call key"><span class="tag">Neither model fixes vocabulary mismatch</span>
+    <p>TF-IDF and BM25 can only score documents that share terms with the query. <code>car</code> still returns nothing (Lab 3 Answer 5.3), and with the suffix stemmer <code>running</code> (→ <code>runn</code>) misses <code>d19</code>'s "runners ran". Fixing that needs query expansion or neural/semantic search, coming in Sessions 9–10.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 3 · s.17–18</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 3 recap</h3>
+    <ul>
+      <li>TF-IDF = tf × idf; IDF = log(N/df) rewards rare terms.</li>
+      <li>Documents and queries are vectors; compare by cosine (angle).</li>
+      <li>BM25 saturates tf (\(k_1\)) and normalizes for length (\(b\)).</li>
+      <li>Both beat Boolean retrieval by producing a <b>ranked</b> list.</li>
+      <li>On "python", TF-IDF says <code>d04</code> first, BM25 says <code>d18</code>.</li>
+      <li>Neither model fixes vocabulary mismatch or ambiguity.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz3">Check yourself: Chapter 3</h3>
+  <div class="quiz" data-quiz="3"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 4 -->
+<section class="chapter" id="ch4">
+  <div class="chapter-head">
+    <span class="num">Chapter 4</span>
+    <h2>Evaluating Search</h2>
+  </div>
+  <div class="refs"><span class="ref">Lesson 4 · s.1–27</span><span class="ref g">Lab 4 · Precision to NDCG</span></div>
+
+  <section class="sub" id="c4-why">
+  <h3>4.1 Why we need evaluation</h3>
+  <p>Lab 3 left a disagreement: TF-IDF ranked <code>d04</code> first for "python", BM25 ranked <code>d18</code> first. We compared two lists by eye, which isn't evidence. Every design choice (stemming rules, \(k_1\), \(b\), stop list) needs a way to compare <i>before</i> and <i>after</i>. Without measurement, tuning is guessing.</p>
+  <div class="refs"><span class="ref">Lesson 4 · s.2–3</span></div>
+  </section>
+
+  <section class="sub" id="c4-coll">
+  <h3>4.2 Test collections and relevance judgments</h3>
+  <p>A <b>test collection</b> has three parts:</p>
+  <ol class="boxes">
+    <li><b>Documents</b>: our 30.</li>
+    <li><b>Queries</b>: the six needs N1–N6.</li>
+    <li><b>Relevance judgments (qrels)</b>: which docs satisfy each need, decided by a <b>human</b>.</li>
+  </ol>
+  <p>For "python": <code>d04</code> relevant (a useful Python introduction), <code>d18</code> relevant (a brief code snippet), <code>d05</code> not relevant (a snake).</p>
+  <h4>Binary vs graded</h4>
+  <p><b>Binary</b> says yes or no. <b>Graded</b> says <i>how</i> relevant, for example on a 0–3 scale. Graded judgments let you reward putting the <b>best</b> document first, not just any relevant one.</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="num">Grade</th><th>Meaning</th><th>Example for "python"</th></tr></thead>
+    <tbody>
+      <tr><td class="num">0</td><td>Not relevant</td><td><code>d05</code> (snake)</td></tr>
+      <tr><td class="num">1</td><td>Somewhat relevant</td><td><code>d18</code> in the lecture (Lab 4 gives it 2)</td></tr>
+      <tr><td class="num">2</td><td>Useful</td><td>n/a</td></tr>
+      <tr><td class="num">3</td><td>Highly relevant</td><td><code>d04</code> (an actual introduction)</td></tr>
+    </tbody></table></div>
+  <p>Where judgments come from: in small projects, your own team or a few volunteers. In large campaigns like <b>TREC</b>, trained annotators follow detailed guidelines. Either way, judgments are <b>data, and data has noise</b>.</p>
+  <div class="refs"><span class="ref">Lesson 4 · s.4–7, s.18</span><span class="ref">Lab 4 · Part 1</span></div>
+  </section>
+
+  <section class="sub" id="c4-prf">
+  <h3>4.3 Precision, recall and F1</h3>
+  <div class="math">\[ P = \frac{TP}{TP + FP} \qquad R = \frac{TP}{TP + FN} \qquad F_1 = \frac{2PR}{P + R} \]</div>
+  <p class="say">TP = relevant and returned. FP = returned but not relevant. FN = relevant but missed. F1 is the harmonic mean: it punishes a system that's great at only one of the two.</p>
+  <p>Why harmonic and not a plain average? A system that returns all 30 documents has recall 1.0 and precision maybe 0.07. The plain average is 0.53, which looks okay. F1 is 0.13, which is honest.</p>
+  <div class="refs"><span class="ref">Lesson 4 · s.8</span></div>
+  </section>
+
+  <section class="sub" id="c4-atk">
+  <h3>4.4 Cutoffs: P@k and R@k</h3>
+  <p>Users look at the top of the list, so we evaluate only the first \(k\) results. \(k\) stands for "how far a user is likely to look".</p>
+  <div class="math">\[ P@k = \frac{\#\text{relevant in top }k}{k} \qquad R@k = \frac{\#\text{relevant in top }k}{\#\text{all relevant}} \]</div>
+  <p>Lecture example: ranking <code>d04</code> ✓, <code>d18</code> ✓, <code>d15</code> ✗, with relevant set {d04, d18}.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Cutoff</th><th class="num">Relevant found</th><th class="num">P@k</th><th class="num">R@k</th></tr></thead>
+    <tbody>
+      <tr><td>k = 1</td><td class="num">1</td><td class="num">1.00</td><td class="num">0.50</td></tr>
+      <tr><td>k = 2</td><td class="num">2</td><td class="num">1.00</td><td class="num">1.00</td></tr>
+      <tr><td>k = 3</td><td class="num">2</td><td class="num">0.67</td><td class="num">1.00</td></tr>
+    </tbody></table></div>
+  <p>At \(k=3\): \(F_1@3 = 2\cdot\frac{0.67\times1.00}{0.67+1.00} = 0.80\). Changing \(k\) changes the score, so which \(k\) matches real behaviour? And a single cutoff hides <i>where</i> the relevant documents sit. P@1 rewards a system that finds just one good result; P@10 counts results many people never see.</p>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 4 · Part 2: precision_at_k</h4></div>
+    <div class="lab-body">
+<pre class="code">def precision_at_k(ranked_ids, relevant, k):
+    hits = sum(1 for d in ranked_ids[:k] if d in relevant)
+    return hits / k                # divide by k, even if fewer than k results</pre>
+      <p>That last comment matters. For N5 <code>cat</code>, both models return only <code>d16</code>. That's perfect, yet P@3 = 1/3 = 0.33 because the formula divides by 3. A short list is penalized at P@k. R@3 = 1.00 tells the real story.</p>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 4 · s.9–13</span><span class="ref">Lab 4 · Part 2</span></div>
+  </section>
+
+  <section class="sub" id="c4-ap">
+  <h3>4.5 Average Precision and MAP</h3>
+  <p><b>Average Precision</b> avoids picking a single \(k\). Walk down the ranking. Every time you hit a relevant document, write down the precision at that rank. Then average those numbers over <i>all</i> relevant documents (missed ones count as 0).</p>
+  <div class="math">\[ AP = \frac{1}{R}\sum_{k=1}^{N} P@k \cdot rel(k) \qquad\qquad MAP = \frac{1}{|Q|}\sum_{q\in Q} AP_q \]</div>
+  <p class="say">\(rel(k)\) is 1 if the document at rank \(k\) is relevant, 0 otherwise. \(R\) is the total number of relevant documents. MAP is the mean AP over all queries: one number for a whole system.</p>
+  <p>Lecture example: ranks <code>d04</code> ✓, <code>d18</code> ✗, <code>d05</code> ✓ with 2 relevant documents.</p>
+  <div class="math">\[ AP = \frac{\tfrac11 + \tfrac23}{2} = \frac{1.00 + 0.67}{2} = 0.83 \]</div>
+  <p>Relevant documents at early ranks push AP up. Lab 4 makes this concrete. For "python" (relevant = {d04, d18}):</p>
+  <ul>
+    <li>TF-IDF: <code>d04</code> ✓, <code>d18</code> ✓, <code>d05</code> → AP = (1/1 + 2/2)/2 = <b>1.000</b></li>
+    <li>BM25: <code>d18</code> ✓, <code>d05</code> ✗, <code>d04</code> ✓ → AP = (1/1 + 2/3)/2 = <b>0.833</b></li>
+  </ul>
+  <div class="call warn"><span class="tag">Limit of AP</span>
+    <p>Ranking A: <code>d04</code> (very relevant), <code>d18</code> (somewhat). Ranking B: <code>d18</code>, then <code>d04</code>. With binary judgments both have AP = 1.00. AP can't reward putting the <i>better</i> document first.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 4 · s.13–17</span><span class="ref">Lab 4 · Part 3</span></div>
+  </section>
+
+  <section class="sub" id="c4-ndcg">
+  <h3>4.6 Graded relevance and NDCG</h3>
+  <p><b>NDCG</b> (Normalized Discounted Cumulative Gain) combines three ideas:</p>
+  <ol class="boxes">
+    <li><b>Graded gain:</b> a highly relevant doc earns more credit, \(2^{r}-1\).</li>
+    <li><b>Rank discount:</b> the same doc earns less lower down, divided by \(\log_2(i+1)\).</li>
+    <li><b>Normalize</b> against the ideal ranking, so the score sits between 0 and 1.</li>
+  </ol>
+  <div class="math">\[ DCG@k = \sum_{i=1}^{k}\frac{2^{r_i}-1}{\log_2(i+1)} \qquad NDCG@k = \frac{DCG@k}{IDCG@k} \]</div>
+  <div class="grid2">
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Step 1: grade → gain</h4>
+      <div class="tbl" style="margin:.4rem 0"><table>
+        <thead><tr><th class="num">Grade r</th><th class="num">Gain 2ʳ−1</th></tr></thead>
+        <tbody><tr><td class="num">0</td><td class="num">0</td></tr><tr><td class="num">1</td><td class="num">1</td></tr><tr><td class="num">2</td><td class="num">3</td></tr><tr><td class="num">3</td><td class="num">7</td></tr></tbody></table></div>
+      <p class="small muted">Going from grade 2 to 3 more than doubles the gain (3 → 7). The best documents count a lot more.</p>
+    </div>
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Step 2: apply the discount</h4>
+      <div class="tbl" style="margin:.4rem 0"><table>
+        <thead><tr><th class="num">Rank</th><th>Doc</th><th class="num">Gain</th><th class="num">log₂(i+1)</th><th class="num">Contrib.</th></tr></thead>
+        <tbody><tr><td class="num">1</td><td>d18</td><td class="num">1</td><td class="num">1.00</td><td class="num">1.00</td></tr>
+        <tr><td class="num">2</td><td>d04</td><td class="num">7</td><td class="num">1.58</td><td class="num">4.43</td></tr>
+        <tr><td class="num">3</td><td>d05</td><td class="num">0</td><td class="num">2.00</td><td class="num">0.00</td></tr></tbody></table></div>
+      <p class="small muted">DCG@3 = 1.00 + 4.43 + 0 = 5.43</p>
+    </div>
+  </div>
+  <p><b>Step 3: normalize.</b> The ideal order is <code>d04</code> (3), <code>d18</code> (1), <code>d05</code> (0): \(IDCG@3 = \frac71 + \frac1{1.58} + 0 = 7.63\). So \(NDCG@3 = 5.43 / 7.63 = 0.71\).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Metric</th><th>A: d04 → d18 → d05</th><th>B: d18 → d04 → d05</th></tr></thead>
+    <tbody>
+      <tr><td>Relevant at ranks</td><td>1, 2</td><td>1, 2</td></tr>
+      <tr><td>AP (binary)</td><td>1.00</td><td>1.00</td></tr>
+      <tr><td>DCG@3</td><td>7.63</td><td>5.43</td></tr>
+      <tr><td>NDCG@3</td><td><b>1.00</b></td><td>0.71</td></tr>
+    </tbody></table></div>
+  <p>A puts the best document first. Only the graded metric notices.</p>
+  <div class="refs"><span class="ref">Lesson 4 · s.18–24</span><span class="ref">Lab 4 · Part 4</span></div>
+  </section>
+
+  <section class="sub" id="c4-bench">
+  <h3>4.7 Metrics bench</h3>
+  <p>Reorder the ranking and change grades to see every metric update. The working is printed underneath, so you can check your hand calculations against it. "Relevant" for P, R and AP means grade ≥ 1.</p>
+  <div class="lab" id="lab-bench">
+    <div class="lab-head"><span class="tag">Try it</span><h4>P@k · R@k · F1 · AP · NDCG</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <span class="small muted">Load:</span>
+        <button class="btn sm on" data-bp="lect">Lecture s.22 (d18, d04, d05)</button>
+        <button class="btn sm" data-bp="tfidf">Lab 4 N2 · TF-IDF</button>
+        <button class="btn sm" data-bp="bm25">Lab 4 N2 · BM25</button>
+        <button class="btn sm" data-bp="n3">Lab 4 N3 · both</button>
+        <button class="btn sm" data-bp="n6">Lab 4 N6 · running</button>
+      </div>
+      <div class="row"><label class="ctl" for="bn-k">Cutoff k</label><input type="range" id="bn-k" min="1" max="5" value="3"><b class="mono" id="bn-kv">3</b></div>
+      <div id="bn-rows"></div>
+      <div class="kpis" id="bn-kpis"></div>
+      <p class="small muted">Press Run to walk down the ranking the way AP and DCG do: one rank at a time, adding up precision at each relevant hit and each document's discounted gain.</p>
+      <div class="player" id="bn-player"></div>
+      <div class="msg" id="bn-msg"></div>
+      <div class="gbars" id="bn-bars" aria-label="Gain and discounted gain per rank"></div>
+      <p class="small muted" style="margin:0">Outlined bar = gain 2<sup>r</sup>−1 (max 7). Filled bar = what's left after dividing by log₂(rank+1).</p>
+      <div class="readout" id="bn-work"></div>
+    </div>
+  </div>
+  </section>
+
+  <section class="sub" id="c4-lab">
+  <h3>4.8 As demonstrated in Lab 4: TF-IDF or BM25?</h3>
+  <p>Lab 4 runs both rankers over N1–N6 with Lab 4's judgments (binary for AP, graded 0–3 for NDCG). These are the results once the TODO functions are filled in (see the explained notebook):</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Need · query</th><th class="num">AP TF-IDF</th><th class="num">AP BM25</th><th class="num">NDCG TF-IDF</th><th class="num">NDCG BM25</th></tr></thead>
+    <tbody>
+      <tr><td>N1 · cheap hotel</td><td class="num">0.333</td><td class="num">0.333</td><td class="num">0.674</td><td class="num">0.674</td></tr>
+      <tr><td><b>N2 · python</b></td><td class="num"><b>1.000</b></td><td class="num"><b>0.833</b></td><td class="num"><b>1.000</b></td><td class="num"><b>0.731</b></td></tr>
+      <tr><td>N3 · travel Phnom Penh Siem Reap</td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td></tr>
+      <tr><td>N4 · car</td><td class="num">0.000</td><td class="num">0.000</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+      <tr><td>N5 · cat</td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td><td class="num">1.000</td></tr>
+      <tr><td>N6 · running</td><td class="num">0.500</td><td class="num">0.500</td><td class="num">0.337</td><td class="num">0.337</td></tr>
+      <tr><td><b>Mean (MAP / avg NDCG)</b></td><td class="num"><b>0.639</b></td><td class="num">0.611</td><td class="num"><b>0.668</b></td><td class="num">0.624</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li><b>Both metrics prefer TF-IDF, and only N2 decides it.</b> The other five queries tie exactly.</li>
+    <li><b>The gap is bigger under NDCG</b> (0.045 vs 0.028), because NDCG also punishes BM25 for putting the grade-2 <code>d18</code> above the grade-3 <code>d04</code>. AP only sees "a non-relevant doc at rank 2".</li>
+    <li><b>N4 is 0 for both.</b> Evaluation can't fix vocabulary mismatch, but it makes the failure visible as a number.</li>
+  </ul>
+  <h4>When metrics disagree: sweeping b</h4>
+  <p>Lab 4 Part 5 varies BM25's \(b\) on "python":</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="num">b</th><th>Ranking</th><th class="num">AP</th><th class="num">NDCG</th></tr></thead>
+    <tbody>
+      <tr><td class="num">0</td><td>d04, d05, d18 (a three-way tie at 2.181, left in id order)</td><td class="num">0.833</td><td class="num">0.956</td></tr>
+      <tr><td class="num">0.75</td><td>d18, d05, d04</td><td class="num">0.833</td><td class="num">0.731</td></tr>
+      <tr><td class="num">1.0</td><td>d18, d05, d04</td><td class="num">0.833</td><td class="num">0.731</td></tr>
+    </tbody></table></div>
+  <p>AP doesn't move: either way, one relevant doc sits at rank 1 and the other at rank 3. NDCG jumps when <code>d04</code> (grade 3) reaches the top. Be careful with the \(b=0\) row, though. That win comes from a <b>tie</b> broken by document id, not from BM25 knowing anything. Ties are a real trap in evaluation.</p>
+  <div class="call use"><span class="tag">Lab 4 · Part 6: judge it yourself</span>
+    <p>The new need "studying or courses in Cambodia" with candidates <code>d03</code> (CADT degrees), <code>d20</code> (apartments near the university), <code>d25</code> (coffee shops where students study), <code>d28</code> (learning to program). Most people give <code>d03</code> a 3, but partners split on <code>d25</code> and <code>d28</code>: is "students study in cafés" about studying? Is "learning to program" about courses, and in Cambodia? That disagreement is the lesson.</p>
+  </div>
+  <div class="refs"><span class="ref">Lab 4 · Parts 3–6</span></div>
+  </section>
+
+  <section class="sub" id="c4-choose">
+  <h3>4.9 Choosing a metric, and trusting it</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Retrieval goal</th><th>Useful metric</th></tr></thead>
+    <tbody>
+      <tr><td>Show a few good results immediately</td><td>P@k, NDCG@k</td></tr>
+      <tr><td>Find as many relevant items as possible (e.g. legal or medical search)</td><td>Recall, R@k with a suitable k</td></tr>
+      <tr><td>Compare binary-judged systems across many queries</td><td>MAP</td></tr>
+      <tr><td>Reward highly relevant results near the top ("show me the official page")</td><td>NDCG</td></tr>
+    </tbody></table></div>
+  <div class="call warn"><span class="tag">Annotator disagreement</span>
+    <p>Two people can disagree about a borderline document. That changes the qrels, and so it changes MAP and NDCG. Use clear guidelines, example cases and repeated judgments, and discuss disagreements <b>before</b> claiming a tiny score difference means anything. Lab 4's whole TF-IDF vs BM25 gap rests on one query and two documents. One annotator grading <code>d18</code> a 3 instead of a 2 would shrink it.</p>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Here's a case where recall has legal weight. In US lawsuits, each side may have to hand over every relevant document from millions of emails. Since a 2012 court decision (<i>Da Silva Moore</i>), judges have accepted ranking software for this job, and lawyers argue over the measured recall. Nobody there cares about NDCG@3, because the result nobody reads is exactly the one that could lose the case.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 4 · s.25–27</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 4 recap</h3>
+    <ul>
+      <li>Test collection = documents + queries + human relevance judgments.</li>
+      <li>P@k, R@k and F1@k measure success at a cutoff.</li>
+      <li>AP rewards early relevant hits; MAP averages AP over queries.</li>
+      <li>NDCG uses graded relevance and discounts lower ranks.</li>
+      <li>On Lab 4's collection: MAP 0.639 vs 0.611, NDCG 0.668 vs 0.624, both for TF-IDF.</li>
+      <li>Pick the metric for the task, and check how trustworthy the qrels are.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz4">Check yourself: Chapter 4</h3>
+  <div class="quiz" data-quiz="4"></div>
+</section>
+
+<!-- ======================================================= SHEET -->
+<section class="chapter" id="sheet">
+  <div class="chapter-head">
+    <span class="num">Reference</span>
+    <h2>Formula Sheet and Glossary</h2>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Formula</th><th>Lesson · Lab</th></tr></thead>
+    <tbody>
+      <tr><td>Precision / Recall</td><td>\(P=\frac{TP}{TP+FP},\ R=\frac{TP}{TP+FN}\)</td><td>L1 s.17, L4 s.8 · Lab 1 P5</td></tr>
+      <tr><td>F1</td><td>\(F_1=\frac{2PR}{P+R}\)</td><td>L4 s.8 · Lab 4 P2</td></tr>
+      <tr><td>IDF</td><td>\(idf(t)=\log\frac{N}{df(t)}\)</td><td>L3 s.7 · Lab 3 P2</td></tr>
+      <tr><td>TF-IDF</td><td>\(w(t,d)=tf(t,d)\cdot idf(t)\)</td><td>L3 s.8 · Lab 3 P2</td></tr>
+      <tr><td>Cosine</td><td>\(\cos(\vec q,\vec d)=\frac{\vec q\cdot\vec d}{\lVert\vec q\rVert\lVert\vec d\rVert}\)</td><td>L3 s.10 · Lab 3 P3</td></tr>
+      <tr><td>BM25 IDF</td><td>\(\log\left(\frac{N-df+0.5}{df+0.5}+1\right)\)</td><td>L3 s.16 · Lab 3 P4</td></tr>
+      <tr><td>BM25</td><td>\(\sum_t idf\cdot\frac{tf(k_1+1)}{tf+k_1(1-b+b|d|/avgdl)}\)</td><td>L3 s.15 · Lab 3 P4</td></tr>
+      <tr><td>P@k / R@k</td><td>\(\frac{\#rel@k}{k},\ \frac{\#rel@k}{\#rel}\)</td><td>L4 s.9 · Lab 4 P2</td></tr>
+      <tr><td>AP / MAP</td><td>\(\frac1R\sum_k P@k\cdot rel(k)\); mean over queries</td><td>L4 s.14–16 · Lab 4 P3</td></tr>
+      <tr><td>DCG / NDCG</td><td>\(\sum_i\frac{2^{r_i}-1}{\log_2(i+1)}\); DCG / IDCG</td><td>L4 s.19–23 · Lab 4 P4</td></tr>
+      <tr><td>Break-even queries</td><td>\(q=\frac{\text{build}}{\text{scan}-\text{merge}}\)</td><td>Lab 2 P7</td></tr>
+    </tbody></table></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><b>Information need</b></td><td>What the person actually wants; the query is only an attempt to express it.</td></tr>
+      <tr><td><b>Token / term</b></td><td>A token is a word as cut from the text; a term is the normalized form stored in the index.</td></tr>
+      <tr><td><b>Stop word</b></td><td>A very common word removed before indexing (the, of, to).</td></tr>
+      <tr><td><b>Stemming / lemmatization</b></td><td>Chopping suffixes by rule / mapping to a dictionary base form.</td></tr>
+      <tr><td><b>Postings list</b></td><td>Sorted list of document ids containing a term.</td></tr>
+      <tr><td><b>Inverted index</b></td><td>Dictionary from term to postings list.</td></tr>
+      <tr><td><b>Vocabulary mismatch</b></td><td>Query and relevant document use different words for the same thing (car / automobile).</td></tr>
+      <tr><td><b>Saturation</b></td><td>Extra repetitions of a term add less and less score (BM25's \(k_1\)).</td></tr>
+      <tr><td><b>Length normalization</b></td><td>Discounting matches in long documents (BM25's \(b\)).</td></tr>
+      <tr><td><b>Qrels</b></td><td>Query relevance judgments: the human answer key of a test collection.</td></tr>
+      <tr><td><b>TREC</b></td><td>NIST's long-running evaluation campaign that builds large test collections.</td></tr>
+    </tbody></table></div>
+  <p class="foot">Built from the four Session 1–4 lecture decks (Mr. Natt Korat, CADT) and Labs 1–4. Figures are cropped from those decks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment. Each lab has a line-by-line companion notebook in <code>Lab/explained/</code> that links back to the slides cited here.</p>
+</section>
+</main>
+</div>
+
+<script>
+/*ENGINE-START*/
+var DOCS={
+d01:'Budget guesthouses in Phnom Penh offer clean rooms near the Riverside for under twenty dollars a night.',
+d02:'Cheap hotel deals in Siem Reap are easy to find, especially during the rainy season.',
+d03:'The Cambodia Academy of Digital Technology offers degrees in software engineering, data science and cybersecurity.',
+d04:'Python is a popular programming language for data science, web development and automation.',
+d05:'A ball python is a small, docile snake that is often kept as a pet.',
+d06:'Java is a statically typed language widely used for enterprise applications and Android development.',
+d07:'Java is an island in Indonesia with more than one hundred million inhabitants.',
+d08:'Angkor Wat is the largest religious monument in the world and attracts millions of visitors every year.',
+d09:'The Mekong River flows through six countries and supports fishing and rice farming along its banks.',
+d10:'Rice is the main crop in Cambodia, and farmers plant it at the start of the rainy season.',
+d11:'Fried noodles and fish amok are popular dishes in Cambodian restaurants.',
+d12:'Buses run every hour from Phnom Penh to Siem Reap, and the trip takes about six hours.',
+d13:'Tuk-tuk drivers in the capital usually negotiate the fare before the ride starts.',
+d14:'Electric vehicles are becoming more common as battery prices fall.',
+d15:'An automobile engine converts fuel into motion using internal combustion.',
+d16:'Her cat sleeps all day, but at night it starts running around the house.',
+d17:'The library catalog lists every category of book, from fiction to computer science.',
+d18:'To concatenate two strings in Python, use the plus operator.',
+d19:'The marathon runners ran through the city streets despite the heat.',
+d20:'Apartments with 2 bedrooms near the university are popular with students.',
+d21:'Machine learning models learn patterns from data instead of following hand-written rules.',
+d22:'Search engines use crawlers to collect web pages and build an index for fast lookup.',
+d23:'A database stores structured records in tables and answers precise queries written in SQL.',
+d24:'The government announced new investment in digital skills and internet access for rural areas.',
+d25:'Coffee shops in the capital are popular places for students to study and meet friends.',
+d26:'Khmer script has no spaces between words, which makes text processing harder.',
+d27:'Airlines added more flights to the coastal city of Sihanoukville for the holiday season.',
+d28:'Learning to program requires regular practice, not only reading books.',
+d29:'The National Museum in Phnom Penh displays Khmer sculpture from the Angkorian period.',
+d30:'Affordable accommodation for backpackers is available in Kampot, including hostels and homestays.'};
+var IDS=Object.keys(DOCS);
+var STOP=new Set("a an the is are was were be been being of to in on at for with and or not this that these those it its as by from into over under about than then so if but".split(" "));
+var SUF=["ational","tional","alize","ation","ative","fulness","ousness","iveness","ing","ies","ied","ly","ed","es","s"];
+function stem(w){for(var i=0;i<SUF.length;i++){var s=SUF[i];if(w.endsWith(s)&&w.length-s.length>=3)return w.slice(0,-s.length);}return w;}
+function rawTokens(t){return t.toLowerCase().match(/[a-z]+/g)||[];}
+function preprocess(t){return rawTokens(t).filter(function(x){return !STOP.has(x);}).map(stem);}
+var DT={},DL={};IDS.forEach(function(d){DT[d]=preprocess(DOCS[d]);DL[d]=DT[d].length;});
+var N=IDS.length,AVGDL=IDS.reduce(function(a,d){return a+DL[d];},0)/N;
+var INDEX={};IDS.forEach(function(d){new Set(DT[d]).forEach(function(t){(INDEX[t]=INDEX[t]||[]).push(d);});});
+Object.keys(INDEX).forEach(function(t){INDEX[t].sort();});
+function tf(t,d){var c=0;DT[d].forEach(function(x){if(x===t)c++;});return c;}
+function df(t){return INDEX[t]?INDEX[t].length:0;}
+function idf(t){var x=df(t);return x?Math.log(N/x):0;}
+var VEC={};IDS.forEach(function(d){var v={};new Set(DT[d]).forEach(function(t){v[t]=tf(t,d)*idf(t);});VEC[d]=v;});
+function cosine(a,b){var dot=0,n1=0,n2=0,k;for(k in a){if(k in b)dot+=a[k]*b[k];n1+=a[k]*a[k];}for(k in b)n2+=b[k]*b[k];n1=Math.sqrt(n1);n2=Math.sqrt(n2);return(n1&&n2)?dot/(n1*n2):0;}
+function qvec(q){var c={};preprocess(q).forEach(function(t){c[t]=(c[t]||0)+1;});var v={};for(var t in c)v[t]=c[t]*idf(t);return v;}
+function rankTfidf(q,k){var qv=qvec(q);return IDS.map(function(d){return[d,cosine(qv,VEC[d])];}).filter(function(x){return x[1]>0;}).sort(function(a,b){return b[1]-a[1];}).slice(0,k||10);}
+function idfBm(t){var x=df(t);return Math.log((N-x+0.5)/(x+0.5)+1);}
+function bm25(q,d,k1,b){var s=0;new Set(preprocess(q)).forEach(function(t){var f=tf(t,d);if(f>0)s+=idfBm(t)*(f*(k1+1))/(f+k1*(1-b+b*DL[d]/AVGDL));});return s;}
+function rankBm25(q,k,k1,b){if(k1==null)k1=1.5;if(b==null)b=0.75;return IDS.map(function(d){return[d,bm25(q,d,k1,b)];}).filter(function(x){return x[1]>0;}).sort(function(a,b2){return b2[1]-a[1];}).slice(0,k||10);}
+function booleanOr(q){var s=new Set();preprocess(q).forEach(function(t){(INDEX[t]||[]).forEach(function(d){s.add(d);});});return Array.from(s).sort();}
+function apOf(r,rel){var h=0,s=0;r.forEach(function(d,i){if(rel.has(d)){h++;s+=h/(i+1);}});return rel.size?s/rel.size:0;}
+function dcgOf(g){return g.reduce(function(a,r,i){return a+(Math.pow(2,r)-1)/Math.log2(i+2);},0);}
+/*ENGINE-END*/
+
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function f2(x){return isNaN(x)?"n/a":x.toFixed(2);}
+function f3(x){return x.toFixed(3);}
+var STOPLIST="a an the is are was were be been being of to in on at for with and or not this that these those it its as by from into over under about than then so if but".split(" ");
+function stemInfo(w){for(var i=0;i<SUF.length;i++){var s=SUF[i];if(w.endsWith(s)&&w.length-s.length>=3)return{stem:w.slice(0,-s.length),suf:s};}return{stem:w,suf:""};}
+
+/* ---------- Generic Run / Step / Speed player ---------- */
+function player(el,o){
+  el.innerHTML='<button class="btn primary" type="button" data-a="run">▶ Run</button>'+
+    '<button class="btn" type="button" data-a="step">Step ›</button>'+
+    '<button class="btn" type="button" data-a="end">Skip to end</button>'+
+    '<button class="btn" type="button" data-a="reset">Reset</button>'+
+    '<label class="ctl">Speed <input type="range" min="1" max="5" value="3" aria-label="Animation speed"></label>'+
+    '<span class="pos mono small"></span>';
+  var run=el.querySelector('[data-a="run"]'),rng=el.querySelector("input"),pos=el.querySelector(".pos");
+  var i=0,n=1,t=null,mult=[0,2.4,1.5,1,0.45,0.12];
+  function wait(){return (o.interval||500)*mult[+rng.value];}
+  function show(){pos.textContent="step "+i+" / "+(n-1);o.render(i);}
+  function stop(){if(t){clearTimeout(t);t=null;}run.textContent="▶ Run";}
+  function tick(){if(i>=n-1){stop();return;}i++;show();if(i>=n-1){stop();return;}t=setTimeout(tick,wait());}
+  el.addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;var a=b.dataset.a;
+    if(a==="run"){if(t){stop();return;}if(i>=n-1){i=0;show();}run.textContent="❚❚ Pause";t=setTimeout(tick,wait());}
+    else if(a==="step"){stop();i=i>=n-1?0:i+1;show();}
+    else if(a==="end"){stop();i=n-1;show();}
+    else if(a==="reset"){stop();i=0;show();}
+  });
+  return{refresh:function(atStart){stop();n=Math.max(1,o.count());i=atStart?0:n-1;show();}};
+}
+function scrollInto(box,el){if(!el)return;var top=el.offsetTop;if(top<box.scrollTop+10||top>box.scrollTop+box.clientHeight-40)box.scrollTop=Math.max(0,top-box.clientHeight/2);}
+
+/* ---------- Theme ---------- */
+(function(){
+  var btn=$("theme-btn"),lbl=$("theme-lbl"),root=document.documentElement;
+  function isDark(){var a=root.getAttribute("data-theme");if(a)return a==="dark";return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;}
+  function paint(){lbl.textContent=isDark()?"Light mode":"Dark mode";}
+  btn.addEventListener("click",function(){var n=isDark()?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("qc-theme",n);}catch(e){}paint();});
+  paint();
+})();
+
+/* ---------- TOC + progress ---------- */
+(function(){
+  var links=[].slice.call(document.querySelectorAll(".toc a[href^='#']"));
+  var targets=links.map(function(a){return document.getElementById(a.getAttribute("href").slice(1));});
+  var pp=$("pp"),pct=$("pp-pct"),sec=$("pp-sec"),bar=$("pp-bar");
+  if(window.matchMedia&&matchMedia("(max-width:960px)").matches)$("toc-d").open=false;
+  function onScroll(){
+    var y=window.scrollY,h=document.documentElement.scrollHeight-innerHeight,p=h>0?Math.min(100,Math.round(y/h*100)):0;
+    var cur=-1;for(var i=0;i<targets.length;i++){if(targets[i]&&targets[i].getBoundingClientRect().top<120)cur=i;}
+    links.forEach(function(a,i){a.classList.toggle("active",i===cur);});
+    pct.textContent=p+"%";bar.style.width=p+"%";sec.textContent=cur>=0?links[cur].textContent:"Contents";
+    pp.classList.toggle("show",y>500);
+  }
+  addEventListener("scroll",onScroll,{passive:true});onScroll();
+})();
+
+/* ---------- Lab 1: watch the naive scan ---------- */
+(function(){
+  var J1={N1:["d01","d02","d30"],N2:["d04","d18"],N3:["d12"],N4:["d14","d15"],N5:["d16"],N6:["d19"]};
+  var need="N5",mode="sub",inp=$("nv-q"),ctx,box=$("nv-scan");
+  function words(t){return t.toLowerCase().match(/\w+/g)||[];}
+  function hl(text,terms,sub){
+    if(!terms.length)return esc(text);
+    var src=terms.map(function(t){return t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}).join("|");
+    var re=sub?new RegExp("("+src+")","gi"):new RegExp("\\b("+src+")\\b","gi");
+    return esc(text).replace(re,"<mark>$1</mark>");
+  }
+  function why(r){
+    var q=ctx.terms;if(!q.length)return"Type a query.";
+    if(mode==="sub"){
+      if(!r.m)return"<b>"+r.d+"</b>: the letters “"+esc(q[0])+"” don't appear anywhere, so skip.";
+      var w=words(DOCS[r.d]).filter(function(x){return x.indexOf(q[0])>=0;})[0];
+      return "<b>"+r.d+"</b>: “"+esc(q[0])+"” found"+(w&&w!==q[0]?" <b>inside “"+esc(w)+"”</b>":"")+", so it's a match"+(w&&w!==q[0]?" (a word-boundary accident)":"")+".";
+    }
+    var dw=words(DOCS[r.d]),have=q.filter(function(t){return dw.indexOf(t)>=0;}),miss=q.filter(function(t){return dw.indexOf(t)<0;});
+    if(mode==="and")return"<b>"+r.d+"</b>: "+(r.m?"has every query word, so it's a match.":"missing "+miss.map(function(x){return"“"+esc(x)+"”";}).join(", ")+", so skip (AND needs all of them).");
+    return"<b>"+r.d+"</b>: "+(r.m?"has "+have.map(function(x){return"“"+esc(x)+"”";}).join(", ")+", so it's a match (OR needs just one).":"no query word, so skip.");
+  }
+  function compute(){
+    var q=inp.value.trim(),terms=mode==="sub"?(q?[q.toLowerCase()]:[]):words(q);
+    var rel=need?new Set(J1[need]):null;
+    ctx={terms:terms,rel:rel,res:IDS.map(function(d){
+      var m=false,w=words(DOCS[d]);
+      if(terms.length){if(mode==="sub")m=DOCS[d].toLowerCase().indexOf(terms[0])>=0;else m=mode==="and"?terms.every(function(t){return w.indexOf(t)>=0;}):terms.some(function(t){return w.indexOf(t)>=0;});}
+      return{d:d,m:m,cost:mode==="sub"?DOCS[d].length:w.length};})};
+    box.innerHTML=ctx.res.map(function(r){return '<div class="srow"><span class="id">'+r.d+(rel&&rel.has(r.d)?'<i class="relb">rel</i>':'')+'</span><span class="tx"></span><span class="mk"></span></div>';}).join("");
+  }
+  function render(i){
+    var rows=box.children,hits=0,cost=0,tp=0;
+    ctx.res.forEach(function(r,j){
+      var el=rows[j],seen=j<i,st=seen?(r.m?"hit":"miss"):"pend";
+      el.className="srow "+st+(j===i-1?" cur":"");
+      el.children[1].innerHTML=seen&&r.m?hl(DOCS[r.d],ctx.terms,mode==="sub"):esc(DOCS[r.d]);
+      el.children[2].textContent=seen?(r.m?"✓":"·"):"";
+      if(seen){cost+=r.cost;if(r.m){hits++;if(ctx.rel&&ctx.rel.has(r.d))tp++;}}
+    });
+    var done=i===ctx.res.length,R=ctx.rel?ctx.rel.size:0;
+    var k=[["Documents read",i+" / 30"],[mode==="sub"?"Characters compared":"Words compared",cost.toLocaleString()],["Matches",hits]];
+    if(ctx.rel)k.push(["Precision",done?(hits?f2(tp/hits):"n/a"):"…"],["Recall",done?f2(tp/R):"…"]);
+    $("nv-kpis").innerHTML=k.map(function(x){return'<div class="kpi"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>';}).join("");
+    var m;
+    if(i===0)m="Press <b>Run</b>. A naive search has no index, so it must open every document and check it.";
+    else if(done)m="Done. It read <b>all 30 documents</b> ("+cost.toLocaleString()+" "+(mode==="sub"?"characters":"words")+") to answer one query, and returns "+hits+" match(es) in document-id order with no ranking."+(ctx.rel?" Relevant for "+need+": {"+J1[need].join(", ")+"}, so precision "+(hits?tp+"/"+hits:"n/a")+", recall "+tp+"/"+R+".":"");
+    else m=why(ctx.res[i-1]);
+    $("nv-msg").innerHTML=m;
+    if(i>0&&!done)scrollInto(box,rows[i-1]);
+  }
+  var pl=player($("nv-player"),{count:function(){return ctx.res.length+1;},render:render,interval:450});
+  function refresh(){compute();pl.refresh();box.scrollTop=0;}
+  document.querySelectorAll("[data-nq]").forEach(function(b){b.addEventListener("click",function(){var p=b.dataset.nq.split("|");need=p[0];inp.value=p[1];document.querySelectorAll("[data-nq]").forEach(function(x){x.classList.toggle("on",x===b);});refresh();});});
+  document.querySelectorAll("[data-nm]").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.nm;document.querySelectorAll("[data-nm]").forEach(function(x){x.classList.toggle("on",x===b);});refresh();});});
+  inp.addEventListener("input",function(){need=null;document.querySelectorAll("[data-nq]").forEach(function(x){x.classList.remove("on");});refresh();});
+  refresh();
+})();
+
+/* ---------- Lab 2: pipeline, step by step ---------- */
+(function(){
+  var inp=$("pp-in"),frames,toks,kept,stems,text;
+  function build(){
+    text=inp.value;toks=rawTokens(text);kept=toks.filter(function(t){return !STOP.has(t);});stems=kept.map(stemInfo);
+    frames=[{s:0},{s:1},{s:2}];
+    toks.forEach(function(t,j){frames.push({s:3,j:j});});frames.push({s:3,j:toks.length});
+    kept.forEach(function(t,m){frames.push({s:4,m:m});});frames.push({s:4,m:kept.length});
+    frames.push({s:5});
+  }
+  function markOrig(showStop,showNum){
+    return esc(text).replace(/[A-Za-z]+|[0-9]+/g,function(w){
+      if(/^[0-9]/.test(w))return showNum?'<span class="numx">'+w+'</span>':w;
+      return showStop&&STOP.has(w.toLowerCase())?'<span class="sw">'+w+'</span>':w;});
+  }
+  function stage(n,label,cur,html){return'<div class="stg '+(cur===n?"act":(cur<n?"wait":""))+'"><b>'+label+'</b><div>'+(cur>=n?html:'<span class="small muted">waiting…</span>')+'</div></div>';}
+  function render(i){
+    var f=frames[i],s=f.s,j=s===3?f.j:(s>3?toks.length:-1),m=s===4?f.m:(s>4?kept.length:-1),html="",msg="";
+    html+=stage(0,"Original",s,'<div>'+markOrig(s>=3,s>=2)+'</div>');
+    html+=stage(1,"1 · Lowercase",s,'<div class="mono small">'+esc(text.toLowerCase())+'</div>');
+    var nums=text.match(/[0-9]+/g)||[];
+    html+=stage(2,"2 · Tokenize",s,'<div class="toks">'+(toks.map(function(t){return'<span>'+esc(t)+'</span>';}).join("")||'<span class="pend">(no tokens)</span>')+'</div>'+(nums.length?'<div class="small muted">Dropped by [a-z]+: '+esc(nums.join(", "))+'</div>':''));
+    html+=stage(3,"3 · Stop words",s,'<div class="toks">'+toks.map(function(t,k){
+      var sw=STOP.has(t),c=k<j?(sw?"gone stopw":""):(k===j?"cur"+(sw?" stopw":""):"pend");
+      return'<span class="'+c+'">'+esc(t)+'</span>';}).join("")+'</div>');
+    html+=stage(4,"4 · Stem",s,'<div class="toks">'+(kept.map(function(t,k){
+      var st=stems[k];if(k<m)return'<span class="'+(st.suf?"chg":"")+'">'+esc(st.stem)+(st.suf?'<s>'+st.suf+'</s>':'')+'</span>';
+      return'<span class="'+(k===m?"cur":"pend")+'">'+esc(t)+'</span>';}).join("")||'<span class="pend">(nothing left)</span>')+'</div>');
+    html+=stage(5,"5 · Index terms",s,'<div class="readout">['+stems.map(function(x){return x.stem;}).join(", ")+']</div>');
+    $("pp-out").innerHTML=html;
+    if(s===0)msg="Press <b>Run</b> to push this text through the Lab 2 pipeline.";
+    else if(s===1)msg="Lowercase everything, so “Python” and “python” become the same.";
+    else if(s===2)msg="Cut the text into tokens with <code>[a-z]+</code>. Punctuation"+(nums.length?" and the digits ("+esc(nums.join(", "))+")":"")+" disappear. "+toks.length+" tokens.";
+    else if(s===3&&j<toks.length){var t=toks[j];msg=STOP.has(t)?"Is “<b>"+esc(t)+"</b>” on the stop list? <b>Yes</b>, so it's removed.":"Is “<b>"+esc(t)+"</b>” on the stop list? No, so keep it.";}
+    else if(s===3){var gone=toks.length-kept.length;msg="Stop words removed: "+gone+" of "+toks.length+" tokens ("+(toks.length?Math.round(100*gone/toks.length):0)+"%)."+(gone&&!kept.length?" Nothing is left. That's the “to be or not to be” problem.":"")+(toks.indexOf("not")>=0?" Note “not” was removed, so the meaning can flip.":"");}
+    else if(s===4&&m<kept.length){var st=stems[m];msg=st.suf?"“<b>"+esc(kept[m])+"</b>” ends in <b>-"+st.suf+"</b> and at least 3 letters remain, so cut it: <b>"+esc(st.stem)+"</b>.":"“<b>"+esc(kept[m])+"</b>”: no suffix rule applies (or the stem would be shorter than 3 letters), so it stays.";}
+    else if(s===4)msg="Stemming done. Words with a cut suffix are filled in.";
+    else msg="These "+stems.length+" terms go into the inverted index. A query must go through the exact same steps.";
+    $("pp-msg").innerHTML=msg;
+    var seen=new Set(toks.slice(0,Math.max(0,j+(s===3?1:0))).filter(function(t){return STOP.has(t);}));
+    if(s<3)seen=new Set();
+    var now=s===3&&j<toks.length&&STOP.has(toks[j])?toks[j]:null;
+    $("pp-stoplist").innerHTML=STOPLIST.map(function(w){return'<span class="'+(seen.has(w)?"lit":"")+(w===now?" now pop":"")+'">'+w+'</span>';}).join("");
+    $("pp-cnt").textContent=s>=3?"· "+seen.size+" of them appear in this text":"";
+  }
+  var pl=player($("pp-player"),{count:function(){return frames.length;},render:render,interval:650});
+  function refresh(){build();pl.refresh();}
+  inp.addEventListener("input",refresh);
+  document.querySelectorAll("[data-pp]").forEach(function(b){b.addEventListener("click",function(){var v=b.dataset.pp;inp.value=DOCS[v]||v;refresh();});});
+  refresh();
+})();
+
+/* ---------- Lab 2: watch the index build ---------- */
+(function(){
+  var W=["phnom","penh","siem","reap","python","java","rice","season","popular","student","cambodia","cambodian"];
+  var adds=[];IDS.forEach(function(d){var seen=[];DT[d].forEach(function(t){if(seen.indexOf(t)<0){seen.push(t);adds.push({d:d,t:t});}});});
+  function render(i){
+    var idx={},vocab=0;
+    for(var k=0;k<i;k++){var a=adds[k];if(!idx[a.t]){idx[a.t]=[];vocab++;}idx[a.t].push(a.d);}
+    var last=adds[i-1],d=last?last.d:null;
+    var docsDone=last?IDS.indexOf(d)+(adds[i]&&adds[i].d===d?0:1):0;
+    $("ix-kpis").innerHTML=[["Documents indexed",docsDone+" / 30"],["Vocabulary",vocab],["Postings entries",i]].map(function(x){return'<div class="kpi"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>';}).join("");
+    if(!d){$("ix-doc").innerHTML='<span class="id">Ready</span><p class="small muted" style="margin:0">Press Run. The index starts empty: every term is new the first time it appears.</p>';}
+    else{
+      var uniq=[];DT[d].forEach(function(t){if(uniq.indexOf(t)<0)uniq.push(t);});
+      var pos=uniq.indexOf(last.t),isNew=idx[last.t].length===1;
+      $("ix-doc").innerHTML='<span class="id">'+d+'</span><div class="small">'+esc(DOCS[d])+'</div><div class="toks">'+uniq.map(function(t,k){return'<span class="'+(k<pos?"chg":(k===pos?"cur":"pend"))+'">'+esc(t)+'</span>';}).join("")+'</div>'+
+        '<div class="msg"><b>'+esc(last.t)+'</b> → '+(isNew?'new term, start a list: ':'append to its list: ')+'['+idx[last.t].join(", ")+']</div>';
+    }
+    var rows=W.map(function(t){var p=idx[t]||[];return'<div class="prow'+(last&&last.t===t?" hot":"")+'"><b>'+t+'</b><div class="plist">'+(p.length?p.map(function(x,k){return'<span class="'+(last&&last.t===t&&k===p.length-1?"new pop":"")+'">'+x+'</span>';}).join(""):'<span class="done">[]</span>')+'</div></div>';});
+    if(last&&W.indexOf(last.t)<0)rows.push('<div class="prow hot"><b>'+esc(last.t)+'</b><div class="plist">'+idx[last.t].map(function(x,k,a){return'<span class="'+(k===a.length-1?"new pop":"")+'">'+x+'</span>';}).join("")+'<span class="lbl" style="min-width:0">(untracked term)</span></div></div>');
+    $("ix-table").innerHTML=rows.join("");
+  }
+  var pl=player($("ix-player"),{count:function(){return adds.length+1;},render:render,interval:220});
+  pl.refresh();
+  function look(){var w=$("ix-q").value,t=preprocess(w);
+    $("ix-look").textContent=!w.trim()?"Type a word.":(!t.length?"“"+w+"” is a stop word or has no letters, so it's not in the index.":t.map(function(x){return x+" → ["+(INDEX[x]||[]).join(", ")+"]   df = "+df(x);}).join("\n"));}
+  $("ix-q").addEventListener("input",look);look();
+})();
+
+/* ---------- Lab 2: merge, animated ---------- */
+(function(){
+  var frames,op,a,b;
+  function post(w){var t=preprocess(w);return t.length?(INDEX[t[0]]||[]):[];}
+  function termOf(w){var t=preprocess(w);return t.length?t[0]:"(stop word)";}
+  function build(){
+    op=$("mg-op").value;a=post($("mg-a").value);b=post($("mg-b").value);
+    if(op==="not")b=IDS.filter(function(d){return b.indexOf(d)<0;});
+    var i=0,j=0,ans=[];
+    frames=[{i:0,j:0,ans:[],msg:op==="not"?"AND NOT: first take NOT("+esc(termOf($("mg-b").value))+"), the complement over all 30 ids. Then intersect. Press <b>Run</b>.":"Two sorted lists, one pointer (filled box) on each. Press <b>Run</b>."}];
+    while(i<a.length&&j<b.length){
+      var x=a[i],y=b[j],m;
+      if(x===y){ans.push(x);m="<b>"+x+" = "+y+"</b>: in both lists, so keep it and move both pointers.";i++;j++;}
+      else if(x<y){if(op==="or")ans.push(x);m="<b>"+x+" &lt; "+y+"</b>: "+x+" can't be in the bottom list"+(op==="or"?", but OR keeps it":"")+". Move the top pointer.";i++;}
+      else{if(op==="or")ans.push(y);m="<b>"+x+" &gt; "+y+"</b>: "+y+" can't be in the top list"+(op==="or"?", but OR keeps it":"")+". Move the bottom pointer.";j++;}
+      frames.push({i:i,j:j,ans:ans.slice(),msg:m});
+    }
+    if(op==="or"&&(i<a.length||j<b.length)){ans=ans.concat(a.slice(i),b.slice(j));frames.push({i:a.length,j:b.length,ans:ans.slice(),msg:"One list is used up. OR appends whatever is left in the other."});i=a.length;j=b.length;}
+    frames.push({i:i,j:j,ans:ans.slice(),done:true,msg:"Done in "+(frames.length-1)+" comparisons, never reading any document text. Answer: <b>["+ans.join(", ")+"]</b>."});
+  }
+  function lst(label,arr,ptr,done){return'<div class="plist"><span class="lbl">'+esc(label)+'</span>'+(arr.length?arr.map(function(d,k){return'<span class="'+(k===ptr&&!done?"ptr":(k<ptr?"done":""))+'">'+d+'</span>';}).join(""):'<span class="done">(empty)</span>')+'</div>';}
+  function render(k){
+    var f=frames[k],la=termOf($("mg-a").value),lb=(op==="not"?"NOT ":"")+termOf($("mg-b").value);
+    $("mg-lists").innerHTML=lst(la,a,f.i,f.done)+lst(lb,b,f.j,f.done)+'<div class="plist"><span class="lbl">Answer</span>'+(f.ans.length?f.ans.map(function(d,n){return'<span class="ans'+(n===f.ans.length-1&&!f.done?" pop":"")+'">'+d+'</span>';}).join(""):'<span class="done">(empty so far)</span>')+'</div>';
+    $("mg-msg").innerHTML=f.msg;
+  }
+  var pl=player($("mg-player"),{count:function(){return frames.length;},render:render,interval:900});
+  function refresh(){build();pl.refresh(true);}
+  ["mg-a","mg-b","mg-op"].forEach(function(id){$(id).addEventListener("input",refresh);$(id).addEventListener("change",refresh);});
+  document.querySelectorAll("[data-mg]").forEach(function(bt){bt.addEventListener("click",function(){var p=bt.dataset.mg.split("|");$("mg-a").value=p[0];$("mg-op").value=p[1];$("mg-b").value=p[2];refresh();});});
+  refresh();
+})();
+
+/* ---------- Saturation chart with a moving tf marker ---------- */
+(function(){
+  var W=600,H=260,L=44,R=16,T=14,B=34,X=20,Y=6,tfm=20;
+  function sx(v){return L+v/X*(W-L-R);} function sy(v){return H-B-v/Y*(H-T-B);}
+  function draw(){
+    var k=parseFloat($("sat-k").value);$("sat-kv").textContent=k.toFixed(1);
+    var s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Score against term frequency: a straight line for linear TF and a curve that levels off for BM25">';
+    for(var y=0;y<=Y;y+=1)s+='<line class="c-grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+sy(y)+'" y2="'+sy(y)+'"/><text class="c-txt" x="'+(L-8)+'" y="'+(sy(y)+4)+'" text-anchor="end">'+y+'</text>';
+    for(var x=0;x<=X;x+=5)s+='<text class="c-txt" x="'+sx(x)+'" y="'+(H-B+16)+'" text-anchor="middle">'+x+'</text>';
+    s+='<line class="c-axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+sy(0)+'" y2="'+sy(0)+'"/><line class="c-axis" x1="'+L+'" x2="'+L+'" y1="'+T+'" y2="'+sy(0)+'"/>';
+    s+='<text class="c-txt" x="'+(W-R)+'" y="'+(H-4)+'" text-anchor="end">term frequency tf</text>';
+    var lin="",cur="";for(var t=0;t<=X;t+=0.25){lin+=(t?"L":"M")+sx(t).toFixed(1)+","+sy(Math.min(t*0.3,Y)).toFixed(1);cur+=(t?"L":"M")+sx(t).toFixed(1)+","+sy(t*(k+1)/(t+k)).toFixed(1);}
+    s+='<path class="c-lin" d="'+lin+'"/><path class="c-curve" d="'+cur+'"/>';
+    if(k+1<=Y)s+='<line class="c-cap" x1="'+L+'" x2="'+(W-R)+'" y1="'+sy(k+1)+'" y2="'+sy(k+1)+'"/><text class="c-txt" x="'+(W-R-4)+'" y="'+(sy(k+1)-6)+'" text-anchor="end">ceiling k1+1 = '+(k+1).toFixed(1)+'</text>';
+    var bm=tfm*(k+1)/(tfm+k),li=tfm*0.3;
+    s+='<line class="c-cap" x1="'+sx(tfm)+'" x2="'+sx(tfm)+'" y1="'+T+'" y2="'+sy(0)+'"/>';
+    s+='<circle class="c-dot" cx="'+sx(tfm)+'" cy="'+sy(bm)+'" r="5"/><circle cx="'+sx(tfm)+'" cy="'+sy(li)+'" r="4.5" fill="var(--bg)" stroke="var(--ink)" stroke-width="1.5"/>';
+    s+='<text class="c-txt" x="'+sx(14.5)+'" y="'+(sy(4.35)-8)+'">linear TF (×0.3)</text></svg>';
+    $("sat-svg").innerHTML=s;
+    var prev=tfm>0?(bm-(tfm-1)*(k+1)/(tfm-1+k)):0;
+    $("sat-out").textContent="tf = "+tfm+"  ->  BM25 term score "+bm.toFixed(2)+"  (ceiling "+(k+1).toFixed(1)+")"+(tfm>0?"\nthis one extra repetition added +"+prev.toFixed(3)+(tfm>1?"   (the 1st occurrence added +1.000)":""):"")+"\nLinear TF just keeps adding the same amount forever.\nLab 3 printed 1.00 / 1.82 / 2.17 for tf = 1 / 4 / 10 at k1 = 1.5.";
+  }
+  var pl=player($("sat-player"),{count:function(){return X+1;},render:function(i){tfm=i;draw();},interval:350});
+  $("sat-k").addEventListener("input",draw);pl.refresh();
+})();
+
+/* ---------- Lab 3: rankers, score breakdown, race ---------- */
+var RANKUI=(function(){
+  var inp=$("rk-q"),sel=null,race;
+  function params(){return{q:inp.value,k1:parseFloat($("rk-k").value),b:parseFloat($("rk-b").value)};}
+  function lk(d){return'<button class="lk'+(d===sel?" sel":"")+'" type="button" data-why="'+d+'">'+d+'</button>';}
+  function why(){
+    var p=params(),d=sel;if(!d){$("rk-why").innerHTML="";return;}
+    var qv=qvec(p.q),dv=VEC[d],qt=Object.keys(qv),dot=0,nq=0,nd=0,t;
+    for(t in qv)nq+=qv[t]*qv[t];for(t in dv)nd+=dv[t]*dv[t];nq=Math.sqrt(nq);nd=Math.sqrt(nd);
+    var r1=qt.map(function(t){var a=qv[t],b=dv[t]||0;dot+=a*b;return'<tr><td><code>'+esc(t)+'</code></td><td class="num">'+f3(a)+'</td><td class="num">'+f3(b)+'</td><td class="num">'+f3(a*b)+'</td></tr>';}).join("");
+    var cos=nq&&nd?dot/(nq*nd):0;
+    var K=p.k1*(1-p.b+p.b*DL[d]/AVGDL),uq=Array.from(new Set(preprocess(p.q))),tot=0;
+    var parts=uq.map(function(t){var f=tf(t,d),ib=idfBm(t),c=f>0?ib*f*(p.k1+1)/(f+K):0;tot+=c;return{t:t,f:f,ib:ib,c:c};});
+    var mx=Math.max.apply(null,parts.map(function(x){return x.c;}).concat([1e-9]));
+    var r2=parts.map(function(x){return'<tr><td><code>'+esc(x.t)+'</code></td><td class="num">'+x.f+'</td><td class="num">'+f3(x.ib)+'</td><td class="num">'+f3(x.c)+'</td><td style="min-width:90px"><span class="cbar" style="width:'+(x.c/mx*100).toFixed(1)+'%"></span></td></tr>';}).join("");
+    $("rk-why").innerHTML='<div class="msg"><b>'+d+'</b>: '+esc(DOCS[d])+'<br><span class="small muted">Terms: ['+DT[d].join(", ")+'] · |d| = '+DL[d]+' · avgdl = '+AVGDL.toFixed(2)+'</span></div>'+
+      '<div class="grid2"><div style="min-width:0"><h4 style="margin:0 0 6px">TF-IDF cosine</h4><div class="tbl" style="margin:0"><table><thead><tr><th>Term</th><th class="num">q weight</th><th class="num">d weight</th><th class="num">q×d</th></tr></thead><tbody>'+(r1||'<tr><td colspan="4">No query terms.</td></tr>')+'</tbody></table></div>'+
+      '<div class="readout" style="margin-top:8px">dot   = '+f3(dot)+'\n|q|   = '+f3(nq)+'\n|d|   = '+f3(nd)+'  (from all '+Object.keys(dv).length+' terms of '+d+')\ncos   = '+f3(dot)+' / ('+f3(nq)+' × '+f3(nd)+') = '+f3(cos)+'</div></div>'+
+      '<div style="min-width:0"><h4 style="margin:0 0 6px">BM25 (k1 '+p.k1.toFixed(1)+', b '+p.b.toFixed(2)+')</h4><div class="tbl" style="margin:0"><table><thead><tr><th>Term</th><th class="num">tf</th><th class="num">idf</th><th class="num">score</th><th>share</th></tr></thead><tbody>'+(r2||'<tr><td colspan="5">No query terms.</td></tr>')+'</tbody></table></div>'+
+      '<div class="readout" style="margin-top:8px">length part K = k1·(1 − b + b·|d|/avgdl)\n  = '+p.k1.toFixed(1)+'·(1 − '+p.b.toFixed(2)+' + '+p.b.toFixed(2)+'·'+DL[d]+'/'+AVGDL.toFixed(2)+') = '+f3(K)+'\neach term: idf · tf·(k1+1) / (tf + K)\nBM25 = '+f3(tot)+'</div></div></div>';
+  }
+  function run(){
+    var p=params();$("rk-kv").textContent=p.k1.toFixed(1);$("rk-bv").textContent=p.b.toFixed(2);
+    var terms=preprocess(p.q);
+    $("rk-terms").textContent=terms.length?"Query terms after preprocessing: "+terms.map(function(t){return t+" (df "+df(t)+", idf "+idf(t).toFixed(3)+")";}).join(", ")+"\nN = 30, avgdl = "+AVGDL.toFixed(1):"No index terms left after preprocessing.";
+    var bo=booleanOr(p.q),tf_=rankTfidf(p.q,10),bm=rankBm25(p.q,10,p.k1,p.b),n=Math.max(bo.length,tf_.length,bm.length),rows="";
+    if(!sel||(bm.length&&!bm.some(function(x){return x[0]===sel;})&&!tf_.some(function(x){return x[0]===sel;})))sel=bm.length?bm[0][0]:null;
+    for(var i=0;i<Math.min(n,10);i++)rows+='<tr><td class="num">'+(i+1)+'</td><td>'+(bo[i]?lk(bo[i]):'')+'</td><td>'+(tf_[i]?lk(tf_[i][0])+' '+f3(tf_[i][1]):'')+'</td><td>'+(bm[i]?lk(bm[i][0])+' '+f3(bm[i][1]):'')+'</td></tr>';
+    if(!n){rows='<tr><td></td><td colspan="3">No document shares a term with this query. That is vocabulary mismatch: ranking can only sort documents that match.</td></tr>';sel=null;}
+    $("rk-body").innerHTML=rows;why();if(race)race();
+  }
+  $("rk-body").addEventListener("click",function(e){var b=e.target.closest("[data-why]");if(!b)return;sel=b.dataset.why;run();});
+  inp.addEventListener("input",run);["rk-k","rk-b"].forEach(function(id){$(id).addEventListener("input",run);});
+  $("rk-def").addEventListener("click",function(){$("rk-k").value=1.5;$("rk-b").value=0.75;run();});
+  document.querySelectorAll("[data-rk]").forEach(function(b){b.addEventListener("click",function(){inp.value=b.dataset.rk;sel=null;run();});});
+  return{params:params,run:run,setRace:function(f){race=f;}};
+})();
+(function(){
+  var model="bm25",sc,mx,qterms;
+  function compute(){
+    var p=RANKUI.params(),qv=qvec(p.q);qterms=new Set(preprocess(p.q));
+    sc=IDS.map(function(d){return model==="bm25"?bm25(p.q,d,p.k1,p.b):cosine(qv,VEC[d]);});
+    mx=Math.max.apply(null,sc.concat([1e-9]));
+  }
+  function render(i){
+    var sorted=i>30,order=IDS.map(function(d,k){return k;});
+    if(sorted)order.sort(function(a,b){return sc[b]-sc[a]||a-b;});
+    var rank=0;
+    $("rc-rows").innerHTML=order.map(function(k){
+      var d=IDS[k],done=sorted||k<i,s=sc[k],cls="rrow"+(done?(s>0?"":" z"):" wait")+(!sorted&&k===i-1?" cur":"");
+      var rk=sorted&&s>0?++rank:"";
+      return'<div class="'+cls+'"><span>'+rk+'</span><span>'+d+'</span><span class="trk"><span class="bar" style="width:'+(done?(s/mx*100).toFixed(1):0)+'%"></span></span><span class="v">'+(done?f3(s):"")+'</span></div>';
+    }).join("");
+    var m;
+    if(i===0)m="Press <b>Run</b>. Every document gets a score, even the ones that clearly won't match.";
+    else if(!sorted){var d=IDS[i-1],sh=Array.from(new Set(DT[d])).filter(function(t){return qterms.has(t);});m="<b>"+d+"</b>: "+(sh.length?"shares "+sh.map(function(t){return"“"+t+"”";}).join(", ")+", score <b>"+f3(sc[i-1])+"</b>":"shares no query term, score 0");}
+    else{var top=order.filter(function(k){return sc[k]>0;}).slice(0,3).map(function(k){return IDS[k];});m=top.length?"Sorted by score. Top results: <b>"+top.join(", ")+"</b>. That's the whole of ranked retrieval: score everything, sort, return the top k.":"Every score is 0, so there's nothing to rank (vocabulary mismatch).";}
+    $("rc-msg").innerHTML=m;
+  }
+  var pl=player($("rc-player"),{count:function(){return 32;},render:render,interval:260});
+  function refresh(){compute();pl.refresh();}
+  document.querySelectorAll("[data-rm]").forEach(function(b){b.addEventListener("click",function(){model=b.dataset.rm;document.querySelectorAll("[data-rm]").forEach(function(x){x.classList.toggle("on",x===b);});refresh();});});
+  RANKUI.setRace(refresh);RANKUI.run();
+})();
+
+/* ---------- Lab 4: metrics bench with walk-through ---------- */
+(function(){
+  var P={lect:[["d18",1],["d04",3],["d05",0]],tfidf:[["d04",3],["d18",2],["d05",0]],bm25:[["d18",2],["d05",0],["d04",3]],
+    n3:[["d12",3],["d02",1],["d29",1],["d01",1]],n6:[["d16",2],["d19",3]]};
+  var NOTE={n6:"Both rankers return only d16. d19 is shown at rank 2 so you can see the ideal; set k = 1 to match Lab 4.",
+    n3:"Lab 4's binary judgments for N3 count only d12; here grade ≥ 1 counts as relevant, so P, R and AP differ from the lab. NDCG matches."};
+  var rows,cur="lect",pl;
+  function load(k){cur=k;rows=P[k].map(function(r){return r.slice();});$("bn-k").max=Math.max(rows.length,1);$("bn-k").value=Math.min(3,rows.length);pl.refresh();}
+  function render(step){
+    var k=Math.min(parseInt($("bn-k").value,10),rows.length);$("bn-kv").textContent=k;
+    $("bn-rows").innerHTML=rows.map(function(r,i){
+      return'<div class="mrow'+(i===step-1&&step<=rows.length&&step!==rows.length?" cur":(i===step-1&&step===rows.length?" cur":""))+'"><span class="rk">'+(i+1)+'</span><span class="id">'+r[0]+'</span><span class="tx">'+esc(DOCS[r[0]])+'</span><span class="ct">'+
+        [0,1,2,3].map(function(g){return'<button class="btn sm'+(r[1]===g?" on":"")+'" data-g="'+i+'|'+g+'" aria-label="Grade '+g+' for '+r[0]+'">'+g+'</button>';}).join("")+
+        '<button class="btn sm" data-mv="'+i+'|-1" aria-label="Move '+r[0]+' up"'+(i===0?" disabled":"")+'>↑</button><button class="btn sm" data-mv="'+i+'|1" aria-label="Move '+r[0]+' down"'+(i===rows.length-1?" disabled":"")+'>↓</button></span></div>';
+    }).join("");
+    var rel=new Set(rows.filter(function(r){return r[1]>0;}).map(function(r){return r[0];})),R=rel.size;
+    var hit=rows.slice(0,k).filter(function(r){return r[1]>0;}).length,p=hit/k,rc=R?hit/R:0,f=p+rc?2*p*rc/(p+rc):0;
+    var ap=apOf(rows.map(function(r){return r[0];}),rel);
+    var g=rows.slice(0,k).map(function(r){return r[1];}),ideal=rows.map(function(r){return r[1];}).sort(function(a,b){return b-a;}).slice(0,k);
+    var dcg=dcgOf(g),idcg=dcgOf(ideal),nd=idcg?dcg/idcg:0;
+    $("bn-kpis").innerHTML=[["P@"+k,p],["R@"+k,rc],["F1@"+k,f],["AP",ap],["NDCG@"+k,nd]].map(function(x){return'<div class="kpi"><b>'+f2(x[1])+'</b><span>'+x[0]+'</span></div>';}).join("");
+    // bars
+    $("bn-bars").innerHTML=rows.map(function(r,i){var gain=Math.pow(2,r[1])-1,c=gain/Math.log2(i+2),on=i<step&&i<k;
+      return'<div class="gb'+(on?"":" wait")+'"><span>'+(i+1)+'</span><span class="tr"><i class="g" style="width:'+(gain/7*100).toFixed(1)+'%"></i><i class="c" style="width:calc('+(c/7*100).toFixed(1)+'% - 3px)"></i></span><span class="v">'+(on?"+"+c.toFixed(2):(i>=k?"beyond k":""))+'</span></div>';}).join("");
+    // ledger
+    var h=0,s=0,dc=0,lines=["Relevant (grade ≥ 1): {"+Array.from(rel).join(", ")+"}   R = "+R+"   cutoff k = "+k];
+    for(var i=0;i<Math.min(step,rows.length);i++){
+      var r=rows[i],gain=Math.pow(2,r[1])-1,disc=Math.log2(i+2),line="rank "+(i+1)+"  "+r[0]+"  grade "+r[1]+"  ";
+      if(r[1]>0){h++;s+=h/(i+1);line+="relevant: precision here "+h+"/"+(i+1)+" = "+f2(h/(i+1))+" → AP sum "+f2(s);}else line+="not relevant: AP sum stays "+f2(s);
+      if(i<k){dc+=gain/disc;line+="\n         DCG += "+gain+"/"+disc.toFixed(2)+" = "+(gain/disc).toFixed(2)+"  → DCG "+dc.toFixed(2);}else line+="\n         (below cutoff k: not counted in DCG@"+k+")";
+      lines.push(line);
+    }
+    if(step>=rows.length){lines.push("AP = "+f2(s)+" / "+R+" = "+f2(ap)+"\nIDCG@"+k+" (best order "+ideal.join(", ")+") = "+f2(idcg)+"\nNDCG@"+k+" = "+f2(dcg)+" / "+f2(idcg)+" = "+f2(nd));if(NOTE[cur])lines.push(NOTE[cur]);}
+    $("bn-work").textContent=lines.join("\n");
+    var m;
+    if(step===0)m="Press <b>Run</b> to walk down the list one rank at a time.";
+    else if(step<=rows.length){var rr=rows[step-1],gn=Math.pow(2,rr[1])-1;m="Rank "+step+": <b>"+rr[0]+"</b>, grade "+rr[1]+". "+(rr[1]>0?"Relevant, so AP records the precision at this rank.":"Not relevant, so AP records nothing, but it still pushes later hits down.")+(step<=k?" Gain "+gn+", divided by log₂("+(step+1)+") = "+Math.log2(step+1).toFixed(2)+".":"");}
+    $("bn-msg").innerHTML=m||"";
+  }
+  pl=player($("bn-player"),{count:function(){return rows.length+1;},render:render,interval:1100});
+  $("bn-rows").addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    if(b.dataset.g){var p=b.dataset.g.split("|");rows[+p[0]][1]=+p[1];}
+    else if(b.dataset.mv){var q=b.dataset.mv.split("|"),i=+q[0],j=i+(+q[1]);if(j>=0&&j<rows.length){var t=rows[i];rows[i]=rows[j];rows[j]=t;}}
+    pl.refresh();
+  });
+  $("bn-k").addEventListener("input",function(){pl.refresh();});
+  document.querySelectorAll("[data-bp]").forEach(function(b){b.addEventListener("click",function(){document.querySelectorAll("[data-bp]").forEach(function(x){x.classList.toggle("on",x===b);});load(b.dataset.bp);});});
+  rows=P.lect.map(function(r){return r.slice();});load("lect");
+})();
+
+/* ---------- Quizzes: one card, arrows at the bottom ---------- */
+(function(){
+  var Q={
+    1:[
+      ["A user types 'bus siem reap'. What is the information need?",["The three words they typed","What they actually want to know, e.g. how to get to Siem Reap tonight","The documents that contain those words"],1,"The query is only an attempt to express the need. Relevance is judged against the need."],
+      ["Why did substring search for 'cat' return d17?",["d17 is about cats","'catalog' and 'category' contain the letters c-a-t","SQLite has a bug"],1,"Substring matching has no notion of word boundaries. Whole-word tokens fix it."],
+      ["The system returns 10 docs, 6 relevant; 20 relevant docs exist. Recall is…",["0.6","0.3","0.5"],1,"Recall = relevant returned / all relevant = 6/20 = 0.3. Precision is 6/10."],
+      ["No method in Lab 1 finds anything for 'car'. Why?",["The query is too short","Vocabulary mismatch: relevant docs say 'automobile' and 'vehicles'","The documents are too long"],1,"No document contains the token 'car'. Exact matching can't bridge synonyms."],
+      ["Lab 1's scan took 74.9 ms at 500,000 docs. Roughly how long at 5,000,000?",["About 75 ms","About 750 ms","About 7.5 ms"],1,"A scan is linear: 10× the documents, about 10× the time."]
+    ],
+    2:[
+      ["What does an inverted index map?",["Document → list of words","Term → sorted list of document ids","Query → ranked list"],1,"Inverted means flipped: from word to the documents that contain it."],
+      ["Why must postings lists be sorted?",["To save memory","So AND/OR can be done by one linear merge","So results look tidy"],1,"Sorted lists let two pointers walk both lists once: O(|p1|+|p2|)."],
+      ["'university' and 'universe' both become 'univers'. This is…",["Under-stemming","Over-stemming","Lemmatization"],1,"Unrelated words collapsing together is over-stemming."],
+      ["Which query is badly hurt by stop-word removal?",["cheap hotel siem reap","to be or not to be","python tutorial"],1,"Every word in it is a stop word, so almost nothing is left."],
+      ["Lab 2: build 51,553 ms, scan 53.66 ms, merge 6.73 ms. Break-even is about…",["110 queries","1,098 queries","10,980 queries"],1,"51,553 / (53.66 − 6.73) ≈ 1,098."]
+    ],
+    3:[
+      ["A term appears in all 30 documents. Its idf = log(N/df) is…",["0","1","log 30"],0,"log(30/30) = log 1 = 0. It can't tell documents apart."],
+      ["Cosine similarity of 0 between query and document means…",["They're identical","They share no terms","The document is empty"],1,"With no shared terms, the dot product is 0."],
+      ["In BM25, raising k1 makes term-frequency saturation…",["Faster","Slower (repetition counts for longer)","Disappear"],1,"The ceiling is k1+1, and the curve approaches it more slowly as k1 grows."],
+      ["With b = 0, BM25 gives d04, d05, d18 the same score for 'python'. Why?",["Length normalization is off and each has tf = 1","They have the same idf","They're the same length"],0,"b = 0 removes |d|/avgdl. With equal tf, nothing else differs."],
+      ["What does neither TF-IDF nor BM25 fix?",["Ranking order","Vocabulary mismatch","Long documents"],1,"Both need shared terms. 'car' still returns nothing."]
+    ],
+    4:[
+      ["Ranking d04 ✓, d18 ✗, d05 ✓ with 2 relevant docs. AP is…",["0.67","0.83","1.00"],1,"(1/1 + 2/3) / 2 = 0.83."],
+      ["What can NDCG see that binary AP can't?",["Whether relevant docs were returned","Which relevant doc is better, and whether it's on top","How fast the system ran"],1,"Graded gains plus rank discount reward the best document at rank 1."],
+      ["Gain for a grade-3 document is…",["3","7","8"],1,"2³ − 1 = 7."],
+      ["In Lab 4, which single query decides TF-IDF vs BM25?",["N3 travel","N2 python","N4 car"],1,"Every other query ties exactly; python is where the orders differ."],
+      ["A medical review must find every relevant paper. Which metric matters most?",["P@1","Recall","NDCG@3"],1,"Missing a relevant paper is the costly error, so recall."]
+    ]
+  };
+  document.querySelectorAll(".quiz").forEach(function(box){
+    var qs=Q[box.dataset.quiz],at=0,picks=qs.map(function(){return null;});
+    box.innerHTML='<div class="qc" tabindex="-1"><div class="qbody"></div><div class="qnav"><button class="btn" type="button" data-n="-1" aria-label="Previous question">←</button><div class="qdots"></div><button class="btn" type="button" data-n="1" aria-label="Next question">→</button></div><div class="qscore"></div></div>';
+    var body=box.querySelector(".qbody"),dots=box.querySelector(".qdots"),score=box.querySelector(".qscore"),prev=box.querySelector('[data-n="-1"]'),next=box.querySelector('[data-n="1"]');
+    function draw(){
+      var q=qs[at],pk=picks[at];
+      body.innerHTML='<div class="eyebrow">Question '+(at+1)+' of '+qs.length+'</div><div class="q" style="border:0;padding:0"><p class="qt">'+esc(q[0])+'</p><div class="opts">'+q[1].map(function(o,j){
+        var c=pk===null?"":(j===q[2]?(pk===j?"right":""):(pk===j?"wrong":""));return'<button class="opt '+c+'" type="button" data-j="'+j+'">'+esc(o)+'</button>';}).join("")+'</div>'+
+        (pk!==null?'<div class="why">'+(pk===q[2]?"Yes. ":"Not quite. ")+esc(q[3])+'</div>':'')+'</div>';
+      dots.innerHTML=qs.map(function(x,i){var c=picks[i]===null?"":(picks[i]===x[2]?"ok":"bad");return'<button type="button" class="'+c+(i===at?" now":"")+'" data-go="'+i+'" aria-label="Go to question '+(i+1)+'"></button>';}).join("");
+      prev.disabled=at===0;next.disabled=at===qs.length-1;next.classList.toggle("primary",pk!==null&&at<qs.length-1);
+      var ans=picks.filter(function(p){return p!==null;}).length,ok=picks.filter(function(p,i){return p===qs[i][2];}).length;
+      score.textContent=ans===qs.length?"Finished: "+ok+" of "+qs.length+" correct":ok+" correct · "+ans+" of "+qs.length+" answered";
+    }
+    box.addEventListener("click",function(e){
+      var b=e.target.closest("button");if(!b)return;
+      if(b.dataset.j!=null){picks[at]=+b.dataset.j;draw();}
+      else if(b.dataset.n){at=Math.max(0,Math.min(qs.length-1,at+(+b.dataset.n)));draw();}
+      else if(b.dataset.go!=null){at=+b.dataset.go;draw();}
+    });
+    box.addEventListener("keydown",function(e){if(e.key==="ArrowRight"&&at<qs.length-1){at++;draw();}else if(e.key==="ArrowLeft"&&at>0){at--;draw();}});
+    draw();
+  });
+})();
+
+</script>
+
+<script>
+/* ---------- Figures: tap to enlarge, flip through slide sequences ---------- */
+(function(){
+  var d=document.createElement("dialog");d.className="zoom";d.innerHTML='<img alt=""><button class="btn" type="button">Close</button>';document.body.appendChild(d);
+  var big=d.querySelector("img");
+  function open(i){if(!d.showModal)return;big.src=i.currentSrc||i.src;big.alt=i.alt;d.showModal();}
+  document.addEventListener("click",function(e){var i=e.target.closest&&e.target.closest(".fig img");if(i)open(i);});
+  document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.matches&&e.target.matches(".fig img"))open(e.target);});
+  d.addEventListener("click",function(){d.close();});
+  document.querySelectorAll(".fig img").forEach(function(i){i.tabIndex=0;i.setAttribute("role","button");});
+  document.querySelectorAll("[data-flip]").forEach(function(f){
+    var im=[].slice.call(f.querySelectorAll("img")),caps=f.dataset.caps.split("||"),at=0,cap=f.querySelector("[data-cap]"),pos=f.querySelector(".flipnav span"),pv=f.querySelector("[data-d='-1']"),nx=f.querySelector("[data-d='1']");
+    function draw(){im.forEach(function(x,k){x.hidden=k!==at;});cap.innerHTML=caps[at]||"";pos.textContent="Slide "+(at+1)+" of "+im.length;pv.disabled=at===0;nx.disabled=at===im.length-1;}
+    f.addEventListener("click",function(e){var b=e.target.closest("button[data-d]");if(!b)return;at=Math.max(0,Math.min(im.length-1,at+(+b.dataset.d)));draw();});
+    draw();
+  });
+})();
+</script>
+<script>
+(function(){var K="hub-progress-ir",best=0,t=null;try{best=parseInt(localStorage.getItem(K),10)||0;}catch(e){}
+function save(){t=null;var h=document.documentElement.scrollHeight-innerHeight,p=h>0?Math.min(100,Math.round(scrollY/h*100)):0;if(p>best){best=p;try{localStorage.setItem(K,String(p));}catch(e){}}}
+addEventListener("scroll",function(){if(!t)t=setTimeout(save,500);},{passive:true});})();
+</script>
+<script>
+/* ---------- Phones and tablets: tap the progress bar for the menu ---------- */
+(function(){
+  var mq=matchMedia("(max-width:960px)"),body=document.body,pill=document.getElementById("pp"),nav=document.getElementById("toc-nav"),scrim=document.getElementById("toc-scrim"),closeBtn=document.getElementById("toc-close"),d=document.getElementById("toc-d");
+  function isOpen(){return body.classList.contains("nav-open");}
+  function setOpen(o,refocus){
+    body.classList.toggle("nav-open",o);pill.setAttribute("aria-expanded",o?"true":"false");
+    if(o){
+      var a=nav.querySelector("a.active");
+      if(a){var r=a.getBoundingClientRect(),n=nav.getBoundingClientRect();nav.scrollTop+=r.top-n.top-(n.height+110)/2;}else nav.scrollTop=0;
+      closeBtn.focus({preventScroll:true});
+    }else if(refocus)pill.focus({preventScroll:true});
+  }
+  function sync(){
+    if(mq.matches){pill.removeAttribute("tabindex");pill.removeAttribute("aria-hidden");pill.setAttribute("aria-label","Open menu: contents, dark mode and all subjects");d.open=true;}
+    else{pill.tabIndex=-1;pill.setAttribute("aria-hidden","true");pill.removeAttribute("aria-label");setOpen(false);}
+  }
+  pill.addEventListener("click",function(){if(mq.matches)setOpen(!isOpen());});
+  closeBtn.addEventListener("click",function(){setOpen(false,true);});
+  scrim.addEventListener("click",function(){setOpen(false,true);});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&isOpen())setOpen(false,true);});
+  nav.addEventListener("click",function(e){if(!mq.matches)return;if(e.target.closest("summary"))e.preventDefault();else if(e.target.closest("a"))setOpen(false);});
+  if(mq.addEventListener)mq.addEventListener("change",sync);else mq.addListener(sync);
+  sync();
+})();
+</script>
+</body></html>
