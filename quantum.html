@@ -2,6 +2,9 @@
 
 <link rel="stylesheet" href="themes.css">
 <script src="themes.js"></script>
+<link rel="stylesheet" href="quiz.css">
+<script src="quizzes/quantum.js" defer></script>
+<script src="quiz.js" defer></script>
 <title>From Bits to Shor</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -407,6 +410,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
           <li><a href="#c4-compare">Comparison and labs</a></li>
           <li><a href="#quiz4">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
     </ol>
@@ -804,7 +808,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     </ul>
   </div>
   <h3 id="quiz1">Check yourself: Chapter 1</h3>
-  <div class="quiz" data-quiz="1"></div>
+  <div data-xq="1"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 2 -->
@@ -1266,7 +1270,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     </ul>
   </div>
   <h3 id="quiz2">Check yourself: Chapter 2</h3>
-  <div class="quiz" data-quiz="2"></div>
+  <div data-xq="2"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 3 -->
@@ -1732,7 +1736,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     </ul>
   </div>
   <h3 id="quiz3">Check yourself: Chapter 3</h3>
-  <div class="quiz" data-quiz="3"></div>
+  <div data-xq="3"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 4 -->
@@ -2031,10 +2035,20 @@ Found trivial factor: 5    → Factors found: (5, 11)</div>
     </ul>
   </div>
   <h3 id="quiz4">Check yourself: Chapter 4</h3>
-  <div class="quiz" data-quiz="4"></div>
+  <div data-xq="4"></div>
 </section>
 
 <!-- ======================================================= SHEET -->
+<section class="chapter" id="exam">
+  <div class="chapter-head">
+    <div class="num">Final</div>
+    <h2>Final Exam</h2>
+  </div>
+  <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>52</b><span>Questions</span></div><div class="kpi"><b>117</b><span>Marks</span></div><div class="kpi"><b>120</b><span>Minutes</span></div></div>
+  <p><a class="btn primary" href="exam-quantum.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
+</section>
+
 <section class="chapter" id="sheet">
   <div class="chapter-head">
     <span class="num">Cheat sheet</span>

@@ -2,6 +2,9 @@
 
 <link rel="stylesheet" href="themes.css">
 <script src="themes.js"></script>
+<link rel="stylesheet" href="quiz.css">
+<script src="quizzes/ml.js" defer></script>
+<script src="quiz.js" defer></script>
 <title>From Rules to Recall</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -508,6 +511,7 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
           <li><a href="#c7-cm">Confusion matrix</a></li>
           <li><a href="#quiz7">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
     </ol>
@@ -625,7 +629,7 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
   </section>
 
   <h3 id="quiz1">Check yourself: Chapter 1</h3>
-  <div class="quiz" data-quiz="1"></div>
+  <div data-xq="1"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 2 -->
@@ -760,7 +764,7 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
   </section>
 
   <h3 id="quiz2">Check yourself: Chapter 2</h3>
-  <div class="quiz" data-quiz="2"></div>
+  <div data-xq="2"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 3 -->
@@ -839,7 +843,7 @@ Rating: mean 6.72, std 0.95, min 1.9, max 9.0</pre>
   </section>
 
   <h3 id="quiz3">Check yourself: Chapter 3</h3>
-  <div class="quiz" data-quiz="3"></div>
+  <div data-xq="3"></div>
 </section>
 <!-- ======================================================= CHAPTER 4 -->
 <section class="chapter" id="ch4">
@@ -1042,7 +1046,7 @@ predicted price (1200 sqft, 3 bed, 1 floor, 40 yrs) = $318936.36</pre>
   </div>
 
   <h3 id="quiz4">Check yourself: Chapter 4</h3>
-  <div class="quiz" data-quiz="4"></div>
+  <div data-xq="4"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 5 -->
@@ -1337,7 +1341,7 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
   </div>
 
   <h3 id="quiz5">Check yourself: Chapter 5</h3>
-  <div class="quiz" data-quiz="5"></div>
+  <div data-xq="5"></div>
 </section>
 <!-- ======================================================= CHAPTER 6 -->
 <section class="chapter" id="ch6">
@@ -1514,7 +1518,7 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
   </div>
 
   <h3 id="quiz6">Check yourself: Chapter 6</h3>
-  <div class="quiz" data-quiz="6"></div>
+  <div data-xq="6"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 7 -->
@@ -1724,10 +1728,20 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
   </div>
 
   <h3 id="quiz7">Check yourself: Chapter 7</h3>
-  <div class="quiz" data-quiz="7"></div>
+  <div data-xq="7"></div>
 </section>
 
 <!-- ======================================================= SHEET -->
+<section class="chapter" id="exam">
+  <div class="chapter-head">
+    <div class="num">Final</div>
+    <h2>Final Exam</h2>
+  </div>
+  <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>47</b><span>Questions</span></div><div class="kpi"><b>98</b><span>Marks</span></div><div class="kpi"><b>120</b><span>Minutes</span></div></div>
+  <p><a class="btn primary" href="exam-ml.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
+</section>
+
 <section class="chapter" id="sheet">
   <div class="chapter-head">
     <span class="num">Reference</span>
@@ -2372,83 +2386,6 @@ function costOf(a,b){var s=0;LX.forEach(function(x,i){var e=a*x+b-LY[i];s+=e*e;}
   $("th-t").addEventListener("input",draw);draw();
 })();
 
-/* ---------- Quiz bank ---------- */
-var QB={
-  1:[
-    ["Most computer science AI work aims at which goal?",["Thinking like humans","Acting like humans","Acting rationally"],2,"Rational action is more general than copying humans, and it's measurable."],
-    ["A spam filter reads emails and moves some to a folder. As an agent, its sensor is…",["The folder","The email text","The user"],1,"Sensors are what it observes. Moving the mail is the effector."],
-    ["Every AI system you use today is best described as…",["Artificial narrow intelligence","Artificial general intelligence","Artificial super intelligence"],0,"Each does specific tasks. General and super are not here yet."],
-    ["Machine translation belongs mainly to which field?",["Robotics","Natural language processing","Expert systems"],1,"The fields tree on slide 7 puts it under NLP."],
-    ["Amazon's scrapped hiring tool marked down resumes with 'women's'. Where did the bias come from?",["A programmer's rule","The ten years of training data","The hardware"],1,"It learned from past resumes, mostly from men. Bias can enter through the data."]
-  ],
-  2:[
-    ["In Mitchell's definition for a spam filter, E is…",["Classifying emails","Watching you label emails","The fraction classified correctly"],1,"T is classifying, E is watching labels, and P is the fraction correct."],
-    ["Predicting a house's price is…",["Classification","Regression","Clustering"],1,"The output is a continuous number."],
-    ["You have customers with no labels and want to find groups. That is…",["Supervised","Unsupervised","Reinforcement"],1,"No labels, so we look for structure."],
-    ["Why do we use ML for weather but not a rectangle's area?",["Area is too easy to compute","Nobody can write the weather's rule by hand","Weather has no data"],1,"When you can write the rule, write it. ML is for when you can't."],
-    ["Zillow's home-buying failure was mainly a warning about which life cycle stage?",["Data collection","Monitoring a model as the world changes","Feature encoding"],1,"Forecasts trained on the past overshot a shifting market."]
-  ],
-  3:[
-    ["Why does NumPy beat a Python list at arithmetic?",["It has more memory","It runs compiled loops over one packed block of numbers","It skips some numbers"],1,"The notebook showed about 50 times faster: 4.54 ms against 238 ms."],
-    ["np.array([1,2,3]) * np.array([9,8,7]) gives…",["[9, 16, 21]","46","An error"],0,"Arithmetic is element-wise."],
-    ["A pandas Series is…",["A whole table","One labelled column","A plot"],1,"Several Series side by side make a DataFrame."],
-    ["df.isnull().sum() tells you…",["The total of each column","How many missing values each column has","How many duplicates there are"],1,"isnull() gives True or False, and sum counts the Trues."],
-    ["Why does a column of -999 values not show up in df.isnull()?",["pandas ignores negatives","It's a real number, not NaN","It's rounded away"],1,"A stand-in value looks like data. Check minimums with describe()."]
-  ],
-  4:[
-    ["In h(x) = ax + b, training chooses…",["x and y","a and b","m"],1,"a and b are the parameters. x and y come from data."],
-    ["Why square the errors in the cost?",["Positive and negative misses can't cancel, and big misses count more","It's faster to type","It makes predictions larger"],0,"Without it, a +5 and a −5 would sum to a perfect score."],
-    ["If the learning rate is too high, you'll see…",["Very slow progress","Cost rising as steps overshoot","An exact answer"],1,"The lab with α = 0.8 shows cost growing on every step."],
-    ["A slope of the cost is positive at your w. Gradient descent moves w…",["Left (smaller)","Right (larger)","Nowhere"],0,"w − η × (positive) is smaller."],
-    ["Trained on size in thousands of sqft, what should you give the model for a 1200 sqft house?",["1200","1.2","12"],1,"The lab's $240,100 answer is this bug. The correct answer is $340k."]
-  ],
-  5:[
-    ["Temperature in °C is which type?",["Ordinal","Interval","Ratio"],1,"Equal gaps, but 0°C isn't 'no temperature'."],
-    ["With Age = 200 in the data, which is safest for filling a missing age?",["Mean","Median","Maximum"],1,"The median only depends on the middle, so one extreme value can't drag it."],
-    ["Q1 = 17.5, Q3 = 51.5. The upper fence is…",["85.5","102.5","69"],1,"IQR = 34, so 51.5 + 1.5 × 34 = 102.5."],
-    ["What does SMOTE do?",["Deletes majority rows","Copies minority rows exactly","Creates new minority points between neighbours"],2,"Interpolated points, rather than duplicates."],
-    ["Country = Cambodia, Thai, Lao should be encoded with…",["One-hot, because there's no order","Label encoding 0, 1, 2","Standardization"],0,"Label encoding would invent an order that isn't there."]
-  ],
-  6:[
-    ["Why not use linear regression to classify?",["It's too slow","Extreme examples drag its threshold and cause misclassifications","It can't draw lines"],1,"Also, its outputs aren't bounded between 0 and 1."],
-    ["g(0) for the sigmoid is…",["0","0.5","1"],1,"1 / (1 + e⁰) = 1/2."],
-    ["The decision boundary of logistic regression is where…",["wx = 0","wx = 1","y = 0"],0,"h = 0.5 exactly when wx = 0."],
-    ["Why not use squared error with a sigmoid?",["It's non-convex, so gradient descent can get stuck","It's too accurate","It can't be computed"],0,"Cross-entropy stays convex."],
-    ["The truth is y = 1 and the model says p = 0.01. Cross-entropy is…",["About 0.01","About 1","About 4.6"],2,"−log(0.01) ≈ 4.6. Confidently wrong costs a lot."]
-  ],
-  7:[
-    ["30 training examples with batch size 5. Iterations per epoch?",["5","6","30"],1,"30 ÷ 5 = 6."],
-    ["Great on training data and poor on test data means…",["Underfitting","Overfitting","Perfect fit"],1,"It memorised noise and can't generalise."],
-    ["Which set is used to tune hyperparameters?",["Validation","Test","Neither"],0,"The test set stays untouched for the final grade."],
-    ["TP = 45, FP = 5. Precision is…",["0.90","0.69","0.75"],0,"45 / 50."],
-    ["For cancer screening, which error is usually worse, so which metric do you push?",["False positive, so precision","False negative, so recall","Neither, so accuracy"],1,"Missing a sick person is the costly error."]
-  ]
-};
-(function(){var Q=QB;
-  document.querySelectorAll(".quiz").forEach(function(box){
-    var qs=Q[box.dataset.quiz],at=0,picks=qs.map(function(){return null;});
-    box.innerHTML='<div class="qc" tabindex="-1"><div class="qbody"></div><div class="qnav"><button class="btn" type="button" data-n="-1" aria-label="Previous question">←</button><div class="qdots"></div><button class="btn" type="button" data-n="1" aria-label="Next question">→</button></div><div class="qscore"></div></div>';
-    var body=box.querySelector(".qbody"),dots=box.querySelector(".qdots"),score=box.querySelector(".qscore"),prev=box.querySelector('[data-n="-1"]'),next=box.querySelector('[data-n="1"]');
-    function draw(){
-      var q=qs[at],pk=picks[at];
-      body.innerHTML='<div class="eyebrow">Question '+(at+1)+' of '+qs.length+'</div><div class="q" style="border:0;padding:0"><p class="qt">'+esc(q[0])+'</p><div class="opts">'+q[1].map(function(o,j){
-        var c=pk===null?"":(j===q[2]?(pk===j?"right":""):(pk===j?"wrong":""));return'<button class="opt '+c+'" type="button" data-j="'+j+'">'+esc(o)+'</button>';}).join("")+'</div>'+
-        (pk!==null?'<div class="why">'+(pk===q[2]?"Yes. ":"Not quite. ")+esc(q[3])+'</div>':'')+'</div>';
-      dots.innerHTML=qs.map(function(x,i){var c=picks[i]===null?"":(picks[i]===x[2]?"ok":"bad");return'<button type="button" class="'+c+(i===at?" now":"")+'" data-go="'+i+'" aria-label="Go to question '+(i+1)+'"></button>';}).join("");
-      prev.disabled=at===0;next.disabled=at===qs.length-1;next.classList.toggle("primary",pk!==null&&at<qs.length-1);
-      var ans=picks.filter(function(p){return p!==null;}).length,ok=picks.filter(function(p,i){return p===qs[i][2];}).length;
-      score.textContent=ans===qs.length?"Finished: "+ok+" of "+qs.length+" correct":ok+" correct · "+ans+" of "+qs.length+" answered";
-    }
-    box.addEventListener("click",function(e){
-      var b=e.target.closest("button");if(!b)return;
-      if(b.dataset.j!=null){picks[at]=+b.dataset.j;draw();}
-      else if(b.dataset.n){at=Math.max(0,Math.min(qs.length-1,at+(+b.dataset.n)));draw();}
-      else if(b.dataset.go!=null){at=+b.dataset.go;draw();}
-    });
-    box.addEventListener("keydown",function(e){if(e.key==="ArrowRight"&&at<qs.length-1){at++;draw();}else if(e.key==="ArrowLeft"&&at>0){at--;draw();}});
-    draw();
-  });
-})();
 /* ---------- Figures: tap to enlarge, flip through slide sequences ---------- */
 (function(){
   var d=document.createElement("dialog");d.className="zoom";d.innerHTML='<img alt=""><button class="btn" type="button">Close</button>';document.body.appendChild(d);

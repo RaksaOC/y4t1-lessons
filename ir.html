@@ -2,6 +2,9 @@
 
 <link rel="stylesheet" href="themes.css">
 <script src="themes.js"></script>
+<link rel="stylesheet" href="quiz.css">
+<script src="quizzes/ir.js" defer></script>
+<script src="quiz.js" defer></script>
 <title>From Substring to NDCG</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -456,6 +459,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
           <li><a href="#c4-choose">Choosing a metric</a></li>
           <li><a href="#quiz4">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
     </ol>
@@ -707,7 +711,7 @@ d17 … <b>cat</b>alog … <b>cat</b>egory …      d18 … con<b>cat</b>enate t
   </section>
 
   <h3 id="quiz1">Check yourself: Chapter 1</h3>
-  <div class="quiz" data-quiz="1"></div>
+  <div data-xq="1"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 2 -->
@@ -970,7 +974,7 @@ season  → [d02, d10, d27]</div>
   </div>
 
   <h3 id="quiz2">Check yourself: Chapter 2</h3>
-  <div class="quiz" data-quiz="2"></div>
+  <div data-xq="2"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 3 -->
@@ -1179,7 +1183,7 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
   </div>
 
   <h3 id="quiz3">Check yourself: Chapter 3</h3>
-  <div class="quiz" data-quiz="3"></div>
+  <div data-xq="3"></div>
 </section>
 
 <!-- ======================================================= CHAPTER 4 -->
@@ -1404,10 +1408,20 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
   </div>
 
   <h3 id="quiz4">Check yourself: Chapter 4</h3>
-  <div class="quiz" data-quiz="4"></div>
+  <div data-xq="4"></div>
 </section>
 
 <!-- ======================================================= SHEET -->
+<section class="chapter" id="exam">
+  <div class="chapter-head">
+    <div class="num">Final</div>
+    <h2>Final Exam</h2>
+  </div>
+  <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>39</b><span>Questions</span></div><div class="kpi"><b>76</b><span>Marks</span></div><div class="kpi"><b>90</b><span>Minutes</span></div></div>
+  <p><a class="btn primary" href="exam-ir.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
+</section>
+
 <section class="chapter" id="sheet">
   <div class="chapter-head">
     <span class="num">Reference</span>
@@ -1886,66 +1900,6 @@ var RANKUI=(function(){
   rows=P.lect.map(function(r){return r.slice();});load("lect");
 })();
 
-/* ---------- Quizzes: one card, arrows at the bottom ---------- */
-(function(){
-  var Q={
-    1:[
-      ["A user types 'bus siem reap'. What is the information need?",["The three words they typed","What they actually want to know, e.g. how to get to Siem Reap tonight","The documents that contain those words"],1,"The query is only an attempt to express the need. Relevance is judged against the need."],
-      ["Why did substring search for 'cat' return d17?",["d17 is about cats","'catalog' and 'category' contain the letters c-a-t","SQLite has a bug"],1,"Substring matching has no notion of word boundaries. Whole-word tokens fix it."],
-      ["The system returns 10 docs, 6 relevant; 20 relevant docs exist. Recall is…",["0.6","0.3","0.5"],1,"Recall = relevant returned / all relevant = 6/20 = 0.3. Precision is 6/10."],
-      ["No method in Lab 1 finds anything for 'car'. Why?",["The query is too short","Vocabulary mismatch: relevant docs say 'automobile' and 'vehicles'","The documents are too long"],1,"No document contains the token 'car'. Exact matching can't bridge synonyms."],
-      ["Lab 1's scan took 74.9 ms at 500,000 docs. Roughly how long at 5,000,000?",["About 75 ms","About 750 ms","About 7.5 ms"],1,"A scan is linear: 10× the documents, about 10× the time."]
-    ],
-    2:[
-      ["What does an inverted index map?",["Document → list of words","Term → sorted list of document ids","Query → ranked list"],1,"Inverted means flipped: from word to the documents that contain it."],
-      ["Why must postings lists be sorted?",["To save memory","So AND/OR can be done by one linear merge","So results look tidy"],1,"Sorted lists let two pointers walk both lists once: O(|p1|+|p2|)."],
-      ["'university' and 'universe' both become 'univers'. This is…",["Under-stemming","Over-stemming","Lemmatization"],1,"Unrelated words collapsing together is over-stemming."],
-      ["Which query is badly hurt by stop-word removal?",["cheap hotel siem reap","to be or not to be","python tutorial"],1,"Every word in it is a stop word, so almost nothing is left."],
-      ["Lab 2: build 51,553 ms, scan 53.66 ms, merge 6.73 ms. Break-even is about…",["110 queries","1,098 queries","10,980 queries"],1,"51,553 / (53.66 − 6.73) ≈ 1,098."]
-    ],
-    3:[
-      ["A term appears in all 30 documents. Its idf = log(N/df) is…",["0","1","log 30"],0,"log(30/30) = log 1 = 0. It can't tell documents apart."],
-      ["Cosine similarity of 0 between query and document means…",["They're identical","They share no terms","The document is empty"],1,"With no shared terms, the dot product is 0."],
-      ["In BM25, raising k1 makes term-frequency saturation…",["Faster","Slower (repetition counts for longer)","Disappear"],1,"The ceiling is k1+1, and the curve approaches it more slowly as k1 grows."],
-      ["With b = 0, BM25 gives d04, d05, d18 the same score for 'python'. Why?",["Length normalization is off and each has tf = 1","They have the same idf","They're the same length"],0,"b = 0 removes |d|/avgdl. With equal tf, nothing else differs."],
-      ["What does neither TF-IDF nor BM25 fix?",["Ranking order","Vocabulary mismatch","Long documents"],1,"Both need shared terms. 'car' still returns nothing."]
-    ],
-    4:[
-      ["Ranking d04 ✓, d18 ✗, d05 ✓ with 2 relevant docs. AP is…",["0.67","0.83","1.00"],1,"(1/1 + 2/3) / 2 = 0.83."],
-      ["What can NDCG see that binary AP can't?",["Whether relevant docs were returned","Which relevant doc is better, and whether it's on top","How fast the system ran"],1,"Graded gains plus rank discount reward the best document at rank 1."],
-      ["Gain for a grade-3 document is…",["3","7","8"],1,"2³ − 1 = 7."],
-      ["In Lab 4, which single query decides TF-IDF vs BM25?",["N3 travel","N2 python","N4 car"],1,"Every other query ties exactly; python is where the orders differ."],
-      ["A medical review must find every relevant paper. Which metric matters most?",["P@1","Recall","NDCG@3"],1,"Missing a relevant paper is the costly error, so recall."]
-    ]
-  };
-  document.querySelectorAll(".quiz").forEach(function(box){
-    var qs=Q[box.dataset.quiz],at=0,picks=qs.map(function(){return null;});
-    box.innerHTML='<div class="qc" tabindex="-1"><div class="qbody"></div><div class="qnav"><button class="btn" type="button" data-n="-1" aria-label="Previous question">←</button><div class="qdots"></div><button class="btn" type="button" data-n="1" aria-label="Next question">→</button></div><div class="qscore"></div></div>';
-    var body=box.querySelector(".qbody"),dots=box.querySelector(".qdots"),score=box.querySelector(".qscore"),prev=box.querySelector('[data-n="-1"]'),next=box.querySelector('[data-n="1"]');
-    function draw(){
-      var q=qs[at],pk=picks[at];
-      body.innerHTML='<div class="eyebrow">Question '+(at+1)+' of '+qs.length+'</div><div class="q" style="border:0;padding:0"><p class="qt">'+esc(q[0])+'</p><div class="opts">'+q[1].map(function(o,j){
-        var c=pk===null?"":(j===q[2]?(pk===j?"right":""):(pk===j?"wrong":""));return'<button class="opt '+c+'" type="button" data-j="'+j+'">'+esc(o)+'</button>';}).join("")+'</div>'+
-        (pk!==null?'<div class="why">'+(pk===q[2]?"Yes. ":"Not quite. ")+esc(q[3])+'</div>':'')+'</div>';
-      dots.innerHTML=qs.map(function(x,i){var c=picks[i]===null?"":(picks[i]===x[2]?"ok":"bad");return'<button type="button" class="'+c+(i===at?" now":"")+'" data-go="'+i+'" aria-label="Go to question '+(i+1)+'"></button>';}).join("");
-      prev.disabled=at===0;next.disabled=at===qs.length-1;next.classList.toggle("primary",pk!==null&&at<qs.length-1);
-      var ans=picks.filter(function(p){return p!==null;}).length,ok=picks.filter(function(p,i){return p===qs[i][2];}).length;
-      score.textContent=ans===qs.length?"Finished: "+ok+" of "+qs.length+" correct":ok+" correct · "+ans+" of "+qs.length+" answered";
-    }
-    box.addEventListener("click",function(e){
-      var b=e.target.closest("button");if(!b)return;
-      if(b.dataset.j!=null){picks[at]=+b.dataset.j;draw();}
-      else if(b.dataset.n){at=Math.max(0,Math.min(qs.length-1,at+(+b.dataset.n)));draw();}
-      else if(b.dataset.go!=null){at=+b.dataset.go;draw();}
-    });
-    box.addEventListener("keydown",function(e){if(e.key==="ArrowRight"&&at<qs.length-1){at++;draw();}else if(e.key==="ArrowLeft"&&at>0){at--;draw();}});
-    draw();
-  });
-})();
-
-</script>
-
-<script>
 /* ---------- Figures: tap to enlarge, flip through slide sequences ---------- */
 (function(){
   var d=document.createElement("dialog");d.className="zoom";d.innerHTML='<img alt=""><button class="btn" type="button">Close</button>';document.body.appendChild(d);
