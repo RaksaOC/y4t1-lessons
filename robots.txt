@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: http://y4t1.chanraksa.com/sitemap.xml

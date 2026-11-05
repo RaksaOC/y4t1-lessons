@@ -1,0 +1,28 @@
+{
+  "name": "Year 4 Study Hub",
+  "short_name": "Y4 Study",
+  "description": "Study notes for four Year 4 courses: Quantum Computing, Information Retrieval, Machine Learning and DevOps, with live demos, chapter quizzes and final exams.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0e0e0e",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
