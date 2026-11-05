@@ -10,7 +10,7 @@ Live at http://y4t1.chanraksa.com through GitHub Pages.
 | `ir.html` | Information Retrieval, "From Substring to NDCG". Its script is inside the file. |
 | `ml.html` | Machine Learning, "From Rules to Recall". Its script is inside the file. |
 | `devops.html` | DevOps, "From Commit to Container". Its script is inside the file. |
-| `themes.css`, `themes.js` | The theme picker, the 13 extra themes (each with light and dark) and the light/dark icon button. Every page loads both. |
+| `themes.css`, `themes.js` | The theme picker, the 14 extra themes (each with light and dark) and the light/dark icon button. Every page loads both. |
 | `quiz.js`, `quiz.css` | The quiz and exam engine: question types, the drag-and-drop circuit builder, marking and saved progress. |
 | `quizzes/` | The questions. `<subject>.js` holds the chapter quizzes and `<subject>-exam.js` holds the final exam. |
 | `exam-*.html` | One separate final exam page per subject. |
