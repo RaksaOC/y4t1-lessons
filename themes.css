@@ -342,9 +342,9 @@
 .dl{margin:0 0 10px;min-width:0;letter-spacing:normal}
 .hero .dl{margin:14px 0;max-width:22rem}
 .dl-row{display:flex;gap:8px;align-items:stretch;min-width:0}
-.dl-btn{flex:1 1 auto;min-width:0;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left}
-.dl-fs{flex:none;display:inline-flex;align-items:center;justify-content:center;padding-inline:10px}
-.dl-fs svg{width:16px;height:16px;display:block}
+.dl-btn{flex:1 1 auto;min-width:0;min-height:40px;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left}
+.dl .dl-row .dl-fs.btn{flex:none;width:auto;min-width:40px;aspect-ratio:1;margin:0;padding:0;display:inline-grid;place-items:center}
+.dl-fs svg{width:18px;height:18px;display:block}
 :root:fullscreen{background:var(--bg);overflow-y:auto}
 :root:-webkit-full-screen{background:var(--bg);overflow-y:auto}
 .dl-btn .ico{flex:none;font-size:11px}
