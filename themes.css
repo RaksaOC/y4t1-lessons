@@ -337,3 +337,17 @@
 .hub-ctl .look-list{max-height:min(82vh,640px);position:absolute;right:0;top:calc(100% + 2px);width:min(290px,calc(100vw - 32px));z-index:50;box-shadow:0 12px 32px rgba(0,0,0,.22)}
 @media (max-width:520px){.hub-ctl{width:100%}.hub-ctl .look{flex:1 1 170px}.hub-ctl .look-btn{width:100%;min-width:0}.hub-ctl .look-list{left:0;right:auto}}
 @media (max-width:960px){.toc-top .look{margin:0;grid-column:1 / -1}.toc-top .look-list{max-height:40vh}}
+
+/* Download button and menu (export.js) */
+.dl{margin:0 0 10px;min-width:0;letter-spacing:normal}
+.hero .dl{margin:14px 0;max-width:22rem}
+.dl-row{display:flex;gap:8px;align-items:stretch;min-width:0}
+.dl-btn{flex:1 1 auto;min-width:0;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left}
+.dl-fs{flex:none;display:inline-flex;align-items:center;justify-content:center;padding-inline:10px}
+.dl-fs svg{width:16px;height:16px;display:block}
+:root:fullscreen{background:var(--bg);overflow-y:auto}
+:root:-webkit-full-screen{background:var(--bg);overflow-y:auto}
+.dl-btn .ico{flex:none;font-size:11px}
+.look-opt.dl-opt{display:grid;grid-template-columns:minmax(0,1fr);gap:1px}
+.look-opt.dl-opt small{grid-column:1}
+.dl-status{margin:6px 0 0;font-size:13px;line-height:1.35;color:var(--muted);overflow-wrap:anywhere}

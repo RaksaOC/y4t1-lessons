@@ -11,6 +11,7 @@ Live at http://y4t1.chanraksa.com through GitHub Pages.
 | `ml.html` | Machine Learning, "From Rules to Recall". Its script is inside the file. |
 | `devops.html` | DevOps, "From Commit to Container". Its script is inside the file. |
 | `themes.css`, `themes.js` | The theme picker, the 14 extra themes (each with light and dark) and the light/dark icon button. Every page loads both. |
+| `export.js` | The Download and full screen buttons on each subject page. Download makes an A4 PDF, or a zip with one PNG per page, in the current theme. It runs in the browser, so it needs the live site or a local server, not a file opened directly. |
 | `quiz.js`, `quiz.css` | The quiz and exam engine: question types, the drag-and-drop circuit builder, marking and saved progress. |
 | `quizzes/` | The questions. `<subject>.js` holds the chapter quizzes and `<subject>-exam.js` holds the final exam. |
 | `exam-*.html` | One separate final exam page per subject. |
