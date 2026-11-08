@@ -3,7 +3,7 @@ window.QUIZ_BANK = {
   subject: 'quantum', page: 'quantum.html', course: 'Quantum Computing',
   exam: {
     minutes: 120, pass: 60,
-    intro: 'Covers all four chapters: foundations, the rules of quantum mechanics, the algorithms, and the Quantum Fourier Transform with its labs.',
+    intro: 'Covers all five chapters: foundations, the rules of quantum mechanics, the algorithms, the Quantum Fourier Transform with its labs, and quantum errors and noise.',
     sections: [
       { ch: 1, name: 'Foundations and the hardware landscape', q: [
         { t: 'mc', q: 'A colleague says: "A QPU is just a much faster CPU, so we\'ll eventually move all our software onto it." Which reply is most accurate?',
@@ -160,6 +160,33 @@ window.QUIZ_BANK = {
         { t: 'tf', q: 'Judge each statement about the QFT and FFT.',
           s: [['The QFT uses about n² gates, while the FFT uses about n·2ⁿ steps.', true], ['So the QFT lets you read all 2ⁿ Fourier coefficients exponentially faster.', false], ['The input\'s offset x₀ changes where the peaks land after the QFT.', false], ['More qubits make peaks sharper when N is not a multiple of r.', true]],
           why: 'You can\'t read out all amplitudes. The offset only changes phases, not peak positions.' }
+      ] },
+      { ch: 5, name: 'Errors, noise and how to fight them', q: [
+        { t: 'circuit', q: 'Build the 3-qubit phase-flip code encoder: spread q0 onto q1 and q2 as in the bit-flip code, then put every qubit in the ± basis.', n: 3, cols: 5, palette: ['H', 'X', 'CX'], unitary: true, target: [['CX', 0, 1], ['CX', 0, 2], ['H', 0], ['H', 1], ['H', 2]],
+          why: 'Two CNOTs give α|000⟩ + β|111⟩, and the Hadamards turn that into α|+++⟩ + β|−−−⟩. H swaps Z errors for X errors, so the same parity checks now catch phase flips.' },
+        { t: 'fill', q: 'Majority-vote codes at p = 0.2 per copy.',
+          text: '3 copies fail with probability {0}. 5 copies fail with probability {1}.',
+          blanks: [{ num: .104, tol: .001 }, { num: .058, tol: .001 }],
+          why: '3(0.04) − 2(0.008) = 0.104. For 5 copies add up 3, 4 or 5 flips: 10(0.008)(0.64) + 5(0.0016)(0.8) + 0.00032 ≈ 0.058.' },
+        { t: 'mc', q: 'You run VQE on a 20-qubit NISQ chip with no spare qubits, and want a more accurate energy estimate. Which approach fits best?',
+          o: ['Zero-noise extrapolation, which needs only extra runs and post-processing', 'The surface code, which corrects every error as the circuit runs', 'Shor\'s 9-qubit code, applied to each of the 20 qubits', 'Process tomography on all 20 qubits before each run'], a: 0,
+          why: 'VQE outputs an expectation value, which is exactly what mitigation improves. Correction would need hundreds of physical qubits per logical one, and 20-qubit tomography is far too expensive.' },
+        { t: 'bucket', q: 'A qubit sits in |0⟩. Sort each noise channel by what it does to that state.',
+          buckets: ['Can change |0⟩', 'Leaves |0⟩ untouched'],
+          items: [['Bit flip', 0], ['Depolarizing', 0], ['Bit-phase flip (Y)', 0], ['Phase flip', 1], ['Phase damping', 1], ['Amplitude damping', 1]],
+          why: 'Z leaves |0⟩ alone, and |0⟩ has no phase to lose. Amplitude damping pulls states towards |0⟩, which is already there.' },
+        { t: 'tf', q: 'Judge each statement about dynamical decoupling.',
+          s: [['It fills idle windows with pulse sequences that multiply to the identity.', true], ['It needs extra qubits to store a backup copy.', false], ['An X–X echo can cancel slow, steady phase drift.', true], ['It is a mitigation method applied to the results after the run.', false]],
+          why: 'DD is suppression: it acts on the hardware during the run, with no extra qubits and no post-processing.' },
+        { t: 'order', q: 'Put one round of quantum error correction in order.',
+          items: ['Encode the logical qubit across several physical qubits', 'Let the computation run while errors may occur', 'Measure parity checks with ancilla qubits', 'Decode the syndrome to locate the error', 'Apply the correcting gate'],
+          why: 'The parity checks never measure the data itself, so the superposition survives the round.' },
+        { t: 'ms', q: 'An IBM report shows CZ error 1.548E-3, SX error 1.805E-4, readout error 4.03E-3, T₁ = 300 µs, T₂ = 324 µs. Which statements are right?',
+          o: ['CZ is the noisier of the two gate types', 'Readout error is larger than the CZ error', 'T₂ is longer than 2T₁', 'An idle |1⟩ is still |1⟩ about 72% of the time after 100 µs', 'An SX gate fails roughly once in every 5,500 uses'], a: [0, 1, 3, 4],
+          why: 'e^(−100/300) ≈ 0.717. 1 / 1.805E-4 ≈ 5,540. T₂ = 324 is far below 2T₁ = 600, as it must be.' },
+        { t: 'mc', q: 'In the 3-qubit bit-flip code, both parity checks fail: q0 ≠ q1 and q1 ≠ q2. What do you do?',
+          o: ['Apply X to q1', 'Apply X to q0', 'Apply X to q2', 'Discard the run, because two errors happened'], a: 0,
+          why: 'q1 is the only qubit in both checks, so a single flip on q1 is what breaks both.' }
       ] },
       { ch: 0, name: 'Putting it together', q: [
         { t: 'order', q: 'Trace the whole of Shor\'s algorithm on N, from start to answer.',

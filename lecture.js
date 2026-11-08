@@ -266,7 +266,7 @@ function circuitSVG(n, ops, opt = {}) {
     tb.innerHTML = rows.map(r => `<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td class="num">${sci(r[2])}</td><td class="num">${fmtTime(r[2] - 9)}</td></tr>`).join('');
     const cv = +c.value; $('#gr-cv').textContent = cv;
     const lr = lgamma(cv - 1) - Math.log10(2);
-    $('#gr-tsp').innerHTML = `Routes for ${cv} cities = (${cv}−1)!/2 = <b>${sci(lr)}</b>\nChecking 10⁹ routes per second: <b>${fmtTime(lr - 9)}</b>` + (cv === 20 ? '\n(Exactly 60,822,550,204,416,000 ≈ 6.08 × 10¹⁶)' : '');
+    $('#gr-tsp').innerHTML = `Routes for ${cv} cities = \\(\\tfrac{(${cv}-1)!}{2}\\) = <b>${sci(lr)}</b>\nChecking \\(10^9\\) routes per second: <b>${fmtTime(lr - 9)}</b>` + (cv === 20 ? '\n(Exactly 60,822,550,204,416,000 ≈ \\(6.08\\times10^{16}\\))' : '');
   }
   n.addEventListener('input', upd); c.addEventListener('input', upd); upd();
 })();
@@ -288,7 +288,7 @@ function circuitSVG(n, ops, opt = {}) {
     else if (lb < 16) cmp = 'Too big for a laptop; needs a supercomputer (Frontier has about 9 PB).';
     else if (la < 80) cmp = 'Bigger than every computer on Earth combined.';
     else cmp = 'More numbers than atoms in the observable universe (~10⁸⁰).';
-    $('#mem-out').innerHTML = `${v} qubits → 2${sup(v)} = <b>${sci(la)}</b> amplitudes\nAt 16 bytes per complex number: <b>${bytes(lb)}</b>\n${cmp}\nEvery extra qubit doubles it.`;
+    $('#mem-out').innerHTML = `${v} qubits → \\(2^{${v}}\\) = <b>${sci(la)}</b> amplitudes\nAt 16 bytes per complex number: <b>${bytes(lb)}</b>\n${cmp}\nEvery extra qubit doubles it.`;
   }
   n.addEventListener('input', upd);
   $$('#lab-memory [data-q]').forEach(b => b.addEventListener('click', () => { n.value = b.dataset.q; upd(); }));
@@ -308,7 +308,7 @@ function circuitSVG(n, ops, opt = {}) {
   function upd(counts) {
     const t = +th.value * Math.PI / 180, p0 = Math.cos(t) ** 2;
     $('#cn-thv').textContent = th.value + '°';
-    $('#cn-q').innerHTML = `|ψ⟩ = ${fnum(Math.cos(t))}|0⟩ + ${fnum(Math.sin(t))}|1⟩\nP(0) = cos²θ = <b>${fnum(p0)}</b>   P(1) = sin²θ = <b>${fnum(1 - p0)}</b>` + (counts ? `\nMeasured 100 times: 0 → ${counts[0]}, 1 → ${counts[1]}` : '');
+    $('#cn-q').innerHTML = `\\(|\\psi\\rangle = ${fnum(Math.cos(t))}\\,|0\\rangle + ${fnum(Math.sin(t))}\\,|1\\rangle\\)`.replace('+ −', '− ') + `\n\\(P(0) = \\cos^2\\theta\\) = <b>${fnum(p0)}</b>   \\(P(1) = \\sin^2\\theta\\) = <b>${fnum(1 - p0)}</b>` + (counts ? `\nMeasured 100 times: 0 → ${counts[0]}, 1 → ${counts[1]}` : '');
     barChart($('#cn-chart'), counts ? [counts[0] / 100, counts[1] / 100] : [p0, 1 - p0], { labels: ['0', '1'], max: 1, pct: true, h: 140, w: 300, aria: 'quantum coin results' });
   }
   th.addEventListener('input', () => upd());
@@ -409,9 +409,9 @@ function blochOf(ar, ai, br, bi) {
     const v = blochOf(st.re[0], st.im[0], st.re[1], st.im[1]);
     drawBloch(cv, [v]);
     const p0 = st.re[0] ** 2 + st.im[0] ** 2, th = Math.acos(Math.max(-1, Math.min(1, v.z))), ph = Math.atan2(v.y, v.x);
-    $('#bl-out').innerHTML = `|ψ⟩ = ${fcx(st.re[0], st.im[0])}|0⟩ + ${fcx(st.re[1], st.im[1])}|1⟩`.replace('+ −', '− ') +
-      `\nP(0) = <b>${fnum(p0)}</b>   P(1) = <b>${fnum(1 - p0)}</b>` +
-      `\nBloch: x=${fnum(v.x, 2)} y=${fnum(v.y, 2)} z=${fnum(v.z, 2)}  (θ=${fnum(th * 180 / Math.PI, 1)}°, φ=${fnum((ph * 180 / Math.PI + 360) % 360, 1)}°)` +
+    $('#bl-out').innerHTML = `\\(|\\psi\\rangle = ${fcx(st.re[0], st.im[0])}\\,|0\\rangle + ${fcx(st.re[1], st.im[1])}\\,|1\\rangle\\)`.replace('+ −', '− ') +
+      `\n\\(P(0)\\) = <b>${fnum(p0)}</b>   \\(P(1)\\) = <b>${fnum(1 - p0)}</b>` +
+      `\nBloch: \\((x, y, z) = (${fnum(v.x, 2)},\\ ${fnum(v.y, 2)},\\ ${fnum(v.z, 2)})\\)   \\(\\theta = ${fnum(th * 180 / Math.PI, 1)}^\\circ,\\ \\varphi = ${fnum((ph * 180 / Math.PI + 360) % 360, 1)}^\\circ\\)` +
       `\nGates: ${hist.length ? hist.join(' → ') : '(none)'}` + (extra ? '\n' + extra : '');
     barChart($('#bl-chart'), last || [p0, 1 - p0], { labels: ['0', '1'], max: 1, pct: true, h: 120, w: 300, aria: 'measurement probabilities' });
   }
@@ -502,7 +502,7 @@ const PRESETS = [
     if (P > 0.001) s += `<line x1="${ox}" y1="${oy}" x2="${p2[0].toFixed(1)}" y2="${p2[1].toFixed(1)}" class="s-mid" stroke-width="5" stroke-dasharray="7 4" marker-end="url(#ah2)"/>`;
     s += `<text class="c-txt-ink" x="${ox + 20}" y="${oy + 16}">path 1</text><text class="c-txt-ink" x="${(p1[0] + p2[0]) / 2 + 6}" y="${(p1[1] + p2[1]) / 2 - 6}">path 2</text></svg>`;
     $('#ph-svg').innerHTML = s;
-    $('#ph-out').innerHTML = `Each path has amplitude ½ (length 0.5).\nPath 2 is turned by Δφ = ${d.value}°.\n\nQuantum (add arrows, then square):\nP = |½ + ½e^{iΔφ}|² = <b>${fnum(P)}</b>\n\nClassical (add the squares):\nP = ¼ + ¼ = <b>0.5</b> always\n\n` + (P > 0.97 ? 'Constructive: the arrows line up.' : P < 0.03 ? 'Destructive: the arrows cancel. This outcome never happens.' : 'Partial interference.') + '\nGrey dashed arrow = total amplitude.';
+    $('#ph-out').innerHTML = `Each path has amplitude \\(\\tfrac12\\) (length 0.5).\nPath 2 is turned by \\(\\Delta\\varphi = ${d.value}^\\circ\\).\n\nQuantum (add arrows, then square):\n\\(P = \\left|\\tfrac12 + \\tfrac12 e^{i\\Delta\\varphi}\\right|^2\\) = <b>${fnum(P)}</b>\n\nClassical (add the squares):\n\\(P = \\tfrac14 + \\tfrac14\\) = <b>0.5</b> always\n\n` + (P > 0.97 ? 'Constructive: the arrows line up.' : P < 0.03 ? 'Destructive: the arrows cancel. This outcome never happens.' : 'Partial interference.') + '\nGrey dashed arrow = total amplitude.';
   }
   d.addEventListener('input', upd);
   $$('#lab-phase [data-ph]').forEach(b => b.addEventListener('click', () => { d.value = b.dataset.ph; upd(); }));
@@ -622,14 +622,14 @@ const PRESETS = [
     const n = +nS.value, N = 1 << n; const order = [...Array(N).keys()]; for (let i = N - 1; i > 0; i--) { const j = randInt(0, i); [order[i], order[j]] = [order[j], order[i]]; }
     const seen = []; let verdict = '';
     for (const x of order) { seen.push(`f(${bin(x, n)}) = ${f[x]}`); if (seen.length > 1 && f[x] !== f[order[0]]) { verdict = 'balanced (two different outputs seen)'; break; } if (seen.length === N / 2 + 1) { verdict = 'constant (more than half the inputs agree)'; break; } }
-    $('#dj-out').innerHTML = seen.join('\n') + `\n\nClassical answer after <b>${seen.length} queries</b>: ${verdict}.\nWorst case for n=${n}: 2^(n−1)+1 = ${N / 2 + 1} queries.`;
+    $('#dj-out').innerHTML = seen.join('\n') + `\n\nClassical answer after <b>${seen.length} queries</b>: ${verdict}.\nWorst case for \\(n = ${n}\\): \\(2^{n-1}+1\\) = ${N / 2 + 1} queries.`;
   });
   $('#dj-quantum').addEventListener('click', () => {
     const n = +nS.value, N = 1 << n, amp = new Array(N).fill(0);
     for (let y = 0; y < N; y++) { let s = 0; for (let x = 0; x < N; x++) { let dot = x & y, par = 0; while (dot) { par ^= dot & 1; dot >>= 1; } s += ((f[x] + par) & 1) ? -1 : 1; } amp[y] = s / N; }
     const p = amp.map(a => a * a), p0 = p[0];
     barChart($('#dj-chart'), p, { labels: [...Array(N).keys()].map(i => bin(i, n)), max: 1, pct: N <= 16, h: 160, aria: 'Deutsch–Jozsa output' });
-    $('#dj-out').innerHTML = `1 oracle query. Amplitude of |${'0'.repeat(n)}⟩ = (1/${N})·Σ(−1)^f(x) = <b>${fnum(amp[0])}</b>\nP(all zeros) = <b>${fnum(p0)}</b> → <b>${p0 > 0.5 ? 'CONSTANT' : 'BALANCED'}</b>` + (p0 < 0.5 ? '\nThe + and − signs cancelled exactly, so 00…0 never appears.' : '\nAll signs agreed, so every path led to 00…0.');
+    $('#dj-out').innerHTML = `1 oracle query. Amplitude of \\(|${'0'.repeat(n)}\\rangle = \\frac{1}{${N}}\\sum_x (-1)^{f(x)}\\) = <b>${fnum(amp[0])}</b>\nP(all zeros) = <b>${fnum(p0)}</b> → <b>${p0 > 0.5 ? 'CONSTANT' : 'BALANCED'}</b>` + (p0 < 0.5 ? '\nThe + and − signs cancelled exactly, so 00…0 never appears.' : '\nAll signs agreed, so every path led to 00…0.');
   });
   $('#dj-reveal').addEventListener('click', () => { const n = +nS.value; $('#dj-out').innerHTML = `It was <b>${kind}</b>.\nTruth table: ${f.map((v, i) => bin(i, n) + '→' + v).join('  ')}`; });
   make();
@@ -648,7 +648,7 @@ const PRESETS = [
     const cls = [...Array(N).keys()].map(i => i === t ? (a[i] < 0 ? 'c-neg' : 'c-hi') : (a[i] < 0 ? 'c-neg' : 'c-dim'));
     barChart($('#gv-chart'), Array.from(a), { signed: true, max: 1, mean, classes: cls, labels: [...Array(N).keys()].map(i => bin(i, n)), h: 210, pct: N <= 8, pctFmt: v => fnum(v, 3), aria: 'Grover amplitudes' });
     const opt = Math.floor(Math.PI / 4 * Math.sqrt(N));
-    $('#gv-status').innerHTML = `${last}  ·  Iterations: <b>${k}</b>  ·  P(target) = <b>${(a[t] ** 2 * 100).toFixed(1)}%</b>  ·  Optimal ≈ ⌊π/4·√${N}⌋ = <b>${opt}</b>`;
+    $('#gv-status').innerHTML = `${last}  ·  Iterations: <b>${k}</b>  ·  P(target) = <b>${(a[t] ** 2 * 100).toFixed(1)}%</b>  ·  Optimal \\(\\approx \\lfloor \\tfrac{\\pi}{4}\\sqrt{${N}} \\rfloor\\) = <b>${opt}</b>`;
   }
   $('#gv-oracle').addEventListener('click', () => { oracle(); render(); });
   $('#gv-diff').addEventListener('click', () => { diff(); k++; render(); });
@@ -686,20 +686,20 @@ function convergents(num, den) { const cf = []; let a = num, b = den; while (b) 
     if (isPrime(N)) { out.textContent = `N = ${N} is prime. There's nothing to factor.`; return; }
     for (let p = 3; p * p <= N; p += 2) { let q = N; while (q % p === 0) q /= p; if (q === 1) { out.innerHTML = `N = ${N} is a power of the prime ${p}. Shor assumes N is not a prime power; a classical check finds <b>${p}</b> directly.`; return; } }
     if (!(a >= 2 && a < N)) { out.textContent = `Pick a with 2 ≤ a < ${N}.`; return; }
-    const g = gcd(a, N); let s = `Step 1. gcd(${a}, ${N}) = ${g}`;
+    const g = gcd(a, N); let s = `Step 1. \\(\\gcd(${a}, ${N}) = ${g}\\)`;
     if (g > 1) { out.innerHTML = s + `\nLucky! ${a} already shares a factor with ${N}: <b>${N} = ${g} × ${N / g}</b>\n(No quantum computer needed this time. Try another a to see the period finding.)`; return; }
     s += ' → no shortcut, so find the period.';
     let r = 1; while (modpow(a, r, N) !== 1) r++;
-    s += `\nStep 2. Smallest r with ${a}^r ≡ 1 (mod ${N}): <b>r = ${r}</b>   ← the quantum computer's job`;
+    s += `\nStep 2. Smallest \\(r\\) with \\(${a}^r \\equiv 1 \\pmod{${N}}\\): <b>r = ${r}</b>   ← the quantum computer's job`;
     const L = Math.min(Math.max(3 * r + 1, 12), 60), seq = [...Array(L).keys()].map(x => modpow(a, x, N));
     barChart($('#sh-seq'), seq.map(v => v / N), { labels: [...Array(L).keys()].map(String), max: 1, classes: seq.map(v => v === 1 ? 'c-pos' : 'c-dim'), h: 130, aria: 'power sequence' });
     let ok = false;
     if (r % 2) s += `\nStep 3. r = ${r} is odd → this a fails. Retry with another a.`;
     else {
       const x = modpow(a, r / 2, N);
-      s += `\nStep 3. r is even. x = ${a}^${r / 2} mod ${N} = ${x}`;
-      if (x === N - 1) s += `\n        But x ≡ −1 (mod ${N}) → this a fails. Retry with another a.`;
-      else { const p = gcd(x - 1, N), q = gcd(x + 1, N); s += `\nStep 4. gcd(${x}−1, ${N}) = ${p},  gcd(${x}+1, ${N}) = ${q}\n<b>${N} = ${p} × ${N / p}</b>`; ok = true; }
+      s += `\nStep 3. r is even. \\(x = ${a}^{${r / 2}} \\bmod ${N} = ${x}\\)`;
+      if (x === N - 1) s += `\n        But \\(x \\equiv -1 \\pmod{${N}}\\) → this a fails. Retry with another a.`;
+      else { const p = gcd(x - 1, N), q = gcd(x + 1, N); s += `\nStep 4. \\(\\gcd(${x}-1, ${N}) = ${p},\\ \\ \\gcd(${x}+1, ${N}) = ${q}\\)\n<b>${N} = ${p} × ${N / p}</b>`; ok = true; }
     }
     out.innerHTML = s;
     const M = 256, P = new Array(M).fill(0);
@@ -711,9 +711,9 @@ function convergents(num, den) { const cf = []; let a = num, b = den; while (b) 
       if (m === 0) return `m = 0 → phase 0: tells us nothing (s = 0). Run again.`;
       const conv = convergents(m, M).filter(([, q]) => q < N); let best = conv.length ? conv[conv.length - 1] : [0, 1];
       for (const c of conv) if (Math.abs(m / M - c[0] / c[1]) < 1 / (2 * M)) { best = c; break; }
-      return `m = ${m} → m/256 = ${fnum(m / M, 4)} ≈ ${best[0]}/${best[1]} → candidate r = ${best[1]}` + (best[1] === r ? '  ✓' : (r % best[1] === 0 ? `  (a divisor of r; combine runs)` : ''));
+      return `m = ${m} → \\(\\tfrac{${m}}{256} = ${fnum(m / M, 4)} \\approx \\tfrac{${best[0]}}{${best[1]}}\\) → candidate r = ${best[1]}` + (best[1] === r ? '  ✓' : (r % best[1] === 0 ? `  (a divisor of r; combine runs)` : ''));
     });
-    $('#sh-cf').textContent = `Peaks sit near multiples of 256/r = ${fnum(256 / r, 2)}. Continued fractions turn a measured m into r:\n` + lines.join('\n') + (ok ? '' : '');
+    $('#sh-cf').textContent = `Peaks sit near multiples of \\(256/r = ${fnum(256 / r, 2)}\\). Continued fractions turn a measured m into r:\n` + lines.join('\n') + (ok ? '' : '');
   }
   run.addEventListener('click', go);
   $('#sh-rand').addEventListener('click', () => { const N = Math.floor(+Ni.value); if (N > 3) ai.value = randInt(2, N - 1); go(); });
@@ -739,7 +739,7 @@ function convergents(num, den) { const cf = []; let a = num, b = den; while (b) 
     s += `<circle cx="${X(+th.value)}" cy="${Y(C(t))}" r="7" fill="currentColor"/>`;
     $('#vq-chart').innerHTML = s + '</svg>';
     const e = C(t);
-    $('#vq-out').innerHTML = `θ = ${fnum(+th.value, 1)}°   C(θ) = ⟨Z⟩ + 0.8⟨X⟩ = cos θ + 0.8 sin θ = <b>${fnum(e, 4)}</b>\nTrue lowest energy = −√(1 + 0.8²) = ${fnum(Emin, 4)}   Gap: ${fnum(e - Emin, 4)}\nOptimizer steps so far: ${steps}` + (e - Emin < 1e-3 ? '\n<b>Converged.</b> The circuit now prepares the ground state.' : '');
+    $('#vq-out').innerHTML = `\\(\\theta = ${fnum(+th.value, 1)}^\\circ\\)   \\(C(\\theta) = \\langle Z\\rangle + 0.8\\langle X\\rangle = \\cos\\theta + 0.8\\sin\\theta\\) = <b>${fnum(e, 4)}</b>\nTrue lowest energy = \\(-\\sqrt{1 + 0.8^2}\\) = ${fnum(Emin, 4)}   Gap: ${fnum(e - Emin, 4)}\nOptimizer steps so far: ${steps}` + (e - Emin < 1e-3 ? '\n<b>Converged.</b> The circuit now prepares the ground state.' : '');
   }
   function step() { let t = +th.value * D; t -= 0.35 * dC(t); let deg = ((t / D) % 360 + 360) % 360; path.push(+th.value); th.value = deg; steps++; render(); }
   th.addEventListener('input', () => { steps = 0; path = []; render(); });
@@ -794,8 +794,8 @@ function convergents(num, den) { const cf = []; let a = num, b = den; while (b) 
     const j = +jS.value, inv = $('#ck-inv').checked, sg = inv ? -1 : 1;
     let h = ''; for (let k = 0; k < 8; k++) { const turns = ((j * k) % 8); h += dial(sg * TAU * turns / 8, `|${k}⟩`, `${sg < 0 && turns ? '−' : ''}${turns}/8 turn`); }
     $('#ck-dials').innerHTML = h;
-    const q = [2, 4, 8].map(d => `(|0⟩ + e^{${sg < 0 ? '−' : ''}2πi·${j}/${d}}|1⟩)/√2  → turns ${fnum(((j / d) % 1), 3)}`);
-    $('#ck-out').textContent = `${inv ? 'QFT⁻¹' : 'QFT'}|${j}⟩ = (1/√8) Σ_k e^{${sg < 0 ? '−' : ''}2πi·${j}k/8}|k⟩\nEvery |k⟩ has size 1/√8 ≈ 0.354, so all 8 outcomes are equally likely (12.5%).\nThe information is in the hand angles: each step in k turns the hand ${j}/8 of a circle further.\n\nProduct form (one factor per qubit):\n` + q.join('\n');
+    const q = [2, 4, 8].map(d => `\\(\\tfrac{1}{\\sqrt2}\\big(|0\\rangle + e^{${sg < 0 ? '-' : ''}2\\pi i\\cdot ${j}/${d}}|1\\rangle\\big)\\)  → turns ${fnum(((j / d) % 1), 3)}`);
+    $('#ck-out').textContent = `\\(${inv ? '\\mathrm{QFT}^{-1}' : '\\mathrm{QFT}'}\\,|${j}\\rangle = \\frac{1}{\\sqrt8}\\sum_{k=0}^{7} e^{${sg < 0 ? '-' : ''}2\\pi i\\cdot ${j}k/8}\\,|k\\rangle\\)\nEvery |k⟩ has size \\(1/\\sqrt8 \\approx 0.354\\), so all 8 outcomes are equally likely (12.5%).\nThe information is in the hand angles: each step in k turns the hand ${j}/8 of a circle further.\n\nProduct form (one factor per qubit):\n` + q.join('\n');
   }
   jS.addEventListener('change', render); $('#ck-inv').addEventListener('change', render); render();
 })();
@@ -823,7 +823,7 @@ function convergents(num, den) { const cf = []; let a = num, b = den; while (b) 
     barChart($('#qp-out'), pout, { labels, max: 1, h: 140, pct: N <= 16, aria: 'output probabilities' });
     const peaks = []; for (let k = 0; k < N; k++) if (pout[k] > 0.04) peaks.push(k);
     const exact = N % r === 0;
-    let t = `N = 2${sup(n)} = ${N}, period r = ${r}, N/r = ${fnum(N / r, 3)}\nPattern occupies x = ${xs.slice(0, 12).join(', ')}${xs.length > 12 ? ', …' : ''}\nStrong outputs at k = ${peaks.slice(0, 16).join(', ')}${peaks.length > 16 ? ', …' : ''}\n`;
+    let t = `\\(N = 2^{${n}} = ${N}\\), period \\(r = ${r}\\), \\(N/r = ${fnum(N / r, 3)}\\)\nPattern occupies x = ${xs.slice(0, 12).join(', ')}${xs.length > 12 ? ', …' : ''}\nStrong outputs at k = ${peaks.slice(0, 16).join(', ')}${peaks.length > 16 ? ', …' : ''}\n`;
     if (r === 1) t += 'r = 1 means "no repetition structure": every input is filled, and the QFT puts everything at k = 0.';
     else if (r >= N) t += 'The period is as big as the whole space: the pattern never repeats inside N, so the QFT can\'t see it. Add qubits.';
     else if (exact) t += `Sharp peaks exactly at multiples of N/r = ${N / r}. Estimate: r = N / ${N / r} = <b>${r}</b>.`;
@@ -870,12 +870,200 @@ function convergents(num, den) { const cf = []; let a = num, b = den; while (b) 
     let best = 0; P.forEach((v, i) => { if (v > P[best]) best = i; });
     barChart($('#qe-chart'), P, { labels: [...Array(M).keys()].map(i => M <= 16 ? bin(i, n) : String(i)), max: 1, pct: M <= 16, h: 170, w: 600, classes: P.map((v, i) => i === best ? 'c-pos' : 'c-dim'), aria: 'QPE outcomes' });
     const est = best / M;
-    $('#qe-out').innerHTML = `True phase φ = ${phi.toFixed(3)}   Counting qubits n = ${n} (resolution 1/${M} = ${fnum(1 / M, 4)})\nMost likely result: <b>${bin(best, n)}</b> = ${best} → φ ≈ ${best}/${M} = <b>${fnum(est, 4)}</b>   (P = ${(P[best] * 100).toFixed(1)}%)\nError: ${fnum(Math.abs(est - phi), 4)}` + (Math.abs(P[best] - 1) < 1e-9 ? '\nExact: φ fits in n binary digits.' : '\nNot exact: φ doesn\'t fit in n bits, so the probability spreads to neighbours.');
+    $('#qe-out').innerHTML = `True phase \\(\\varphi = ${phi.toFixed(3)}\\)   Counting qubits \\(n = ${n}\\) (resolution \\(1/2^{${n}} = ${fnum(1 / M, 4)}\\))\nMost likely result: <b>${bin(best, n)}</b> = ${best} → \\(\\varphi \\approx ${best}/${M}\\) = <b>${fnum(est, 4)}</b>   (P = ${(P[best] * 100).toFixed(1)}%)\nError: ${fnum(Math.abs(est - phi), 4)}` + (Math.abs(P[best] - 1) < 1e-9 ? '\nExact: φ fits in n binary digits.' : '\nNot exact: φ doesn\'t fit in n bits, so the probability spreads to neighbours.');
   }
   ph.addEventListener('input', render); nS.addEventListener('change', render);
   $$('#lab-qpe [data-phi]').forEach(b => b.addEventListener('click', () => { ph.value = b.dataset.phi; if (b.dataset.n) nS.value = b.dataset.n; render(); }));
   render();
 })();
 
+
+/* ============================================================ Ch5: repetition code */
+function choose(n, k) { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return r; }
+function repFail(n, p) { let s = 0; for (let k = Math.floor(n / 2) + 1; k <= n; k++) s += choose(n, k) * p ** k * (1 - p) ** (n - k); return s; }
+(function repCode() {
+  const pS = $('#rp-p'); if (!pS) return;
+  const nS = $('#rp-n'), NS = [1, 3, 5, 7], BITS = 1000;
+  function run() {
+    const p = +pS.value / 100, n = +nS.value;
+    $('#rp-pv').textContent = pS.value + '%';
+    const wrong = {}, ex = []; let flips = 0;
+    NS.forEach(m => {
+      let w = 0;
+      for (let b = 0; b < BITS; b++) {
+        const bit = rnd() < 0.5 ? 1 : 0; let ones = 0, word = '';
+        for (let c = 0; c < m; c++) { const f = rnd() < p, v = f ? 1 - bit : bit; ones += v; word += v; if (m === n && f) flips++; }
+        const vote = ones > m / 2 ? 1 : 0; if (vote !== bit) w++;
+        if (m === n && ex.length < 6) ex.push(`${bit} → sent ${String(bit).repeat(m)} → got ${word} → vote ${vote}  ${vote === bit ? (word.includes(String(1 - bit)) ? '✓ fixed' : '✓') : '✗ wrong'}`);
+      }
+      wrong[m] = w / BITS;
+    });
+    barChart($('#rp-chart'), NS.map(m => wrong[m]), { labels: NS.map(m => m === 1 ? 'no code' : m + ' copies'), max: Math.max(0.05, ...NS.map(m => wrong[m])) * 1.15, pct: true, h: 160, w: 520, classes: NS.map(m => m === n ? 'c-pos' : 'c-dim'), aria: 'share of bits decoded wrongly for each number of copies' });
+    const th = repFail(n, p);
+    const law = n === 1 ? '\\(P_{\\text{fail}} = p\\)' : n === 3 ? '\\(P_{\\text{fail}} = 3p^2 - 2p^3\\)' : `\\(P_{\\text{fail}} = \\sum_{k=${(n + 1) / 2}}^{${n}} \\binom{${n}}{k} p^k (1-p)^{${n}-k}\\)`;
+    let t = `First few bits (${n === 1 ? 'no code' : n + ' copies'}):\n` + ex.join('\n') +
+      `\n\n${BITS.toLocaleString('en-US')} bits sent, ${flips.toLocaleString('en-US')} copies flipped by noise.\nWrong after the vote: <b>${(wrong[n] * 100).toFixed(1)}%</b>   (raw bit: ${(p * 100).toFixed(0)}%)\nTheory: ${law} = ${(th * 100).toFixed(2)}%`;
+    if (p === 0.5) t += '\nAt \\(p = 0.5\\) every copy is a coin toss, so no amount of voting helps.';
+    else if (p >= 0.35 && n > 1) t += '\nThe flip chance is so high that the code barely helps. Codes need errors to be rare.';
+    else if (n > 1 && p > 0) t += `\nThe vote turns a ${(p * 100).toFixed(0)}% error into ${(th * 100).toFixed(2)}%: about ${fnum(p / Math.max(th, 1e-9), 0)}× fewer mistakes.`;
+    $('#rp-out').innerHTML = t;
+  }
+  pS.addEventListener('input', run); nS.addEventListener('change', run); $('#rp-send').addEventListener('click', run);
+  run();
+})();
+
+/* ============================================================ Ch5: Hamming(7,4) */
+(function hamming() {
+  const dataRow = $('#hm-data'); if (!dataRow) return;
+  const wordRow = $('#hm-word'), DPOS = [3, 5, 6, 7];
+  let data = [1, 0, 1, 1], flip = new Array(8).fill(false);
+  const dBtns = data.map((_, i) => { const b = document.createElement('button'); b.className = 'btn gate'; b.addEventListener('click', () => { data[i] ^= 1; flip.fill(false); render(); }); dataRow.appendChild(b); return b; });
+  const wBtns = [1, 2, 3, 4, 5, 6, 7].map(pos => { const b = document.createElement('button'); b.className = 'btn gate'; b.addEventListener('click', () => { flip[pos] = !flip[pos]; render(); }); wordRow.appendChild(b); return b; });
+  function encode() {
+    const w = new Array(8).fill(0); DPOS.forEach((p, i) => { w[p] = data[i]; });
+    [1, 2, 4].forEach(pb => { let s = 0; for (let q = 1; q <= 7; q++) if (q !== pb && (q & pb)) s ^= w[q]; w[pb] = s; });
+    return w;
+  }
+  function render() {
+    const sent = encode(), got = sent.map((v, i) => i && flip[i] ? 1 - v : v);
+    dBtns.forEach((b, i) => { b.textContent = data[i]; b.setAttribute('aria-label', `data bit ${i + 1} is ${data[i]}, tap to change`); });
+    wBtns.forEach((b, i) => { const pos = i + 1, par = [1, 2, 4].includes(pos); b.innerHTML = `${got[pos]}<span class="small" style="display:block;font-weight:400;opacity:.7">${par ? 'p' : 'd'}${pos}</span>`; b.classList.toggle('on', flip[pos]); b.setAttribute('aria-label', `position ${pos} (${par ? 'parity' : 'data'}) is ${got[pos]}${flip[pos] ? ', flipped' : ''}`); });
+    const checks = [1, 2, 4].map(pb => { const cover = [1, 2, 3, 4, 5, 6, 7].filter(q => q & pb); let s = 0; cover.forEach(q => { s ^= got[q]; }); return { pb, cover, bad: s }; });
+    const syn = checks.reduce((a, c) => a + (c.bad ? c.pb : 0), 0), nflip = flip.filter(Boolean).length;
+    const fixed = got.slice(); if (syn) fixed[syn] ^= 1;
+    const outData = DPOS.map(p => fixed[p]).join(''), ok = outData === data.join('');
+    let t = `Sent:     ${sent.slice(1).join(' ')}\nReceived: ${got.slice(1).join(' ')}\n\n` +
+      checks.map(c => `Check \\(s_${c.pb} = ${c.cover.map(q => 'b_' + q).join(' \\oplus ')} = ${c.bad}\\)  ${c.bad ? '<b>odd ✗</b>' : 'even ✓'}`).join('\n') +
+      `\n\nSyndrome \\(s_4 s_2 s_1\\) = <b>${checks[2].bad}${checks[1].bad}${checks[0].bad}</b> = \\(${checks[2].bad}\\cdot4 + ${checks[1].bad}\\cdot2 + ${checks[0].bad}\\cdot1 = ${syn}\\)` +
+      (syn ? ` → flip position ${syn} back` : ' → no error found') +
+      `\nDecoded data: <b>${outData}</b> ${ok ? '✓ correct' : '✗ wrong (sent ' + data.join('') + ')'}`;
+    if (nflip === 0) t += '\nTap any received bit to flip it.';
+    else if (nflip === 1) t += '\nOne flip: the syndrome names the exact position.';
+    else t += `\n${nflip} flips: more than this code can handle. ${syn && !ok ? 'The syndrome points at the wrong place.' : ''}`;
+    $('#hm-out').innerHTML = t;
+  }
+  $('#hm-reset').addEventListener('click', () => { flip.fill(false); render(); });
+  render();
+})();
+
+/* ============================================================ Ch5: noise channels */
+(function noiseLab() {
+  const cv = $('#ns-bloch'); if (!cv) return;
+  const ch = $('#ns-ch'), pS = $('#ns-p');
+  const STARTS = { 0: [0, 0, 1], 1: [0, 0, -1], '+': [1, 0, 0], i: [0, 1, 0], t: [Math.sin(Math.PI / 3), 0, Math.cos(Math.PI / 3)] };
+  const NAMES = { 0: '|0⟩', 1: '|1⟩', '+': '|+⟩', i: '|i⟩', t: 'the 60° tilt' };
+  let st = '+';
+  function apply(c, p, [x, y, z]) {
+    const k = 1 - 2 * p, s = Math.sqrt(1 - p);
+    switch (c) {
+      case 'x': return [x, k * y, k * z];
+      case 'z': return [k * x, k * y, z];
+      case 'y': return [k * x, y, k * z];
+      case 'dep': return [(1 - p) * x, (1 - p) * y, (1 - p) * z];
+      case 'amp': return [s * x, s * y, z * (1 - p) + p];
+      default: return [s * x, s * y, z];
+    }
+  }
+  const NOTE = {
+    x: 'With chance p the arrow is flipped about the x-axis; the result is the average.',
+    z: 'With chance p the |1⟩ part gets a minus sign. Values (z) are safe; the phase (x, y) shrinks.',
+    y: 'X and Z together: only the y-direction is safe.',
+    dep: 'With chance p the state is swapped for a random one, so the whole arrow shrinks evenly.',
+    amp: 'Energy leaks out (T₁): everything is pulled up towards |0⟩, the lowest-energy state.',
+    phd: 'Phase leaks out (T₂) with no energy lost: the arrow is squashed onto the vertical axis.'
+  };
+  const FORM = {
+    x: '(x,\\ (1-2p)\\,y,\\ (1-2p)\\,z)', z: '((1-2p)\\,x,\\ (1-2p)\\,y,\\ z)', y: '((1-2p)\\,x,\\ y,\\ (1-2p)\\,z)',
+    dep: '(1-p)\\,(x,\\ y,\\ z)', amp: '(\\sqrt{1-p}\\,x,\\ \\sqrt{1-p}\\,y,\\ (1-p)\\,z + p)', phd: '(\\sqrt{1-p}\\,x,\\ \\sqrt{1-p}\\,y,\\ z)'
+  };
+  function render() {
+    const p = +pS.value / 100, a = STARTS[st], b = apply(ch.value, p, a);
+    $('#ns-pv').textContent = p.toFixed(2);
+    $$('#lab-noise [data-st]').forEach(e => e.classList.toggle('on', e.dataset.st === st));
+    drawBloch(cv, [{ x: a[0], y: a[1], z: a[2], color: tok('--muted'), dash: true, w: 2 }, { x: b[0], y: b[1], z: b[2], color: tok('--pos') }]);
+    const len = v => Math.hypot(...v), p0 = v => (1 + v[2]) / 2, f = v => v.map(c => fnum(c, 2)).join(', ');
+    const same = a.every((c, i) => Math.abs(c - b[i]) < 1e-9);
+    let t = `Rule: \\((x, y, z) \\to ${FORM[ch.value]}\\)   with \\(p = ${p.toFixed(2)}\\)\n\nStart: ${NAMES[st]}   \\(\\vec r = (${f(a)})\\)\nAfter: \\(\\vec r\\,' = (${f(b)})\\)\n\nArrow length \\(|\\vec r|\\): ${fnum(len(a), 2)} → <b>${fnum(len(b), 2)}</b>  (1 = pure, 0 = fully random)\n\\(P(0) = \\tfrac{1+z}{2}\\): ${fnum(p0(a), 3)} → <b>${fnum(p0(b), 3)}</b>\n\n${NOTE[ch.value]}`;
+    if (same && p > 0) t += `\n<b>This noise can't touch ${NAMES[st]}.</b> Try another starting state.`;
+    if (ch.value === 'x' && p === 1) t += '\nAt \\(p = 1\\) this is just an X gate: no randomness, so the length stays 1.';
+    $('#ns-out').innerHTML = t;
+  }
+  $$('#lab-noise [data-st]').forEach(e => e.addEventListener('click', () => { st = e.dataset.st; render(); }));
+  ch.addEventListener('change', render); pS.addEventListener('input', render);
+  window.addEventListener('qc-theme', render); window.addEventListener('resize', render);
+  render();
+})();
+
+/* ============================================================ Ch5: zero-noise extrapolation */
+(function zneLab() {
+  const pS = $('#zn-p'); if (!pS) return;
+  const shotsS = $('#zn-shots'), fitS = $('#zn-fit'), LAM = [1, 1.5, 2, 2.5, 3];
+  const truth = (p, l) => 0.5 + 0.5 * Math.pow(1 - p, 10 * l);
+  function linfit(xs, ys) {
+    const n = xs.length, mx = xs.reduce((a, b) => a + b) / n, my = ys.reduce((a, b) => a + b) / n;
+    let sxy = 0, sxx = 0; xs.forEach((x, i) => { sxy += (x - mx) * (ys[i] - my); sxx += (x - mx) ** 2; });
+    const m = sxy / sxx; return { m, c: my - m * mx };
+  }
+  function fitter(kind, ys) {
+    if (kind === 'lin') { const { m, c } = linfit(LAM, ys); const f = x => c + m * x; f.tex = `P(\\lambda) \\approx ${fnum(c, 3)} ${m < 0 ? '-' : '+'} ${fnum(Math.abs(m), 3)}\\,\\lambda`; return f; }
+    if (kind === 'exp') {
+      const ly = ys.map(y => Math.log(Math.max(1e-4, y - 0.5)));
+      const { m, c } = linfit(LAM, ly); const f = x => 0.5 + Math.exp(c + m * x); f.tex = `P(\\lambda) \\approx 0.5 + ${fnum(Math.exp(c), 3)}\\,e^{${fnum(m, 3)}\\,\\lambda}`; return f;
+    }
+    const f = x => ys.reduce((s, y, i) => { let w = 1; LAM.forEach((l, j) => { if (j !== i) w *= (x - l) / (LAM[i] - l); }); return s + y * w; }, 0);
+    f.tex = 'P(\\lambda) \\approx c_0 + c_1\\lambda + c_2\\lambda^2 + c_3\\lambda^3 + c_4\\lambda^4 \\text{ (through all 5 points)}'; return f;
+  }
+  function run() {
+    const p = +pS.value / 1000, shots = +shotsS.value, kind = fitS.value;
+    $('#zn-pv').textContent = (p * 100).toFixed(1) + '%';
+    const ys = LAM.map(l => { const t = truth(p, l); if (!shots) return t; let k = 0; for (let s = 0; s < shots; s++) if (rnd() < t) k++; return k / shots; });
+    const F = fitter(kind, ys), est = F(0), raw = ys[0];
+    const W = 600, H = 230, L = 46, R = 14, T = 14, B = 30;
+    const lo = Math.max(0, Math.min(0.5, ...ys, est) - 0.02), hi = Math.max(1.02, est + 0.02);
+    const X = l => L + 26 + l / 3.2 * (W - L - R - 26), Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="P(0) measured at noise scale factors 1 to 3, with a fitted curve extrapolated to zero noise">`;
+    const step = hi - lo > 0.3 ? 0.1 : 0.05;
+    for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) s += `<line class="c-grid" x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text class="c-txt" x="${L - 6}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end">${v.toFixed(2)}</text>`;
+    [0, 1, 1.5, 2, 2.5, 3].forEach(l => { s += `<text class="c-txt" x="${X(l).toFixed(1)}" y="${H - 10}" text-anchor="middle">λ=${l}</text>`; });
+    s += `<line class="c-axis" x1="${X(0)}" x2="${X(0)}" y1="${T}" y2="${H - B}"/>`;
+    s += `<line class="c-mean" x1="${L}" x2="${W - R}" y1="${Y(1).toFixed(1)}" y2="${Y(1).toFixed(1)}"/><text class="c-txt-ink" x="${W - R - 2}" y="${(Y(1) - 5).toFixed(1)}" text-anchor="end">ideal P(0) = 1</text>`;
+    let dt = '', df = ''; for (let i = 0; i <= 64; i++) { const l = i / 64 * 3.2; dt += (i ? 'L' : 'M') + X(l).toFixed(1) + ' ' + Y(truth(p, l)).toFixed(1); }
+    for (let i = 0; i <= 60; i++) { const l = i / 60 * 3; const v = Math.max(lo, Math.min(hi, F(l))); df += (i ? 'L' : 'M') + X(l).toFixed(1) + ' ' + Y(v).toFixed(1); }
+    s += `<path d="${dt}" fill="none" class="s-mid" stroke-width="1.2" stroke-dasharray="2 4"/><path class="c-curve" d="${df}"/>`;
+    ys.forEach((y, i) => { s += `<circle class="c-hi" cx="${X(LAM[i]).toFixed(1)}" cy="${Y(y).toFixed(1)}" r="5"/>`; });
+    const ey = Y(Math.max(lo, Math.min(hi, est)));
+    s += `<rect class="c-pos" x="${(X(0) - 7).toFixed(1)}" y="${(ey - 7).toFixed(1)}" width="14" height="14" transform="rotate(45 ${X(0).toFixed(1)} ${ey.toFixed(1)})"/>`;
+    s += `<text class="c-txt-ink" style="paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round" x="${(X(0) + 14).toFixed(1)}" y="${(ey + (Math.abs(Y(1) - ey) < 14 ? 22 : 4)).toFixed(1)}">zero-noise estimate ${est.toFixed(3)}</text>`;
+    $('#zn-chart').innerHTML = s + '</svg>';
+    const NM = { lin: 'linear', exp: 'exponential', rich: 'Richardson' };
+    let t = `Circuit: \\(X^{10} = I\\), ${(p * 100).toFixed(1)}% depolarizing error per gate, ${shots ? shots.toLocaleString('en-US') + ' shots' : 'exact probabilities'}\n` +
+      '\nFolding \\(U \\to U\\,(U^\\dagger U)^k\\) scales the noise to \\(\\lambda = 2k + 1\\):\n' + LAM.map((l, i) => `<span style="white-space:nowrap">\\(\\lambda = ${l.toFixed(1)}\\): ${ys[i].toFixed(3)}</span>`).join('   ') + `\nFit: \\(${F.tex}\\)` +
+      `\n\nUnmitigated \\(P(0)\\) at \\(\\lambda = 1\\): <b>${raw.toFixed(3)}</b>   error ${fnum(Math.abs(1 - raw), 3)}\nZNE, ${NM[kind]} fit, \\(P(\\lambda{=}0)\\):  <b>${est.toFixed(3)}</b>   error ${fnum(Math.abs(1 - est), 3)}`;
+    const better = Math.abs(1 - est) < Math.abs(1 - raw);
+    t += better ? `\nMitigation removed ${Math.round((1 - Math.abs(1 - est) / Math.abs(1 - raw)) * 100)}% of the error.` : '\n<b>Worse than doing nothing</b>: the fit chased the noise.';
+    if (est > 1.0005) t += '\nAbove 1 isn\'t a real probability: the extrapolation overshot. ZNE estimates can do that.';
+    $('#zn-out').innerHTML = t;
+  }
+  pS.addEventListener('input', run); [shotsS, fitS].forEach(e => e.addEventListener('change', run)); $('#zn-run').addEventListener('click', run);
+  run();
+})();
+
+
+/* ============================================================ live LaTeX in lab readouts */
+(function liveMath() {
+  const labs = $$('.lab'); if (!labs.length || !window.MutationObserver) return;
+  const RE = /\\\(|\\\[/;
+  const tex = el => {
+    const M = window.MathJax; if (!el || !M || typeof M.typeset !== 'function' || !RE.test(el.textContent)) return;
+    try { if (M.typesetClear) M.typesetClear([el]); M.typeset([el]); } catch (e) { if (M.typesetPromise) M.typesetPromise([el]).catch(() => {}); }
+  };
+  const mo = new MutationObserver(recs => {
+    const todo = new Set();
+    recs.forEach(r => { const el = r.target.nodeType === 1 ? r.target : r.target.parentElement; if (el && !el.closest('mjx-container')) todo.add(el); });
+    todo.forEach(tex);
+  });
+  labs.forEach(l => mo.observe(l, { childList: true, characterData: true, subtree: true }));
+  window.addEventListener('load', () => { const M = window.MathJax; if (M && M.startup && M.startup.promise) M.startup.promise.then(() => labs.forEach(tex)); });
+})();
 
 })();

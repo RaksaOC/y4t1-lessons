@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- seo -->
-<meta name="description" content="Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT and phase estimation, with a circuit builder, quizzes and an exam.">
+<meta name="description" content="Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT, phase estimation, and noise and error correction, with a circuit builder, quizzes and an exam.">
 <link rel="canonical" href="http://y4t1.chanraksa.com/quantum.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -11,7 +11,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Year 4 Study Hub">
 <meta property="og:title" content="Quantum Computing: From Bits to Shor · Year 4 Study Hub">
-<meta property="og:description" content="Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT and phase estimation, with a circuit builder, quizzes and an exam.">
+<meta property="og:description" content="Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT, phase estimation, and noise and error correction, with a circuit builder, quizzes and an exam.">
 <meta property="og:url" content="http://y4t1.chanraksa.com/quantum.html">
 <meta property="og:image" content="http://y4t1.chanraksa.com/assets/og/quantum.png">
 <meta property="og:image:width" content="1200">
@@ -19,9 +19,9 @@
 <meta property="og:image:alt" content="Quantum Computing: From Bits to Shor">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Quantum Computing: From Bits to Shor · Year 4 Study Hub">
-<meta name="twitter:description" content="Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT and phase estimation, with a circuit builder, quizzes and an exam.">
+<meta name="twitter:description" content="Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT, phase estimation, and noise and error correction, with a circuit builder, quizzes and an exam.">
 <meta name="twitter:image" content="http://y4t1.chanraksa.com/assets/og/quantum.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Quantum Computing: From Bits to Shor", "url": "http://y4t1.chanraksa.com/quantum.html", "description": "Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT and phase estimation, with a circuit builder, quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Quantum Computing", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Quantum Computing: From Bits to Shor", "url": "http://y4t1.chanraksa.com/quantum.html", "description": "Quantum Computing from the first qubit to Shor's algorithm: gates, entanglement, Grover, the QFT, phase estimation, and noise and error correction, with a circuit builder, quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Quantum Computing", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
 <!-- /seo -->
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 
@@ -436,6 +436,20 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
           <li><a href="#c4-compare">Comparison and labs</a></li>
           <li><a href="#quiz4">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#ch5">5 · Errors and noise</a>
+        <ol>
+          <li><a href="#c5-classical">Classical error correction</a></li>
+          <li><a href="#c5-why">Why quantum errors are harder</a></li>
+          <li><a href="#c5-types">Types of quantum noise</a></li>
+          <li><a href="#c5-time">T₁ and T₂</a></li>
+          <li><a href="#c5-detect">Detecting noise</a></li>
+          <li><a href="#c5-lab1">Lab: noise in Qiskit</a></li>
+          <li><a href="#c5-qec">Error correction</a></li>
+          <li><a href="#c5-qem">Error mitigation</a></li>
+          <li><a href="#c5-supp">Suppression and decoupling</a></li>
+          <li><a href="#c5-mitiq">Putting it together</a></li>
+          <li><a href="#quiz5">Check yourself</a></li>
+        </ol></li>
       <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
@@ -446,7 +460,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
 <main>
 <!-- ======================================================= HERO -->
 <header class="hero" id="start">
-  <div class="slidebar"><span>Quantum Computing</span><span>Chapters 1–4</span></div>
+  <div class="slidebar"><span>Quantum Computing</span><span>Chapters 1–5</span></div>
   <h1>From Bits to Shor</h1>
   <p class="lede">Hi. Pull up a chair. Over the next few hours I'm going to walk you from "what even is a qubit?" all the way to the algorithm that could break internet encryption. You don't need any physics background. If you can multiply two small numbers and read a table, you can follow every step.</p>
   <div class="legend" aria-label="How to read the boxes">
@@ -463,6 +477,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <li><b>Chapter 2</b> covers the rules: qubits, gates, superposition, entanglement, interference, and two party tricks (teleportation and superdense coding).</li>
       <li><b>Chapter 3</b> covers the algorithms: Deutsch–Jozsa, Grover and Shor, and how they use those rules.</li>
       <li><b>Chapter 4</b> covers the engine: the Quantum Fourier Transform, Bernstein–Vazirani, phase estimation, and how the labs are built.</li>
+      <li><b>Chapter 5</b> covers the enemy: noise, and the three ways to fight it (error correction, mitigation and suppression).</li>
     </ul>
   </div>
 </header>
@@ -2064,6 +2079,307 @@ Found trivial factor: 5    → Factors found: (5, 11)</div>
   <div data-xq="4"></div>
 </section>
 
+<!-- ======================================================= CHAPTER 5 -->
+<section class="chapter" id="ch5">
+  <div class="chapter-head">
+    <span class="num">Chapter 5</span>
+    <h2>Quantum Errors and Noise</h2>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.1–30</span><span class="ref">Labs: Error, QEM (Mitiq)</span></div>
+  <p>Every algorithm so far assumed perfect qubits. Real ones aren't. Heat, vibration, stray fields and imperfect pulses nudge them all the time, and Chapter 1 already warned that this noise is the biggest thing standing between today's chips and Shor on real keys. This chapter is about fighting back. We start with how ordinary computers deal with errors, see why qubits make that much harder, and then meet the three answers: <b>correct</b> errors, <b>mitigate</b> them, or <b>suppress</b> them before they happen.</p>
+
+  <section class="sub" id="c5-classical">
+  <h3>5.1 Errors before qubits: classical error correction</h3>
+  <p>Classical bits go wrong too: electrical noise, imperfect circuits, a signal that fades on its way down a cable. The errors come in three shapes.</p>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c5-errtypes.webp" width="1200" height="375" loading="lazy" alt="Three 8-bit words sent and received: one with a single flipped bit, one with two scattered flips, and one with a run of neighbouring flips"></span><figcaption>A single-bit error, a multiple-bit error, and a burst error, where neighbouring bits go wrong together.</figcaption></figure>
+  <p>The first question is always: how do you even <b>know</b> something went wrong? You can't compare against the original, because the receiver never had it. The answer is to send a little extra, called <b>redundancy</b>, and check that it still agrees with itself. The slides show three ways.</p>
+  <h4>The 3-repetition code</h4>
+  <p>Send every bit three times: 0 becomes 000 and 1 becomes 111. The receiver takes a <b>majority vote</b>. One flipped copy is outvoted by the other two, so the error is detected and corrected. Two flips win the vote, and the answer comes out wrong.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Case</th><th>Original</th><th>Sent</th><th>Received</th><th>Majority</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>No error</td><td>0</td><td class="mono">000</td><td class="mono">000</td><td>0</td><td>0</td></tr>
+      <tr><td>One error</td><td>1</td><td class="mono">111</td><td class="mono">110</td><td>1</td><td>1 (fixed)</td></tr>
+      <tr><td>One error</td><td>0</td><td class="mono">000</td><td class="mono">010</td><td>0</td><td>0 (fixed)</td></tr>
+      <tr><td>Two errors</td><td>1</td><td class="mono">111</td><td class="mono">001</td><td>0</td><td><b>0 (wrong)</b></td></tr>
+    </tbody></table></div>
+  <p>If each copy flips independently with probability p, the vote fails only when two or three copies flip:</p>
+  <div class="math">\[ P_{\text{fail}} = 3p^2(1-p) + p^3 = 3p^2 - 2p^3 \]</div>
+  <p class="say">With p = 0.1, one bit alone is wrong 10% of the time, but the vote is wrong only 2.8% of the time. The code helps only while p is below 0.5. Past that, the copies are more likely wrong than right, and voting makes things worse.</p>
+  <div class="lab" id="lab-rep">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Majority vote under noise</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="rp-p">Flip chance p</label><input type="range" id="rp-p" min="0" max="50" step="1" value="10"><b class="mono" id="rp-pv">10%</b>
+        <label class="ctl" for="rp-n">Copies</label><select id="rp-n"><option value="1">1 (no code)</option><option value="3" selected>3</option><option value="5">5</option><option value="7">7</option></select>
+        <button class="btn primary" id="rp-send">Send 1,000 bits</button></div>
+      <div class="svgwrap" id="rp-chart"></div>
+      <div class="readout" id="rp-out"></div>
+    </div>
+  </div>
+  <h4>Parity check</h4>
+  <p>Add one <b>parity bit</b> so the total number of 1s is always even. <span class="mono">100011</span> has three 1s, which is odd, so append 1. <span class="mono">110011</span> has four, so append 0. The receiver recounts. An odd total means something flipped, so it rejects the data and asks again. A parity bit <b>detects</b> a single error but can't say <i>which</i> bit it was, so it can't correct it. Two flips cancel out and go unnoticed.</p>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c5-parity.webp" width="1200" height="573" loading="lazy" alt="Sender computes a parity bit for 100011, sends 1000111; the receiver recomputes parity, accepts even data and rejects odd data"></span><figcaption>The sender adds a parity bit; the receiver recomputes it and accepts or rejects the data.</figcaption></figure>
+  <h4>Hamming codes</h4>
+  <p>Richard Hamming's trick is to use several parity bits, each checking a different, overlapping group of positions. Put them at positions 1, 2 and 4, the powers of 2. When one bit flips, the pattern of failed checks, called the <b>syndrome</b>, spells out the bad position in binary. Then you flip it back. Hamming(7,4) protects 4 data bits with only 3 extra bits, where repetition would need 8.</p>
+  <div class="lab" id="lab-ham">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Hamming(7,4): find the flipped bit</h4></div>
+    <div class="lab-body">
+      <p class="small muted">Set the 4 data bits, then tap any received bit to flip it, the way noise would. The receiver's three checks point at the bad position.</p>
+      <div class="row" id="hm-data"><span class="small muted">Data</span></div>
+      <div class="row" id="hm-word"><span class="small muted">Received</span></div>
+      <div class="row"><button class="btn" id="hm-reset">Clear the flips</button></div>
+      <div class="readout" id="hm-out"></div>
+    </div>
+  </div>
+  <p>Try flipping two bits. The syndrome still points somewhere, but at the wrong place, and the "fix" adds a third error. Every code has a limit on how many errors it can handle.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Hamming worked at Bell Labs in the 1940s and was fed up with weekend computer jobs crashing on a single bad bit. His codes, published in 1950, still protect the memory in most servers today: "ECC RAM" fixes single-bit errors silently. QR codes and CDs use stronger cousins, which is why a scratched disc still plays.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.4–8</span></div>
+  </section>
+
+  <section class="sub" id="c5-why">
+  <h3>5.2 Why quantum errors are harder</h3>
+  <p>Qubits do their job through <b>superposition</b> and <b>entanglement</b>. Those are exactly the properties that make them sensitive to their environment, so errors aren't a rare accident. They are constant. To build reliable machines we have to <b>detect</b>, <b>correct</b>, <b>mitigate</b> and <b>suppress</b> them. Three things from Chapter 2 make that hard:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Classical errors</th><th>Quantum errors</th></tr></thead>
+    <tbody>
+      <tr><td>Bits are discrete: 0 or 1, so an error is a clean flip</td><td>Qubits are continuous complex states, so an error can be any tiny drift of the arrow</td></tr>
+      <tr><td>Bits are easy to copy, so repetition is free</td><td>The <b>no-cloning theorem</b> forbids copying an unknown state</td></tr>
+      <tr><td>You can look at a bit directly to check it</td><td><b>Measurement collapses</b> the state, so looking destroys what you're protecting</td></tr>
+    </tbody></table></div>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c5-qemqec.webp" width="1200" height="552" loading="lazy" alt="Top row: a prepared state 01 measured with noise, then mitigated so 01 dominates again. Bottom row: the same noisy measurement, then corrected back to 01"></span><figcaption>The goal in a picture: noise spreads the answer across wrong outcomes, and we want the right bar back.</figcaption></figure>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>Quantum error correction can't copy the qubit and can't look at it. It works anyway by <b>entangling</b> the qubit with others and measuring only <b>parities</b>, questions like "do these two agree?". Those answers reveal the error without revealing the data. You'll see how in 5.7.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.9, s.14</span></div>
+  </section>
+
+  <section class="sub" id="c5-types">
+  <h3>5.3 Types of quantum noise</h3>
+  <p>Picture the qubit as an arrow on the Bloch sphere from Chapter 2. Each kind of noise does something different to that arrow.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Error type</th><th>What it does</th><th>On the Bloch sphere</th></tr></thead>
+    <tbody>
+      <tr><td><b>Bit flip</b> (X error)</td><td>Swaps |0⟩ ↔ |1⟩</td><td>Turns the arrow upside down about the x-axis</td></tr>
+      <tr><td><b>Phase flip</b> (Z error)</td><td>Multiplies the |1⟩ part by −1</td><td>Turns the arrow half way round the vertical axis</td></tr>
+      <tr><td><b>Bit-phase flip</b> (Y error)</td><td>Both at once</td><td>Damages both the values and the phase</td></tr>
+      <tr><td><b>Depolarizing</b></td><td>With some chance, replaces the state with a completely random one</td><td>Shrinks the arrow towards the centre</td></tr>
+      <tr><td><b>Amplitude damping</b></td><td>Energy leaks out: |1⟩ relaxes to |0⟩</td><td>Pulls the arrow towards the north pole, |0⟩</td></tr>
+      <tr><td><b>Phase damping</b></td><td>Phase information leaks out, but no energy is lost</td><td>Squashes the arrow onto the vertical axis</td></tr>
+    </tbody></table></div>
+  <p>A shrunken arrow is a qubit that's partly random. The length of the arrow is how much "quantumness" is left: 1 means a pure state, and 0 is a fair coin with no phase at all. Try each channel on different starting states, and notice that some errors can't touch some states.</p>
+  <div class="lab" id="lab-noise">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Noise channels on the Bloch sphere</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="ns-ch">Noise</label><select id="ns-ch">
+        <option value="x">Bit flip (X)</option><option value="z">Phase flip (Z)</option><option value="y">Bit-phase flip (Y)</option><option value="dep" selected>Depolarizing</option><option value="amp">Amplitude damping</option><option value="phd">Phase damping</option></select>
+        <label class="ctl" for="ns-p">Strength</label><input type="range" id="ns-p" min="0" max="100" step="1" value="30"><b class="mono" id="ns-pv">0.30</b></div>
+      <div class="row"><span class="small muted">Start in</span><button class="btn" data-st="0">|0⟩</button><button class="btn" data-st="1">|1⟩</button><button class="btn" data-st="+">|+⟩</button><button class="btn" data-st="i">|i⟩</button><button class="btn" data-st="t">60° tilt</button></div>
+      <div class="grid2"><div><canvas id="ns-bloch" aria-label="Bloch sphere: dashed arrow before noise, solid arrow after"></canvas></div><div class="readout" id="ns-out"></div></div>
+    </div>
+  </div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>A compass needle in a noisy room. A bit flip is someone flipping the compass over. A phase flip spins it half a turn around its pin. Depolarizing is someone shaking the box so the needle could be pointing anywhere. Amplitude damping is the needle slowly settling towards magnetic north. Phase damping blurs which way round it was pointing, but not whether it points up or down.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.10</span><span class="ref">Visualizer: gui.quantumcodes.io</span></div>
+  </section>
+
+  <section class="sub" id="c5-time">
+  <h3>5.4 Coherence, decoherence, T₁ and T₂</h3>
+  <p><b>Coherence</b> is a qubit's ability to stay in superposition. Every algorithm depends on it. <b>Decoherence</b> is the environment (heat, vibration, radiation, magnetic fields) leaking into the qubit and destroying that quantum information. Hardware quotes two clocks for it:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Parameter</th><th>Meaning</th><th>Matches</th></tr></thead>
+    <tbody>
+      <tr><td><b>T₁</b>, relaxation time</td><td>How long before an excited |1⟩ decays to |0⟩</td><td>Amplitude damping</td></tr>
+      <tr><td><b>T₂</b>, dephasing time</td><td>How long before the superposition's phase is lost</td><td>Phase damping (plus T₁ decay)</td></tr>
+    </tbody></table></div>
+  <div class="math">\[ P_{1}(t) = e^{-t/T_1}, \qquad \text{coherence}(t) \propto e^{-t/T_2} \]</div>
+  <p class="say">After one T₁, a qubit that started in |1⟩ is still there only about 37% of the time. T₂ can never be longer than 2T₁, because losing energy also destroys the phase.</p>
+  <p>On today's hardware both are only <b>tens to hundreds of microseconds</b>. That is the real limit on <b>circuit depth</b>: every gate takes time, and the whole algorithm has to finish before the qubits forget. It's why the deep circuits in Shor are out of reach and short ones like VQE are not.</p>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.11</span></div>
+  </section>
+
+  <section class="sub" id="c5-detect">
+  <h3>5.5 Detecting quantum errors and noise</h3>
+  <p>Before you can fight noise you have to measure it. The slides list four techniques:</p>
+  <ul>
+    <li><b>Fidelity:</b> how close an actual output state or distribution is to the ideal, from 0 to 1.</li>
+    <li><b>Randomized benchmarking:</b> run long random sequences of gates that should multiply out to "do nothing", and see how fast the result decays. That gives the <b>average gate fidelity</b>, without being fooled by state preparation or readout errors.</li>
+    <li><b>Quantum process tomography:</b> feed in many known states, measure in many bases, and reconstruct the whole operation a gate actually performs, imperfections included. It's thorough but expensive, so it's only practical for one or two qubits.</li>
+    <li><b>Hardware error reports:</b> providers publish calibration data for every qubit and connection, refreshed many times a day.</li>
+  </ul>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c5-ibm.webp" width="1194" height="1088" loading="lazy" alt="IBM Quantum dashboard for ibm_pittsburgh, a 156-qubit Heron r3 processor: 2-qubit error 1.55E-3, readout error 4.03E-3, T1 300 microseconds, T2 324 microseconds, with a map of the qubit lattice"></span><figcaption>An IBM hardware report: ibm_pittsburgh, a 156-qubit Heron r3 chip, and its calibration map.</figcaption></figure>
+  <h4>Reading the report</h4>
+  <p>From this dashboard: 2-qubit (CZ) error ≈ 1.55 × 10⁻³, single-qubit (SX) error ≈ 1.8 × 10⁻⁴, readout error ≈ 4.0 × 10⁻³, T₁ ≈ 300 µs, T₂ ≈ 324 µs. Two-qubit gates are almost <b>ten times</b> worse than one-qubit gates, which is why transpilers (Chapter 3) work so hard to cut CNOTs.</p>
+  <p>A quick rule of thumb: if errors are independent, a circuit succeeds roughly when every operation does, so multiply the success chances.</p>
+  <div class="math">\[ P_{\text{success}} \approx \prod_i (1-\varepsilon_i) \]</div>
+  <p class="say">A circuit with 100 CZs, 200 SX gates and 5 readouts on this chip: 0.99845¹⁰⁰ ≈ 0.857, times 0.99982²⁰⁰ ≈ 0.965, times 0.99597⁵ ≈ 0.980, which is about <b>0.81</b>. One run in five is spoiled before you even start, and doubling the CZ count drops it to about 0.70.</p>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.12–13</span></div>
+  </section>
+
+  <section class="sub" id="c5-lab1">
+  <h3>5.6 Lab: watching noise in Qiskit</h3>
+  <p>The first lab notebook (<code>Error.ipynb</code>) adds noise to a small circuit on purpose and compares the results. The steps:</p>
+  <ol class="steps">
+    <li>Build the circuit: put q0 in |1⟩, copy it into q1 and q2 with two CNOTs (the repetition code), then decode with two CNOTs and a Toffoli that flips q0 back if q1 and q2 both disagree with it.</li>
+    <li>Simulate it ideally (no error).</li>
+    <li>Simulate it with a bit-flip noise model, <code>pauli_error([("X", p), ("I", 1 − p)])</code>, with p = 0.30.</li>
+    <li>Compare the two histograms.</li>
+    <li>Repeat at transpiler optimization levels 0, 1, 2 and 3.</li>
+  </ol>
+  <div class="readout">qc = QuantumCircuit(3, 1)
+qc.x(0)                      # logical |1⟩
+qc.cx(0, 1); qc.cx(0, 2)     # encode: |111⟩
+# ... noise happens here in a real device ...
+qc.cx(0, 1); qc.cx(0, 2)     # decode
+qc.ccx(1, 2, 0)              # majority vote onto q0
+qc.measure(0, 0)</div>
+  <p>The results: ideal gives <b>1</b> in all 1,024 shots. With noise, about <b>70% 1 and 30% 0</b> (e.g. 724 vs 300). Optimization levels 0–3 give 748, 718, 682 and 715 ones: no real pattern, just shot noise.</p>
+  <div class="call warn"><span class="tag">Careful: why didn't the code help?</span>
+    <p>Look at where the noise model attaches: <code>add_quantum_error(bit_flip_error, ["x", "id"], [0])</code>. That puts the 30% flip on the <b>X gate on q0</b>, before encoding. A wrong input is copied faithfully into all three qubits, so the vote agrees on the wrong answer, and the failure rate stays at p = 0.3. A code only protects against errors that happen <i>after</i> encoding. Move the noise onto the encoded qubits and the failure rate drops to 3p² − 2p³ ≈ 0.22 at p = 0.3, or to 0.028 at p = 0.1. The optimization level can't help either, because the noisy X gate is in every version of the circuit.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.15</span><span class="ref">Lab: Error.ipynb</span></div>
+  </section>
+
+  <section class="sub" id="c5-qec">
+  <h3>5.7 Quantum error correction (QEC)</h3>
+  <p><b>Goal:</b> protect quantum information by spreading <b>one logical qubit</b> across <b>many physical qubits</b>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Concept</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td><b>Redundancy</b></td><td>Encode the logical qubit using several physical qubits</td></tr>
+      <tr><td><b>Stabilizers</b></td><td>Parity checks, measured through helper qubits, that reveal errors without revealing the data. The results are the <b>syndrome</b>.</td></tr>
+      <tr><td><b>Fault tolerance</b></td><td>Circuits keep working correctly even when the correction steps themselves have small errors</td></tr>
+    </tbody></table></div>
+  <h4>The 3-qubit bit-flip code</h4>
+  <p>Two CNOTs entangle the qubit with two fresh |0⟩s. Nothing is copied, so no-cloning is safe:</p>
+  <div class="math">\[ \alpha|0\rangle + \beta|1\rangle \;\longrightarrow\; \alpha|000\rangle + \beta|111\rangle \]</div>
+  <p>Now measure two parities with ancilla qubits: does q0 agree with q1 (\(Z_0Z_1\)), and does q1 agree with q2 (\(Z_1Z_2\))? Both branches, |000⟩ and |111⟩, give the same parity answers, so α and β are never disturbed. Only the error shows up:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>q0 = q1?</th><th>q1 = q2?</th><th>Diagnosis</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>yes</td><td>yes</td><td>No error</td><td>Nothing</td></tr>
+      <tr><td>no</td><td>yes</td><td>q0 flipped</td><td>X on q0</td></tr>
+      <tr><td>no</td><td>no</td><td>q1 flipped</td><td>X on q1</td></tr>
+      <tr><td>yes</td><td>no</td><td>q2 flipped</td><td>X on q2</td></tr>
+    </tbody></table></div>
+  <p>Phase flips get the same treatment after a layer of Hadamards, because H turns Z errors into X errors. Peter Shor combined the two in 1995 to make the first code that handles <i>any</i> single-qubit error, using 9 physical qubits. Modern chips aim for the <b>surface code</b>, a grid of qubits with parity checks all over it. This is where Chapter 1's "about 1,000 physical qubits per logical qubit" comes from.</p>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c5-agent.webp" width="1200" height="332" loading="lazy" alt="A loop between an agent, a quantum memory and classical control: the agent reads code structure and chooses actions, with a reward signal"></span><figcaption>Decoding as a loop: something reads the syndrome, decides on a fix, and acts. Some research uses machine-learning agents for this.</figcaption></figure>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>There's a <b>threshold</b>: if physical errors are rare enough, making the code bigger makes the logical qubit better. Above it, extra qubits only add more places to fail. Google's Willow chip (2024) was the first to show the logical error rate falling as the surface code grew, which is the "below threshold" line from Chapter 1's NISQ chart.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.16</span></div>
+  </section>
+
+  <section class="sub" id="c5-qem">
+  <h3>5.8 Quantum error mitigation (QEM)</h3>
+  <p><b>Error mitigation</b> is a collection of tricks that reduce the <i>effect</i> of noise on your results, without the extra qubits that full correction needs. It doesn't fix the qubits. It runs the noisy circuit cleverly, many times, and <b>post-processes</b> the numbers to estimate what a perfect machine would have said. That makes it the practical choice for today's NISQ devices. The slides cover four techniques: zero-noise extrapolation, readout-error mitigation, probabilistic error cancellation and Pauli twirling.</p>
+  <h4>Zero-noise extrapolation (ZNE)</h4>
+  <p>You can't turn noise <i>down</i>, but you can turn it <i>up</i> on purpose. Run the circuit at noise levels λ = 1, 1.5, 2, 2.5, 3, measure your answer each time, fit a curve through the points, and follow it back to λ = 0: the zero-noise answer that no machine can run.</p>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c5-zne.webp" width="1200" height="697" loading="lazy" alt="Mitiq ZNE workflow: the user's program becomes noise-scaled circuits, which run on hardware; the noisy results are combined into an error-mitigated expectation value"></span><figcaption>Mitiq's ZNE workflow: generate noise-scaled circuits, run them, then infer the zero-noise value.</figcaption></figure>
+  <p>How do you scale noise without touching the hardware? <b>Unitary folding.</b> Replace a gate U with U U† U. Mathematically that's still U, because U†U = I, but the chip now runs three gates, so roughly three times the noise. Fold the whole circuit (<b>global folding</b>), single gates (<b>local folding</b>), or insert identities (<b>identity folding</b>). Folding only some gates gives in-between factors like 1.5.</p>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c5-folding.webp" width="1200" height="618" loading="lazy" alt="An original circuit U next to three folded versions: local unitary folding, global unitary folding U U-dagger U, and identity folding"></span><figcaption>Folding: the logic stays the same while the gate count, and so the noise, goes up.</figcaption></figure>
+  <div class="math">\[ U \;\to\; U\,(U^\dagger U)^k, \qquad \lambda = 2k + 1 \]</div>
+  <p>This lab mirrors the second notebook (<code>QEM.ipynb</code>): 10 X gates on one qubit, which multiply out to "do nothing", so the ideal result is P(0) = 1. Each gate has depolarizing noise.</p>
+  <div class="lab" id="lab-zne">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Zero-noise extrapolation</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="zn-p">Error per gate</label><input type="range" id="zn-p" min="5" max="60" step="5" value="20"><b class="mono" id="zn-pv">2.0%</b>
+        <label class="ctl" for="zn-shots">Shots</label><select id="zn-shots"><option value="1024" selected>1,024</option><option value="8192">8,192</option><option value="0">No shot noise</option></select>
+        <label class="ctl" for="zn-fit">Fit</label><select id="zn-fit"><option value="lin" selected>Linear</option><option value="exp">Exponential</option><option value="rich">Richardson (degree 4)</option></select>
+        <button class="btn primary" id="zn-run">Run again</button></div>
+      <div class="svgwrap" id="zn-chart"></div>
+      <div class="readout" id="zn-out"></div>
+    </div>
+  </div>
+  <p>The notebook's run with 2% noise got P(0) = 0.913 unmitigated and <b>0.961</b> after linear ZNE with scale factors 1 to 3. That's much closer to 1, but not all the way: the real decay is a curve, and a straight line underestimates it. Try the exponential fit, then try Richardson with shot noise on.</p>
+  <div class="call warn"><span class="tag">Careful: more is not better</span>
+    <p>A higher-degree fit passes through every point, including the shot noise. Extrapolating that wiggly curve back to λ = 0 can land further from the truth than a straight line. ZNE trades <b>bias</b> (a too-simple curve) against <b>variance</b> (amplified noise), and the cost of reducing either is more shots.</p>
+  </div>
+  <h4>The other mitigation techniques</h4>
+  <ul>
+    <li><b>Readout-error mitigation:</b> first prepare each basis state and record how often it's misread, to build a "confusion matrix". Then undo that matrix on your real results. It's cheap, and it fixes the 0.4% readout errors in the report above.</li>
+    <li><b>Probabilistic error cancellation (PEC):</b> characterise the noise, then write the <i>ideal</i> gate as a weighted mix of noisy operations, some with negative weights. Randomly sample circuits from that mix and recombine the results with the weights. On average the noise cancels. The price is that the number of runs grows exponentially with circuit size.</li>
+    <li><b>Pauli twirling:</b> sandwich gates between random Pauli gates that cancel out logically. That turns messy, coherent errors into simple random Pauli flips, which the other methods handle much better.</li>
+  </ul>
+  <figure class="fig sm"><span class="frame"><img src="assets/qc/c5-pec.webp" width="1110" height="844" loading="lazy" alt="Headphone speaker waves plus ambient noise waves cancel to a flat line"></span><figcaption>PEC, as the slides put it: like noise-cancelling headphones adding the opposite wave.</figcaption></figure>
+  <h4>Mitigation versus correction</h4>
+  <figure class="fig md"><span class="frame"><img src="assets/qc/c5-monitor.webp" width="1200" height="655" loading="lazy" alt="Three panels: quantum error correction monitors and detects errors; catch and reverse anticipates them from a tell signal; error mitigation doesn't monitor and leaves errors undetected"></span><figcaption>Correction watches and fixes errors as they happen. Mitigation never sees them, and cleans up the statistics afterwards.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Error correction (QEC)</th><th>Error mitigation (QEM)</th></tr></thead>
+    <tbody>
+      <tr><td>Extra qubits</td><td>Many (hundreds per logical qubit)</td><td>None</td></tr>
+      <tr><td>Extra cost</td><td>Qubits and fast classical decoding</td><td>More circuit runs and post-processing</td></tr>
+      <tr><td>What you get</td><td>A protected qubit you can keep computing with</td><td>A better <b>estimate</b> of an average (an expectation value)</td></tr>
+      <tr><td>When</td><td>The long-term route to large algorithms like Shor</td><td>Today, on NISQ hardware</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.17–23</span><span class="ref">Lab: QEM.ipynb</span></div>
+  </section>
+
+  <section class="sub" id="c5-supp">
+  <h3>5.9 Error suppression and dynamical decoupling</h3>
+  <p><b>Error suppression</b> works <i>before</i> errors happen. It builds resilience into the hardware and the operations themselves, with better-shaped control pulses and circuit designs that avoid trouble. The slides compare it to compressing a file: the information is all still there, but packed into a form that's less exposed.</p>
+  <p>The classic example is <b>dynamical decoupling (DD)</b>. Qubits that sit idle while others work still drift, because of slow, unwanted phase from the environment. DD fills those idle windows with pulse pairs such as X then X, which multiply to the identity. Halfway through, the X turns the drift around, so the second half undoes the first. Sequences go from a plain X–X echo to XY4 (X–Y–X–Y) and XY8.</p>
+  <figure class="fig lg"><span class="frame"><img src="assets/qc/c5-ddd.webp" width="1200" height="503" loading="lazy" alt="A 4-qubit circuit timeline with idle windows filled by DD sequences, and a table of sequences: CP, CPMG, XY4, XY8"></span><figcaption>Digital dynamical decoupling: idle windows (grey) are filled with pulse sequences that multiply to I.</figcaption></figure>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Runners on a track who have drifted apart because some are faster. At the whistle everyone turns round and runs back. The fast ones have further to go, and everyone reaches the start line together. The X pulse is the whistle.</p>
+  </div>
+  <div class="call use"><span class="tag">Where it's used</span>
+    <p>The same "echo" trick, invented by Erwin Hahn in 1950, is how <b>MRI scanners</b> get sharp images: a refocusing pulse reverses the dephasing of hydrogen spins in your body. IBM's runtime can insert DD sequences into your circuits automatically.</p>
+  </div>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.24–26</span></div>
+  </section>
+
+  <section class="sub" id="c5-mitiq">
+  <h3>5.10 Putting it together, and the Mitiq lab</h3>
+  <p>Noise is the central challenge in building large quantum computers, and no single tool beats it. We combine all four:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Approach</th><th>Role</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>Error correction (QEC)</b></td><td>Long-term, scalable</td><td>Surface code, logical qubits</td></tr>
+      <tr><td><b>Error mitigation (QEM)</b></td><td>Short-term, practical</td><td>ZNE, PEC, readout mitigation</td></tr>
+      <tr><td><b>Error suppression</b></td><td>Hardware-level prevention</td><td>Dynamical decoupling, better pulses</td></tr>
+      <tr><td><b>Benchmarking and tomography</b></td><td>Measuring the problem</td><td>Randomized benchmarking, hardware reports</td></tr>
+    </tbody></table></div>
+  <h4>The Mitiq lab</h4>
+  <p><b>Mitiq</b> is an open-source Python library for error mitigation from the Unitary Foundation. It implements ZNE, PEC and DDD, and it works with Qiskit, Cirq and Braket. The notebook <code>QEM.ipynb</code>:</p>
+  <ol class="steps">
+    <li>Build the circuit: 10 X gates on one qubit, then measure. The ideal answer is 0 every time.</li>
+    <li>Simulate it ideally: <code>{'0': 1024}</code>.</li>
+    <li>Add depolarizing noise (<code>initialized_depolarizing_noise(noise_level=0.02)</code>) and run it: P(0) ≈ 0.913.</li>
+    <li>Run ZNE with <code>LinearFactory(scale_factors=[1.0, 1.5, 2.0, 2.5, 3.0])</code>: P(0) ≈ 0.961.</li>
+    <li>Plot ideal, noisy and mitigated side by side.</li>
+  </ol>
+  <div class="readout">from mitiq import zne
+from mitiq.zne.inference import LinearFactory
+
+factory = LinearFactory(scale_factors=[1.0, 1.5, 2.0, 2.5, 3.0])
+mitigated_p0 = zne.execute_with_zne(circuit, executor, factory=factory)
+# executor(circuit) runs the circuit and returns P(0)</div>
+  <p>The key design choice is the <b>executor</b>: a function you write that takes a circuit and returns one number, here P(0). Mitiq folds the circuit, calls your executor at each scale factor, and extrapolates. The notebook can switch to a real IBM back-end with <code>USE_REAL_HARDWARE = True</code>, and then the noise is the chip's own.</p>
+  <div class="refs"><span class="ref">Teacher Ch5 · s.27–29</span><span class="ref">Lab: QEM.ipynb</span></div>
+  </section>
+
+  <div class="recap">
+    <h3 style="margin-top:0">Chapter 5 in ten lines</h3>
+    <ul>
+      <li>Classical codes add redundancy: repetition votes, parity detects, Hamming locates the bad bit with a syndrome.</li>
+      <li>3-copy repetition fails with \(3p^2-2p^3\), which helps only while p &lt; 0.5.</li>
+      <li>Qubits are harder: errors are continuous, states can't be copied, and looking collapses them.</li>
+      <li>Noise types: bit flip X, phase flip Z, Y, depolarizing (shrinks), amplitude damping (falls to |0⟩), phase damping (loses phase).</li>
+      <li>T₁ = energy relaxation, T₂ = dephasing; tens to hundreds of µs, which limits circuit depth.</li>
+      <li>Measure noise with fidelity, randomized benchmarking, tomography and hardware reports; success ≈ \(\prod(1-\varepsilon_i)\).</li>
+      <li>QEC: one logical qubit in many physical ones; parity checks (stabilizers) give a syndrome without touching the data.</li>
+      <li>QEM: no extra qubits. ZNE folds U → UU†U to scale noise, then extrapolates to zero.</li>
+      <li>Suppression prevents errors: dynamical decoupling echoes away drift in idle windows.</li>
+      <li>Combine all four; Mitiq does ZNE, PEC and DDD on Qiskit circuits.</li>
+    </ul>
+  </div>
+  <h3 id="quiz5">Check yourself: Chapter 5</h3>
+  <div data-xq="5"></div>
+</section>
+
 <!-- ======================================================= SHEET -->
 <section class="chapter" id="exam">
   <div class="chapter-head">
@@ -2071,7 +2387,7 @@ Found trivial factor: 5    → Factors found: (5, 11)</div>
     <h2>Final Exam</h2>
   </div>
   <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
-  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>52</b><span>Questions</span></div><div class="kpi"><b>117</b><span>Marks</span></div><div class="kpi"><b>120</b><span>Minutes</span></div></div>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>60</b><span>Questions</span></div><div class="kpi"><b>134</b><span>Marks</span></div><div class="kpi"><b>120</b><span>Minutes</span></div></div>
   <p><a class="btn primary" href="exam-quantum.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
 </section>
 
@@ -2101,26 +2417,45 @@ Found trivial factor: 5    → Factors found: (5, 11)</div>
       <tr><td>Controlled rotation</td><td>\(R_m=\mathrm{diag}(1,e^{2\pi i/2^m})\)</td></tr>
       <tr><td>Bernstein–Vazirani</td><td>\(f(x)=a\cdot x \bmod 2\)</td></tr>
       <tr><td>QPE</td><td>\(U|\psi\rangle=e^{2\pi i\varphi}|\psi\rangle,\ \varphi\approx m/2^n\)</td></tr>
+      <tr><td>3-copy repetition code</td><td>\(P_{\text{fail}}=3p^2-2p^3\) (helps only if \(p<\tfrac12\))</td></tr>
+      <tr><td>Bit-flip code</td><td>\(\alpha|0\rangle+\beta|1\rangle\to\alpha|000\rangle+\beta|111\rangle\); checks \(Z_0Z_1,\ Z_1Z_2\)</td></tr>
+      <tr><td>T₁ and T₂ decay</td><td>\(P_1(t)=e^{-t/T_1},\ \text{coherence}\propto e^{-t/T_2},\ T_2\le2T_1\)</td></tr>
+      <tr><td>Circuit success</td><td>\(P_{\text{success}}\approx\prod_i(1-\varepsilon_i)\)</td></tr>
+      <tr><td>ZNE folding</td><td>\(U\to U(U^\dagger U)^k,\ \lambda=2k+1\); extrapolate to \(\lambda=0\)</td></tr>
+      <tr><td>Noise on the Bloch vector</td><td>depolarizing \(\vec r\to(1-p)\vec r\); \(P(0)=\tfrac{1+z}{2}\)</td></tr>
     </tbody></table></div>
   <h3>Glossary</h3>
   <div class="tbl"><table>
     <tbody>
       <tr><td><b>Amplitude</b></td><td>The complex number in front of a basis state; its squared size is a probability.</td></tr>
+      <tr><td><b>Amplitude damping</b></td><td>Energy loss: |1⟩ relaxes to |0⟩. Measured by T₁.</td></tr>
       <tr><td><b>Ancilla</b></td><td>A helper qubit (e.g. the |−⟩ qubit in BV and Deutsch–Jozsa).</td></tr>
       <tr><td><b>Basis state</b></td><td>|0⟩, |1⟩ for one qubit; |00⟩…|11⟩ for two; the "plain" states.</td></tr>
+      <tr><td><b>Bit flip / phase flip</b></td><td>An unwanted X (swaps |0⟩ and |1⟩) or Z (puts a minus sign on |1⟩) error.</td></tr>
       <tr><td><b>Collapse</b></td><td>After measurement, the state becomes the outcome you saw.</td></tr>
       <tr><td><b>Decoherence</b></td><td>The environment leaking into qubits and destroying superposition.</td></tr>
+      <tr><td><b>Depolarizing noise</b></td><td>With some chance, the state is replaced by a random one; shrinks the Bloch arrow.</td></tr>
+      <tr><td><b>Dynamical decoupling</b></td><td>Pulse pairs in idle windows that echo away slow drift (error suppression).</td></tr>
       <tr><td><b>Eigenstate</b></td><td>A state that a gate only multiplies by a phase.</td></tr>
+      <tr><td><b>Error mitigation (QEM)</b></td><td>Post-processing tricks (ZNE, PEC, readout correction) that improve noisy results without extra qubits.</td></tr>
       <tr><td><b>Fidelity</b></td><td>How close an actual result or state is to the ideal (1 = perfect).</td></tr>
       <tr><td><b>gcd</b></td><td>Greatest common divisor; fast with Euclid's algorithm.</td></tr>
       <tr><td><b>Logical vs physical qubit</b></td><td>An error-corrected qubit built from many noisy hardware qubits.</td></tr>
+      <tr><td><b>Mitiq</b></td><td>Open-source Python library for error mitigation (ZNE, PEC, DDD).</td></tr>
       <tr><td><b>NISQ</b></td><td>Noisy Intermediate-Scale Quantum: today's 50–1,000 qubit devices.</td></tr>
       <tr><td><b>Oracle</b></td><td>A black-box gate that computes a function you're trying to learn about.</td></tr>
+      <tr><td><b>PEC</b></td><td>Probabilistic error cancellation: sample noisy circuits with signed weights so the noise averages out.</td></tr>
       <tr><td><b>Phase</b></td><td>The angle of an amplitude's arrow; invisible in one measurement, crucial for interference.</td></tr>
+      <tr><td><b>Phase damping</b></td><td>Loss of phase without energy loss; measured by T₂.</td></tr>
       <tr><td><b>QASM</b></td><td>A text language for quantum circuits (OpenQASM).</td></tr>
+      <tr><td><b>Randomized benchmarking</b></td><td>Long random gate sequences that should do nothing; their decay gives average gate fidelity.</td></tr>
+      <tr><td><b>Readout error</b></td><td>Measuring 0 when the qubit was 1, or the reverse.</td></tr>
       <tr><td><b>Shots</b></td><td>How many times a circuit is run to build a histogram.</td></tr>
+      <tr><td><b>Stabilizer / syndrome</b></td><td>Parity checks that reveal an error without revealing the data; their results are the syndrome.</td></tr>
+      <tr><td><b>T₁ / T₂</b></td><td>Relaxation time (|1⟩ → |0⟩) and dephasing time (phase lost).</td></tr>
       <tr><td><b>Transpile</b></td><td>Rewrite a circuit into a specific chip's native gates and wiring.</td></tr>
       <tr><td><b>Unitary</b></td><td>A reversible, probability-preserving operation; all quantum gates are unitary.</td></tr>
+      <tr><td><b>ZNE</b></td><td>Zero-noise extrapolation: run at boosted noise levels, then extrapolate back to zero noise.</td></tr>
     </tbody></table></div>
   <h3 id="materials">Course materials</h3>
   <p>The original files this page was built from. Tap one to download it.</p>
@@ -2130,6 +2465,12 @@ Found trivial factor: 5    → Factors found: (5, 11)</div>
     <li><a href="materials/qc/Chapter_1_Introduction_to_Quantum_Computing.pdf" download="Chapter 1 Introduction to Quantum Computing.pdf" data-dl>Chapter 1 · Introduction to Quantum Computing</a> <span class="small muted">PDF · 7.5 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/qc/Chapter_2_Basic_of_Quantum_Mechanics.pdf" download="Chapter 2 Basic of Quantum Mechanics.pdf" data-dl>Chapter 2 · Basics of Quantum Mechanics</a> <span class="small muted">PDF · 1.7 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/qc/Chapter_3_Quantum_Algorithms.pdf" download="Chapter 3 Quantum Algorithms.pdf" data-dl>Chapter 3 · Quantum Algorithms</a> <span class="small muted">PDF · 2.4 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/qc/Chapter_4_Quantum_Fourier_Transform.pdf" download="Chapter 4 Quantum Fourier Transform.pdf" data-dl>Chapter 4 · Quantum Fourier Transform</a> <span class="small muted">PDF · 0.9 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/qc/Chapter_5_Quantum_Errors_and_Noises.pdf" download="Chapter 5 Quantum Errors and Noises.pdf" data-dl>Chapter 5 · Quantum Errors and Noises</a> <span class="small muted">PDF · 1.4 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+  </ul>
+  <h4>Lab notebooks</h4>
+  <ul class="dl">
+    <li><a href="materials/qc/Chapter_5_Labs.zip" download="Chapter 5 Labs.zip" data-dl>Chapter 5 · Error.ipynb and QEM.ipynb</a> <span class="small muted">ZIP · 0.1 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
   </ul>
   <p class="foot">Simulations on this page run a small, exact quantum state simulator in your browser. Figures are cropped from the course slides. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
 </section>
