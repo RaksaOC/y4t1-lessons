@@ -1,1 +1,11 @@
 .DS_Store
+# secrets
+.env*.local
+.env
+*.local.js
+# next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo

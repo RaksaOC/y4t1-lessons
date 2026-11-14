@@ -351,3 +351,9 @@
 .look-opt.dl-opt{display:grid;grid-template-columns:minmax(0,1fr);gap:1px}
 .look-opt.dl-opt small{grid-column:1}
 .dl-status{margin:6px 0 0;font-size:13px;line-height:1.35;color:var(--muted);overflow-wrap:anywhere}
+
+/* Contents panel controls (All subjects, theme, Download, Listen): one height and one gap.
+   nav.toc beats each page's own .toc a.hub-back rule; the phone layout keeps its own grid gap. */
+nav.toc a.hub-back{display:flex;align-items:center;min-height:40px;padding:0 12px;margin:0 0 10px;line-height:1.2}
+nav.toc .look,nav.toc .dl{margin:0 0 10px}
+nav.toc .look-btn,nav.toc .dl-btn,nav.toc .tts-go{min-height:40px}

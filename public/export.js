@@ -415,10 +415,17 @@
     document.addEventListener("click",function(e){if(!menu.hidden&&!box.contains(e.target))open(false);});
     views.push({btn:btn,label:label,ico:ico,menu:menu,status:st});
   }
+  /* Set SHOW_DOWNLOAD to false to hide Download; full screen then moves into the Listen row (tts.js). */
+  var SHOW_DOWNLOAD=true;
+  function fullscreenOnly(where,before){
+    var fs=fullscreenButton();if(!fs)return;
+    var box=document.createElement("div");box.className="dl dl-fs-only";
+    var row=document.createElement("div");row.className="dl-row";row.appendChild(fs);box.appendChild(row);
+    where.insertBefore(box,before||null);
+  }
   function init(){
-    var toc=document.getElementById("toc-nav"),d=document.getElementById("toc-d"),hero=document.querySelector(".hero"),legend=hero&&hero.querySelector(".legend");
-    if(toc)build(toc,d&&d.parentNode===toc?d:toc.children[1]||null);
-    if(hero)build(hero,legend);
+    var toc=document.getElementById("toc-nav"),d=document.getElementById("toc-d");
+    if(toc)(SHOW_DOWNLOAD?build:fullscreenOnly)(toc,d&&d.parentNode===toc?d:toc.children[1]||null);
     paintFullscreen();
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
