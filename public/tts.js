@@ -1023,7 +1023,9 @@
     ".tts-toast{margin:0;padding:8px 12px 0;font-size:12.5px;line-height:1.35;color:var(--ink);max-width:none}.tts-toast[hidden]{display:none}"+
     ".tts-ctl{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:10px}"+
     ".tts-bar[data-mode=\"ask\"] .tts-ctl,.tts-bar[data-mode=\"ask\"] .tts-panel{display:none}"+
-    ".tts-bar.tts-wait .tts-pp{position:relative}.tts-bar.tts-wait .tts-pp::after{content:\"\";position:absolute;inset:-5px;border-radius:inherit;border:2px solid transparent;border-top-color:var(--hi,var(--ink));animation:tts-spin .8s linear infinite}"+
+    /* loading: a small round spinner replaces the play icon (a rotating border sweeps outside square buttons) */
+    ".tts-bar.tts-wait .tts-pp{position:relative}.tts-bar.tts-wait .tts-pp svg{opacity:0}"+
+    ".tts-bar.tts-wait .tts-pp::after{content:\"\";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;box-sizing:border-box;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;animation:tts-spin .8s linear infinite;pointer-events:none}"+
     "@keyframes tts-spin{to{transform:rotate(360deg)}}"+
     /* ask view */
     ".tts-ask{display:none;padding:10px 12px 12px;gap:10px}.tts-bar[data-mode=\"ask\"] .tts-ask{display:grid}"+
