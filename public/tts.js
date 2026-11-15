@@ -1031,6 +1031,7 @@
     ".tts-ask{display:none;padding:10px 12px 12px;gap:10px}.tts-bar[data-mode=\"ask\"] .tts-ask{display:grid}"+
     ".tts-ask-head{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:var(--w-lbl,800);text-transform:var(--lbl-tt,uppercase);letter-spacing:calc(.04em * var(--lk,1));color:var(--muted);min-width:0}"+
     ".tts-ask-head svg{width:14px;height:14px;flex:none;color:var(--hi,var(--ink))}.tts-ask-head span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"+
+    ".tts-ask-quote{margin:0;padding-left:9px;border-left:2px solid var(--hi,var(--ink));font-size:13px;line-height:1.45;font-style:italic;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.tts-ask-quote[hidden]{display:none}"+
     ".tts-ask-note{margin:0;font-size:12.5px;max-width:none}.tts-ask-note[hidden]{display:none}"+
     ".tts-ask-rec,.tts-ask-type,.tts-ask-out{display:none}"+
     ".tts-ask-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:8px}"+
@@ -1252,27 +1253,38 @@
   var ASK_MODEL="gemini-3.5-flash-lite"; /* the cheapest text model; recall answers are short */
   var ASK_URL="https://generativelanguage.googleapis.com/v1beta/models/"+ASK_MODEL+":streamGenerateContent?alt=sse";
   var HKEY="tts-history:"+location.pathname;
-  var ask={mode:"",unit:-1,gen:0,rec:null,abort:null,q:"",a:"",speaking:false,clear:0};
+  var ask={mode:"",unit:-1,gen:0,rec:null,abort:null,q:"",a:"",speaking:false,clear:0,sel:"",fromSel:false};
   function loadHistory(){try{var h=JSON.parse(localStorage.getItem(HKEY)||"[]");return Array.isArray(h)?h:[];}catch(e){return [];}}
   function saveHistory(h){try{localStorage.setItem(HKEY,JSON.stringify(h.slice(-100)));}catch(e){}}
   function sectionId(u){var s=u&&(u.el.closest("section.sub[id]")||u.el.closest("section[id]"));return s?s.id:"";}
 
   /* What Gemini sees: the page as read so far (headings marked, the current paragraph flagged),
      a little of what comes next, and the last few questions asked on this page. */
-  function pageContext(at){
-    var out=[],end=Math.min(units.length-1,at+3);
+  function pageContext(at,all){
+    var out=[],end=all?units.length-1:Math.min(units.length-1,at+3);
     for(var k=0;k<=end;k++){
       var u=units[k],t=u.text;
       if(u.kind==="heading")t="\n## "+t;
       if(k===at)t=">>> "+t+" <<<";
-      if(k===at+1)out.push("[The student has not heard the rest yet:]");
+      if(k===at+1&&!all)out.push("[The student has not heard the rest yet:]");
       out.push(t);
     }
     var txt=out.join("\n");
-    return txt.length>90000?"…"+txt.slice(-90000):txt;
+    if(txt.length<=90000)return txt;
+    if(!all)return "…"+txt.slice(-90000);
+    /* reading mode: keep a window around the selected paragraph */
+    var i=txt.indexOf(">>> "),a=Math.max(0,i-60000);
+    return (a?"…":"")+txt.slice(a,a+90000)+(a+90000<txt.length?"…":"");
   }
   function askSystem(at){
     var u=units[at],page=document.title.split("·")[0].trim();
+    if(ask.sel)return "You are a quick tutor built into a student's study page called \""+page+"\". "+
+      "The student is reading the page (not listening) and selected this passage in section \""+(u.sec||"")+"\":\n\u00ab"+ask.sel+"\u00bb\n"+
+      "They are asking about that passage. Answer briefly so they can carry on reading: 1 to 4 short sentences, under 80 words, because the answer is also read aloud. Plain words only: no markdown, no lists, no symbols or LaTeX; say formulas in words. "+
+      "Use the page notes below as the source, with the same terms and examples; the paragraph that holds the selection is marked >>> <<<. If the idea is explained elsewhere on the page, say which section. "+
+      "If the notes don't cover it, answer from general knowledge in one sentence and say it isn't in these notes. "+
+      "Reply in exactly this format: a first line 'Q: ' with the student's question as they asked it (transcribe the audio and fix obvious mishearings), then a line 'A: ' with your answer.\n\n"+
+      "PAGE NOTES:\n"+pageContext(at,true);
     return "You are a quick recall tutor built into a student's study page called \""+page+"\". "+
       "The student is listening to the page read aloud and paused at the paragraph marked >>> <<< (section \""+(u.sec||"")+"\") because they forgot or did not get something. "+
       "Remind them briefly so they can carry on listening: 1 to 3 short spoken sentences, under 60 words. Plain words only: no markdown, no lists, no symbols or LaTeX; say formulas in words. "+
@@ -1294,7 +1306,7 @@
       contents.push({role:"user",parts:[{text:"(At section \""+h.sec+"\") "+h.q}]});
       contents.push({role:"model",parts:[{text:"Q: "+h.q+"\nA: "+h.a}]});
     });
-    var parts=[{text:"(Asked at section \""+(units[ask.unit].sec||"")+"\".) "+(q.text||"The question is in the audio.")}];
+    var parts=[{text:"(Asked at section \""+(units[ask.unit].sec||"")+"\""+(ask.sel?", about the selected text \u201c"+(ask.sel.length>200?ask.sel.slice(0,200)+"…":ask.sel)+"\u201d":"")+".) "+(q.text||"The question is in the audio.")}];
     if(q.audio)parts.push({inlineData:{mimeType:"audio/wav",data:q.audio}});
     contents.push({role:"user",parts:parts});
     var ctrl=window.AbortController?new AbortController():null;ask.abort=ctrl;
@@ -1377,11 +1389,32 @@
   /* --- the flow */
   function startAsk(){
     if(curUnit<0||!units[curUnit])return;
+    ask.sel="";ask.fromSel=false;ui.askQuote.hidden=true;
     ask.unit=curUnit;ask.resumeAt=curSent>=0?curSent:units[curUnit].first;
     stopAudio();if(playing)paused=true;paint();
     hist(false);
     ui.askSec.textContent=units[curUnit].sec||"";
     startRec();
+  }
+  /* Not reading: select some text and ask about it. The bar opens in ask mode and closes again on "Got it". */
+  function startSelAsk(){
+    var s=selAsk;if(!s)return;
+    if(!player){player=new Audio();player.preload="auto";}
+    try{player.src=SILENT;player.play().catch(function(){});}catch(e){}
+    if(!units.length)build();
+    if(!units.length)return;
+    ask.unit=unitNear(s.range.startContainer);ask.sel=s.text;ask.fromSel=true;ask.resumeAt=-1;
+    selAsk=null;hist(false);
+    showBar(true);
+    ui.askSec.textContent=units[ask.unit].sec||"Selected text";
+    ui.askQuote.textContent="\u201c"+s.text+"\u201d";ui.askQuote.hidden=false;
+    startRec();
+  }
+  function unitNear(node){
+    for(var n=node.nodeType===1?node:node.parentNode;n&&n!==main;n=n.parentElement)if(unitOf.has(n))return unitOf.get(n);
+    var best=0;
+    for(var k=0;k<units.length;k++){var el=units[k].el;if(el.contains(node)||(el.compareDocumentPosition(node)&4))best=k;else break;}
+    return best;
   }
   async function sendAsk(q){
     var my=++ask.gen;ask.q=q.text||"";ask.a="";
@@ -1404,7 +1437,7 @@
     ask.q=question;ask.a=answer;
     ui.askQ.textContent="\u201c"+question+"\u201d";ui.askA.textContent=answer;setAsk("answer");
     var h=loadHistory(),u=units[ask.unit];
-    h.push({t:Date.now(),sec:u.sec||"",id:sectionId(u),at:u.text.slice(0,80),q:question,a:answer});saveHistory(h);
+    h.push({t:Date.now(),sec:u.sec||"",id:sectionId(u),at:ask.sel?"\u201c"+ask.sel.slice(0,78)+"\u201d":u.text.slice(0,80),q:question,a:answer});saveHistory(h);
     speakAnswer(answer,my);
   }
   async function speakAnswer(text,my){
@@ -1434,7 +1467,13 @@
     if(!ask.mode)return;
     ask.gen++;if(ask.rec)stopRec(false);
     if(ask.abort)try{ask.abort.abort();}catch(e){}
-    hush();setAsk("");
+    hush();
+    if(ask.fromSel){
+      ask.fromSel=false;ask.sel="";ui.askQuote.hidden=true;setAsk("");
+      try{getSelection().removeAllRanges();}catch(e){}
+      if(!playing)showBar(false);return;
+    }
+    setAsk("");
     if(resume&&units.length)playFrom(curSent>=0?curSent:ask.resumeAt);
   }
   function setAsk(m,note){
@@ -1466,6 +1505,13 @@
   var askHover=false,askHideT=0;
   function placeAskBtn(){
     var b=ui.askBtn;if(!b)return;
+    if(selAsk&&ui.bar&&ui.bar.hidden&&!ask.mode){
+      var rs=selAsk.range.getClientRects(),last=rs.length?rs[rs.length-1]:selAsk.range.getBoundingClientRect();
+      if(!last||(!last.width&&!last.height)){b.hidden=true;return;}
+      var sx=Math.min(last.right+6,(document.documentElement.clientWidth||innerWidth)-40),sy=last.top-36<4?last.bottom+6:last.top-36;
+      b.style.left=(sx+scrollX)+"px";b.style.top=(sy+scrollY)+"px";b.dataset.sel="1";b.hidden=false;b.classList.add("on");return;
+    }
+    if(b.dataset.sel){b.dataset.sel="";if(!askHover)b.classList.remove("on");}
     if(!ui.bar||ui.bar.hidden||ask.mode||curUnit<0||!units[curUnit]){b.hidden=true;return;}
     var r=units[curUnit].el.getBoundingClientRect(),m=main.getBoundingClientRect();
     if(!r.width&&!r.height){b.hidden=true;return;}
@@ -1475,8 +1521,43 @@
   function askVisible(v){
     clearTimeout(askHideT);
     if(v){askHover=true;placeAskBtn();ui.askBtn.classList.add("on");}
-    else askHideT=setTimeout(function(){askHover=false;ui.askBtn.classList.remove("on");},350);
+    else askHideT=setTimeout(function(){askHover=false;if(!ui.askBtn.dataset.sel)ui.askBtn.classList.remove("on");},350);
   }
+
+  /* --- selections: the text (formulas as their TeX) and where it is */
+  var selAsk=null,selT=0,askDown=0;
+  function selText(r){
+    readTex();
+    var root=r.commonAncestorContainer;if(root.nodeType!==1)root=root.parentNode;
+    var mj=root.closest&&root.closest("mjx-container");if(mj){var tx=texOf.get(mj);return tx?"\\("+tx+"\\)":"";}
+    var out="",lastBlock=null;
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,{acceptNode:function(n){
+      if(!r.intersectsNode(n))return NodeFilter.FILTER_REJECT;
+      if(n.nodeType===1){if(n.tagName==="MJX-CONTAINER")return NodeFilter.FILTER_ACCEPT;return n.matches(".tts-ui,.tts-here,script,style")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_SKIP;}
+      return n.parentNode.closest("mjx-container")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}});
+    for(var n=w.nextNode();n;n=w.nextNode()){
+      var piece;
+      if(n.nodeType===1){var t=texOf.get(n);piece=t?" \\("+t+"\\) ":"";}
+      else{piece=n.nodeValue;if(n===r.endContainer)piece=piece.slice(0,r.endOffset);if(n===r.startContainer)piece=piece.slice(r.startOffset);}
+      var blk=(n.nodeType===1?n.parentNode:n.parentNode).closest("p,li,h1,h2,h3,h4,h5,td,th,pre,figcaption,dd,dt,div");
+      if(lastBlock&&blk!==lastBlock)out+=" ";lastBlock=blk;out+=piece;
+    }
+    return out.replace(/\s+/g," ").trim();
+  }
+  function selInfo(){
+    if(!ui.bar||!ui.bar.hidden||ask.mode)return null;
+    var s=window.getSelection&&getSelection();if(!s||s.isCollapsed||!s.rangeCount)return null;
+    var r=s.getRangeAt(0),n=r.commonAncestorContainer;if(n.nodeType!==1)n=n.parentNode;
+    if(!n||!main.contains(n)||n.closest(".tts-ui,input,textarea,select,button,[contenteditable]"))return null;
+    var t="";try{t=selText(r);}catch(e){}
+    if(!t)t=s.toString().replace(/\s+/g," ").trim();
+    if(t.length<2)return null;
+    return {text:t.length>1500?t.slice(0,1500)+"…":t,range:r.cloneRange()};
+  }
+  document.addEventListener("selectionchange",function(){
+    clearTimeout(selT);
+    selT=setTimeout(function(){if(Date.now()-askDown<600)return;selAsk=selInfo();placeAskBtn();},150);
+  });
 
   /* --- question history */
   function when(t){
@@ -1570,11 +1651,12 @@
     form.addEventListener("submit",function(e){e.preventDefault();var t=ui.askInput.value.trim();if(!t)return;ui.askInput.value="";sendAsk({text:t});});
     var outBox=el("div","tts-ask-out");ui.askQ=el("p","tts-q");ui.askA=el("p","tts-a");ui.askA.setAttribute("aria-live","polite");outBox.appendChild(ui.askQ);outBox.appendChild(ui.askA);
     ui.askNote=el("p","tts-ask-note");ui.askNote.hidden=true;
+    ui.askQuote=el("p","tts-ask-quote");ui.askQuote.hidden=true;
     /* one row: [cancel / ask more]  [meter or text box]  [main action] [type / speak / got it] */
     var row=el("div","tts-ask-row"),midc=el("div","tts-ask-mid");midc.appendChild(rec);midc.appendChild(form);
     ui.askL=btn("tts-abtn",ICON.close,"Cancel");ui.askC=btn("tts-abtn",ICON.stop,"Done");ui.askR=btn("tts-abtn",ICON.check,"Got it");
     [ui.askL,midc,ui.askC,ui.askR].forEach(function(x){row.appendChild(x);});
-    [ah,ui.askNote,outBox,row].forEach(function(x){ui.ask.appendChild(x);});
+    [ah,ui.askQuote,ui.askNote,outBox,row].forEach(function(x){ui.ask.appendChild(x);});
     ui.askL.addEventListener("click",function(){if(ask.mode==="answer"){hush();startRec();}else endAsk(true);});
     ui.askC.addEventListener("click",function(){if(ask.mode==="rec")stopRec(true);else if(ask.mode==="type"){if(form.requestSubmit)form.requestSubmit();else form.dispatchEvent(new Event("submit",{cancelable:true}));}else if(ask.mode==="answer"){if(ask.speaking){hush();paintAsk();}else speakAnswer(ask.a,ask.gen);}});
     ui.askR.addEventListener("click",function(){if(ask.mode==="rec"){stopRec(false);setAsk("type");}else if(ask.mode==="type")startRec();else if(ask.mode==="answer")endAsk(true);});
@@ -1601,7 +1683,8 @@
     /* the Ask first button */
     ui.askBtn=el("button","tts-askbtn tts-ui",ICON.spark);ui.askBtn.type="button";ui.askBtn.hidden=true;
     ui.askBtn.setAttribute("aria-label","Ask first");ui.askBtn.setAttribute("data-tip","Ask first");
-    ui.askBtn.addEventListener("click",function(e){e.stopPropagation();ui.askBtn.classList.remove("on");startAsk();});
+    ui.askBtn.addEventListener("click",function(e){e.stopPropagation();ui.askBtn.classList.remove("on");if(ui.askBtn.dataset.sel)startSelAsk();else startAsk();});
+    ["pointerdown","mousedown"].forEach(function(t){ui.askBtn.addEventListener(t,function(e){askDown=Date.now();if(ui.askBtn.dataset.sel)e.preventDefault();});});
     ui.askBtn.addEventListener("mouseenter",function(){askVisible(true);});ui.askBtn.addEventListener("mouseleave",function(){askVisible(false);});
     ui.askBtn.addEventListener("focus",function(){askVisible(true);});ui.askBtn.addEventListener("blur",function(){askVisible(false);});
     document.body.appendChild(ui.askBtn);
