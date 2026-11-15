@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- seo -->
-<meta name="description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, and evaluation, with demos, quizzes and an exam.">
+<meta name="description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.">
 <link rel="canonical" href="http://y4t1.chanraksa.com/ir.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -11,7 +11,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Year 4 Study Hub">
 <meta property="og:title" content="Information Retrieval: From Substring to NDCG · Year 4 Study Hub">
-<meta property="og:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, and evaluation, with demos, quizzes and an exam.">
+<meta property="og:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.">
 <meta property="og:url" content="http://y4t1.chanraksa.com/ir.html">
 <meta property="og:image" content="http://y4t1.chanraksa.com/assets/og/ir.png">
 <meta property="og:image:width" content="1200">
@@ -19,9 +19,9 @@
 <meta property="og:image:alt" content="Information Retrieval: From Substring to NDCG">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Information Retrieval: From Substring to NDCG · Year 4 Study Hub">
-<meta name="twitter:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, and evaluation, with demos, quizzes and an exam.">
+<meta name="twitter:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.">
 <meta name="twitter:image" content="http://y4t1.chanraksa.com/assets/og/ir.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Information Retrieval: From Substring to NDCG", "url": "http://y4t1.chanraksa.com/ir.html", "description": "Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, and evaluation, with demos, quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Information Retrieval", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Information Retrieval: From Substring to NDCG", "url": "http://y4t1.chanraksa.com/ir.html", "description": "Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Information Retrieval", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
 <!-- /seo -->
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 
@@ -353,6 +353,22 @@ mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;margin:.4em 0 !i
   .boxes{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:380px){.boxes{grid-template-columns:minmax(0,1fr)}}
+/* chapter 5 demos */
+.url-show{display:flex;flex-wrap:wrap;gap:3px;font-size:13.5px}
+.url-show span{display:inline-flex;flex-direction:column;border:var(--bw15,1.5px) solid var(--box,var(--ink));padding:2px 7px;word-break:break-all}
+.url-show span i{font-style:normal;font-family:var(--f-body);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.url-show span.off{border-style:dashed}
+.url-parts{font-size:13px;color:var(--muted)}
+pre.src{max-height:340px;overflow:auto;color:var(--ink);font-size:12px}
+pre.src span{display:inline-block;min-width:100%}
+pre.src span.in{background:var(--surface-2)}
+pre.src span.hit{background:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}
+.lab textarea{font-family:var(--f-mono);font-size:13px;line-height:1.5;padding:6px 8px;border:var(--bw15,1.5px) solid var(--box,var(--ink));background:var(--bg);color:var(--ink);border-radius:0;resize:vertical}
+.crq{display:flex;flex-wrap:wrap;gap:4px;max-height:220px;overflow:auto;align-content:flex-start}
+.crq span{font-family:var(--f-mono);font-size:11.5px;border:var(--bw15,1.5px) solid var(--box,var(--ink));padding:1px 6px;white-space:nowrap}
+.crq span.pg{background:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}
+.crq span.now{outline:3px solid var(--hi,var(--ink));outline-offset:1px;font-weight:700}
+.crq span.more{border-style:dashed;color:var(--muted)}
 </style>
 
 <script>
@@ -486,6 +502,20 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
           <li><a href="#c4-choose">Choosing a metric</a></li>
           <li><a href="#quiz4">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#ch5">5 · Collecting documents</a>
+        <ol>
+          <li><a href="#c5-why">Where documents come from</a></li>
+          <li><a href="#c5-url">The pipeline and URLs</a></li>
+          <li><a href="#c5-http">HTTP and status codes</a></li>
+          <li><a href="#c5-dom">HTML, the DOM, selectors</a></li>
+          <li><a href="#c5-bs">Beautiful Soup by hand</a></li>
+          <li><a href="#c5-js">What scraping can't see</a></li>
+          <li><a href="#c5-robots">robots.txt</a></li>
+          <li><a href="#c5-polite">Politeness</a></li>
+          <li><a href="#c5-scrapy">Lab 5: Scrapy</a></li>
+          <li><a href="#c5-ethics">Permission and privacy</a></li>
+          <li><a href="#quiz5">Check yourself</a></li>
+        </ol></li>
       <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
@@ -496,9 +526,9 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
 <main>
 <!-- ======================================================= HERO -->
 <header class="hero" id="start">
-  <div class="slidebar"><span>Information &amp; Web Retrieval Analytics</span><span>Sessions 1–4 · Labs 1–4</span></div>
+  <div class="slidebar"><span>Information &amp; Web Retrieval Analytics</span><span>Sessions 1–5 · Labs 1–5</span></div>
   <h1>From Substring to NDCG</h1>
-  <p class="lede">Hi. Let's build a search engine together, one honest mistake at a time. We start with the dumbest thing that could work (look for the query text inside every document), watch it fail, and fix each failure with a real IR idea. By the end you'll be ranking documents with BM25 and proving, with numbers, which ranker is better.</p>
+  <p class="lede">Hi. Let's build a search engine together, one honest mistake at a time. We start with the dumbest thing that could work (look for the query text inside every document), watch it fail, and fix each failure with a real IR idea. By the end you'll be ranking documents with BM25, proving with numbers which ranker is better, and crawling the web for a collection of your own.</p>
   <div class="legend" aria-label="How to read the boxes">
     <span class="chip dash">Think of it like…</span>
     <span class="chip fill">Where it's used</span>
@@ -507,13 +537,14 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <span class="chip inv">Careful</span>
     <span class="chip lab">In the lab</span>
   </div>
-  <p class="small muted"><b>One collection, all the way through.</b> Every example and every live demo on this page uses the same 30 short documents (<code>d01</code>…<code>d30</code>) from the labs: guesthouses in Phnom Penh, a ball python, Java the island, an automobile engine, and so on. Some are planted on purpose to trip up naive search. Numbers quoted from the labs are the ones your notebooks printed.</p>
+  <p class="small muted"><b>One collection, all the way through.</b> Every example and every live demo on this page uses the same 30 short documents (<code>d01</code>…<code>d30</code>) from the labs: guesthouses in Phnom Penh, a ball python, Java the island, an automobile engine, and so on. Some are planted on purpose to trip up naive search. Chapter 5 then steps outside and collects new documents from Books to Scrape, a site built for practice. Numbers quoted from the labs are the ones your notebooks printed.</p>
   <div class="call key"><span class="tag">The plan</span>
     <ul>
       <li><b>Chapter 1</b> asks what IR is and why a database <code>LIKE</code> query is not a search engine. (Lesson 1, Lab 1)</li>
       <li><b>Chapter 2</b> cleans text into tokens and builds an <b>inverted index</b> so we stop reading every document. (Lesson 2, Lab 2)</li>
       <li><b>Chapter 3</b> turns a set of matches into a <b>ranked list</b> with TF-IDF and BM25. (Lesson 3, Lab 3)</li>
       <li><b>Chapter 4</b> measures whether a ranking is any good: P@k, AP, MAP and NDCG. (Lesson 4, Lab 4)</li>
+      <li><b>Chapter 5</b> goes back to the start of the pipeline and <b>collects</b> documents from the web, with Beautiful Soup and then a Scrapy crawler. (Lesson 5, Lab 5)</li>
     </ul>
   </div>
 </header>
@@ -1438,6 +1469,447 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
   <div data-xq="4"></div>
 </section>
 
+<!-- ======================================================= CHAPTER 5 -->
+<section class="chapter" id="ch5">
+  <div class="chapter-head">
+    <span class="num">Chapter 5</span>
+    <h2>Collecting Documents: Web Search and Scraping</h2>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.1–18</span><span class="ref g">Lab 5 · Beautiful Soup to Scrapy</span></div>
+
+  <section class="sub" id="c5-why">
+  <h3>5.1 Where the documents come from</h3>
+  <p>For four chapters our 30 documents were simply handed to us. A real search engine doesn't get that luxury. Before it can tokenize, index or rank anything, <b>someone has to collect the documents first</b>. Lesson 1's anatomy diagram had a spider crawling the web on the offline side. This chapter is that spider.</p>
+  <p>The lecture separates four jobs that people often lump together as "scraping":</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Job</th><th>The question it answers</th><th>In Lab 5</th></tr></thead>
+    <tbody>
+      <tr><td><b>Crawling</b></td><td>Which URLs should we discover or visit next?</td><td>Follow "next" up to 2 listing pages, then each book's page</td></tr>
+      <tr><td><b>Scraping</b></td><td>Which fields do we extract from the fetched pages?</td><td>Title, description, category, price, rating</td></tr>
+      <tr><td><b>Indexing</b></td><td>How do we organize documents for fast retrieval?</td><td>Not yet: Lab 5 stops at an index-ready JSONL file</td></tr>
+      <tr><td><b>Web search</b></td><td>Which documents answer a user's query?</td><td>Chapters 2–4, run on the new corpus later</td></tr>
+    </tbody></table></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Stocking a library. <b>Crawling</b> is walking the aisles of every bookshop in town deciding which shelf to visit next. <b>Scraping</b> is copying each book's title and blurb onto a card. <b>Indexing</b> is filing the cards. <b>Search</b> is the librarian answering your question from the cards. Chapters 1–4 were all librarian work.</p>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>The non-profit Common Crawl has published a fresh crawl of the web roughly every month since 2008, each one billions of pages, free for anyone to download. Researchers use it to build search experiments, and most large language models were trained partly on it. It's the same pipeline as Lab 5, just with a few billion more pages.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.2–3</span></div>
+  </section>
+
+  <section class="sub" id="c5-url">
+  <h3>5.2 The pipeline, and what a URL is made of</h3>
+  <div class="pipe" aria-label="Scraping pipeline"><span>URL</span><i>→</i><span>HTTP request</span><i>→</i><span>HTML response</span><i>→</i><span>Parse</span><i>→</i><span>Structured record</span><i>→</i><span>Index (later)</span></div>
+  <p>Each arrow is one part of Lab 5. Everything starts with a URL, so it pays to know its parts:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Part</th><th>In <code>https://books.toscrape.com/catalogue/page-2.html?sort=title#top</code></th><th>Why a crawler cares</th></tr></thead>
+    <tbody>
+      <tr><td><b>Scheme</b></td><td><code>https://</code></td><td>How to talk to the server (encrypted HTTP here)</td></tr>
+      <tr><td><b>Host</b></td><td><code>books.toscrape.com</code></td><td>Which server. Lab 5 refuses any URL off this host</td></tr>
+      <tr><td><b>Path</b></td><td><code>/catalogue/page-2.html</code></td><td>Which page on that server. robots.txt rules match on it</td></tr>
+      <tr><td><b>Query</b></td><td><code>?sort=title</code></td><td>Extra parameters. The same page sorted two ways can look like two URLs: a duplicate trap</td></tr>
+      <tr><td><b>Fragment</b></td><td><code>#top</code></td><td>A spot inside the page. It is never sent to the server, so crawlers drop it</td></tr>
+    </tbody></table></div>
+  <p>Links inside a page are usually <b>relative</b>: <code>page-3.html</code>, not the whole address. A relative link means "relative to the page I'm on", so you can't just glue it onto the site's root. Try it:</p>
+  <div class="lab" id="lab-url">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Take a URL apart, then follow a link</h4></div>
+    <div class="lab-body">
+      <div class="row"><label class="ctl" for="ur-in">URL</label><input type="text" id="ur-in" class="mono" value="https://books.toscrape.com/catalogue/page-2.html?sort=title#top" autocomplete="off" spellcheck="false" style="flex:1;min-width:0"></div>
+      <div class="url-show mono" id="ur-show" aria-live="polite"></div>
+      <div class="url-parts" id="ur-parts"></div>
+      <b class="small" style="text-transform:uppercase;letter-spacing:.05em">Resolve a link found on a page</b>
+      <div class="row"><span class="small muted">Load:</span>
+        <button class="btn sm on" type="button" data-ur="0">Home page · book link</button>
+        <button class="btn sm" type="button" data-ur="1">Page 2 · book link</button>
+        <button class="btn sm" type="button" data-ur="2">Page 2 · "next"</button>
+        <button class="btn sm" type="button" data-ur="3">Book page · category <code>../</code></button>
+        <button class="btn sm" type="button" data-ur="4">An absolute link</button>
+      </div>
+      <div class="row"><label class="ctl" for="ur-page">On page</label><input type="text" id="ur-page" class="mono" autocomplete="off" spellcheck="false" style="flex:1;min-width:0"></div>
+      <div class="row"><label class="ctl" for="ur-href">href</label><input type="text" id="ur-href" class="mono" autocomplete="off" spellcheck="false" style="flex:1;min-width:0"></div>
+      <div class="tbl" style="margin:0"><table>
+        <thead><tr><th>Method</th><th>Result</th><th>On Books to Scrape</th></tr></thead>
+        <tbody id="ur-res"></tbody></table></div>
+      <div class="msg" id="ur-msg"></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.4–5</span><span class="ref">Lab 5 · Answer 4.1</span></div>
+  </section>
+
+  <section class="sub" id="c5-http">
+  <h3>5.3 HTTP: a request and a response</h3>
+  <p>The scraper is the <b>client</b>. It sends a <b>request</b>: a method (almost always <code>GET</code>, "give me this page"), a URL and some headers, such as its <code>User-Agent</code> name. The server sends back a <b>response</b>: a status code, headers (like <code>Content-Type</code>) and the body, which for a web page is HTML. <code>POST</code>, <code>PUT</code> and the rest exist, but scrapers rarely need them.</p>
+  <div class="pipe" aria-label="Request and response"><span>Scraper: GET /catalogue/page-2.html</span><i>→</i><span>Server</span><i>→</i><span>200 OK + headers + HTML</span></div>
+  <p>The status code is the first thing to read, because it tells the crawler what to do next:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Status</th><th>Meaning</th><th>What a responsible crawler does</th></tr></thead>
+    <tbody>
+      <tr><td class="num">200</td><td>OK</td><td>Inspect the body. (200 doesn't mean you're <i>allowed</i> to collect it.)</td></tr>
+      <tr><td class="num">401 / 403</td><td>Login needed / forbidden</td><td>Stop. Never try to get around it</td></tr>
+      <tr><td class="num">404</td><td>Not found</td><td>Log it and skip, or fix the URL</td></tr>
+      <tr><td class="num">429</td><td>Too many requests</td><td>Back off: wait at least <code>Retry-After</code>, slow down, stop if it keeps happening</td></tr>
+      <tr><td class="num">5xx</td><td>The server has a problem</td><td>Stop, or retry a few times, slowly</td></tr>
+    </tbody></table></div>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 5 · Part 1: one request, inspected</h4></div>
+    <div class="lab-body">
+<pre class="code">HEADERS = {"User-Agent": "CADT-IR-Lab5/1.0 (educational sandbox crawler)"}
+response = requests.get(BASE, headers=HEADERS, timeout=20)   # always set a timeout</pre>
+<pre class="out">Status code:  200
+Content-Type: text/html
+Final URL:    https://books.toscrape.com/
+Size:         51294 bytes</pre>
+      <p>51 KB of HTML for one page of 20 books. Notice the honest <code>User-Agent</code>: it says who is crawling and why. And the <code>timeout</code>: without one, a server that never answers would hang your crawler forever.</p>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>After a 429, the wrong move is to push harder: switching IP addresses or faking a browser's User-Agent to get round the limit. The site set that limit on purpose. Lab 5's answer: read <code>Retry-After</code>, wait at least that long, double the delay each time, retry only a couple of times, and if the 429s keep coming, stop and come back later.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.6–7</span><span class="ref">Lab 5 · Part 1</span></div>
+  </section>
+
+  <section class="sub" id="c5-dom">
+  <h3>5.4 HTML, the DOM and CSS selectors</h3>
+  <p>HTML is text, but a browser (or Beautiful Soup) turns it into a tree called the <b>DOM</b> (Document Object Model). Every tag is a node, and tags inside it are its children. The lecture's example:</p>
+  <div class="grid2">
+<pre class="code" style="margin:0">&lt;html&gt;
+  &lt;head&gt;…&lt;/head&gt;
+  &lt;body&gt;
+    &lt;article class="product"&gt;
+      &lt;h3&gt;
+        &lt;a title="My book" href="detail.html"&gt;my book&lt;/a&gt;
+      &lt;/h3&gt;
+      &lt;p class="price"&gt;$12.50&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<pre class="code" style="margin:0">html
+├── head
+└── body
+    └── article.product
+        ├── h3
+        │   └── a  (title, href)
+        └── p.price  "$12.50"</pre>
+  </div>
+  <p>Tags, classes and ids are the <b>hooks</b> a scraper grabs onto. To find them on a real site, open it and use <i>View page source</i>, or the Elements panel in the browser's developer tools. To grab them in code, use <b>CSS selectors</b>: the same syntax a stylesheet uses to style a page can select from it.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Selector</th><th>Selects</th></tr></thead>
+    <tbody>
+      <tr><td><code>article</code></td><td>Every <code>&lt;article&gt;</code> tag</td></tr>
+      <tr><td><code>.price</code> or <code>p.price</code></td><td>Elements with class <code>price</code> (only <code>&lt;p&gt;</code> ones)</td></tr>
+      <tr><td><code>#product_description</code></td><td>The element with that id</td></tr>
+      <tr><td><code>h3 a</code></td><td>An <code>&lt;a&gt;</code> anywhere inside an <code>&lt;h3&gt;</code></td></tr>
+      <tr><td><code>#product_description + p</code></td><td>The <code>&lt;p&gt;</code> right after that element (Lab 5's description)</td></tr>
+      <tr><td><code>li:nth-child(3) a</code></td><td>The link in the third list item (Lab 5's category, in the breadcrumb)</td></tr>
+      <tr><td><code>a::attr(href)</code>, <code>p::text</code></td><td>Scrapy only: the attribute's value, or the text, instead of the element</td></tr>
+    </tbody></table></div>
+  <div class="lab" id="lab-sel">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Select from a Books to Scrape listing</h4></div>
+    <div class="lab-body">
+      <p class="small muted" style="margin:0">A cut-down copy of the real listing page's HTML: two book cards and the "next" link. Type a selector and watch what it grabs.</p>
+      <div class="row"><label class="ctl" for="sl-in">Selector</label><input type="text" id="sl-in" class="mono" value="article.product_pod" autocomplete="off" spellcheck="false" style="flex:1;min-width:0"></div>
+      <div class="row"><span class="small muted">Load:</span>
+        <button class="btn sm" type="button" data-sl="article.product_pod">article.product_pod</button>
+        <button class="btn sm" type="button" data-sl="h3 a::text">h3 a::text</button>
+        <button class="btn sm" type="button" data-sl="h3 a::attr(title)">h3 a::attr(title)</button>
+        <button class="btn sm" type="button" data-sl="article.product_pod h3 a::attr(href)">… h3 a::attr(href)</button>
+        <button class="btn sm" type="button" data-sl="p.price_color::text">p.price_color::text</button>
+        <button class="btn sm" type="button" data-sl="p.star-rating::attr(class)">p.star-rating::attr(class)</button>
+        <button class="btn sm" type="button" data-sl="li.next a::attr(href)">li.next a::attr(href)</button>
+        <button class="btn sm" type="button" data-sl="p.price">p.price (the slide's)</button>
+      </div>
+      <div class="msg" id="sl-msg"></div>
+      <div class="grid2">
+        <pre class="out src" id="sl-src" aria-label="Page source"></pre>
+        <div style="min-width:0;display:grid;gap:6px;align-content:start">
+          <b class="small" style="text-transform:uppercase;letter-spacing:.05em">.getall()</b>
+          <pre class="out" id="sl-out" style="margin:0;white-space:pre-wrap"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.8–9</span><span class="ref">Lab 5 · Parts 3, 5</span></div>
+  </section>
+
+  <section class="sub" id="c5-bs">
+  <h3>5.5 Beautiful Soup by hand</h3>
+  <p>The lecture's live code is the whole idea in two lines: <code>requests</code> <b>downloads</b> the page, and Beautiful Soup <b>parses</b> it so you can select from it.</p>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 5 · Part 3: parse_card</h4></div>
+    <div class="lab-body">
+<pre class="code">soup = BeautifulSoup(listing_response.content, "html.parser")
+cards = soup.select("article.product_pod")              # 20 cards
+
+def parse_card(card, page_url):
+    link = card.select_one("h3 a")
+    title = link.get("title") or link.get_text(strip=True) # the text is cut short: "A Light in the ..."
+    url = urljoin(page_url, link.get("href"))             # relative -> absolute
+    price = re.search(r"\d+(?:\.\d+)?", card.select_one("p.price_color").get_text())
+    classes = card.select_one("p.star-rating").get("class", [])   # ["star-rating", "Three"]
+    rating = next((RATING_MAP[c] for c in classes if c in RATING_MAP), None)
+    ...</pre>
+      <p>Two small tricks. The visible title is truncated, so the full name comes from the <code>title</code> attribute. The rating isn't text at all, it's a class name (<code>Three</code>), mapped to 3. Lab 5's real code also checks every tag for <code>None</code> first: on an unfamiliar site some cards will be missing a field, and <code>None.get_text()</code> would crash the whole crawl over one odd page.</p>
+    </div>
+  </div>
+  <h4>The £ that turned into Â£</h4>
+<pre class="out">HTTP Content-Type: text/html                 (no charset!)
+requests encoding: ISO-8859-1
+apparent encoding: utf-8
+Price from bytes / Beautiful Soup: £51.77
+Price from requests.text:          Â£51.77</pre>
+  <p>The server didn't say which character set it used, so <code>requests</code> guessed Latin-1. The page is really UTF-8, where <code>£</code> is two bytes. Read as Latin-1, those two bytes become two characters: <code>Â£</code>. That garbage is called <b>mojibake</b>. Passing the raw bytes (<code>response.content</code>) lets Beautiful Soup find the page's own <code>&lt;meta charset="UTF-8"&gt;</code> and decode it correctly.</p>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>Mojibake doesn't crash anything, which is exactly the danger. The price parser only keeps the digits, so 51.77 came out right anyway. But accents and curly quotes in titles and descriptions (the French book <i>Soumission</i>) would be garbled, and those are the words people search with. Check the output, not just the absence of errors.</p>
+  </div>
+  <h4>Following the "next" link</h4>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 5 · Part 4: two listing pages, then details</h4></div>
+    <div class="lab-body">
+<pre class="code">current, visited = start_url, set()
+while current and current not in visited and len(visited) &lt; max_pages:   # stop rules
+    visited.add(current)
+    page = BeautifulSoup(polite_get(current).content, "html.parser")
+    ...                                                  # parse_card each card, skip duplicate URLs
+    nxt = page.select_one("li.next a")
+    current = urljoin(current, nxt["href"]) if nxt else None</pre>
+<pre class="out">Listing pages visited: 2 | listing records: 40
+Saved 3 Beautiful Soup detail records to books_bs_sample.json</pre>
+      <p>Three stop rules keep it bounded: no more "next" link, a page already visited, or the page cap. Then each book's own page gives the full record: its <code>description</code> is the <code>&lt;p&gt;</code> after <code>#product_description</code>, and its <code>doc_id</code> is the first 12 hex digits of the SHA-1 of its URL, so the same book always gets the same id.</p>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.10</span><span class="ref">Lab 5 · Parts 3–4</span></div>
+  </section>
+
+  <section class="sub" id="c5-js">
+  <h3>5.6 What static scraping can't see</h3>
+  <div class="grid2">
+    <div class="call key" style="margin:0"><span class="tag">Server-rendered HTML</span>
+      <p>The HTML response already contains the data. <code>requests</code> + Beautiful Soup can read it. Books to Scrape works like this.</p>
+    </div>
+    <div class="call warn" style="margin:0"><span class="tag">Client-rendered content</span>
+      <p>The first HTML is an empty shell, and JavaScript fetches the data afterwards. <code>requests</code> never runs JavaScript, so the fields simply aren't in what it downloads.</p>
+    </div>
+  </div>
+  <p>The quick test: <i>View page source</i>. If the text you want isn't in the source, the page builds it with JavaScript. The better fix is usually to find the <b>API</b> the JavaScript itself calls, and use it if you're permitted. Browser tools such as Selenium and Playwright can run the JavaScript for you, but they're beyond this lesson.</p>
+  <div class="refs"><span class="ref">Lesson 5 · s.11</span></div>
+  </section>
+
+  <section class="sub" id="c5-robots">
+  <h3>5.7 robots.txt: instructions for crawlers</h3>
+  <p>A site publishes rules for bots at one fixed address, the root: <code>https://example.com/robots.txt</code>. The rules say which <b>user agents</b> (bots) may visit which <b>paths</b>.</p>
+<pre class="code">User-agent: *            # these rules are for every bot
+Disallow: /private/      # don't crawl anything under /private/
+Allow: /public/          # /public/ is fine
+Crawl-delay: 2           # optional, non-standard: wait 2 s between requests</pre>
+  <p>Two things robots.txt is <b>not</b>: it isn't a login (nothing enforces it, a bot can ignore it), and it isn't a content licence (being allowed to crawl a page says nothing about what you may do with the text). <code>Crawl-delay</code> isn't part of the standard, so support varies. For a big real example, look at <a href="https://en.wikipedia.org/robots.txt" target="_blank" rel="noopener">en.wikipedia.org/robots.txt</a>.</p>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 5 · Part 2: check it in code, before crawling</h4></div>
+    <div class="lab-body">
+<pre class="code">rp = robotparser.RobotFileParser()
+r = requests.get(urljoin(BASE, "robots.txt"), headers=HEADERS, timeout=20)
+if r.status_code == 200:
+    rp.parse(r.text.splitlines())
+can = rp.can_fetch(HEADERS["User-Agent"], url)      # True / False for this bot and URL
+delay = max(0.5, rp.crawl_delay(HEADERS["User-Agent"]) or 0)</pre>
+<pre class="out">robots.txt HTTP status: 404
+No robots rules published at this path; still review terms and crawl politely.
+Request delay in this notebook: 0.5 seconds</pre>
+      <p>Books to Scrape has no robots.txt at all. A 404 means no rules were published at that path. It is <b>not</b> a licence to scrape any site that lacks one: the site's terms still apply, and so do privacy rules.</p>
+    </div>
+  </div>
+  <div class="lab" id="lab-robots">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Read robots.txt like a crawler</h4></div>
+    <div class="lab-body">
+      <div class="row"><span class="small muted">Load:</span>
+        <button class="btn sm on" type="button" data-rb="0">The slide's file</button>
+        <button class="btn sm" type="button" data-rb="1">Books to Scrape (404)</button>
+        <button class="btn sm" type="button" data-rb="2">One bot banned</button>
+        <button class="btn sm" type="button" data-rb="3">Overlapping rules</button>
+      </div>
+      <textarea id="rb-txt" class="mono" rows="7" spellcheck="false" aria-label="robots.txt" style="width:100%;box-sizing:border-box"></textarea>
+      <div class="row"><label class="ctl" for="rb-ua">User-Agent</label><input type="text" id="rb-ua" class="mono" value="CADT-IR-Lab5/1.0" autocomplete="off" spellcheck="false" style="flex:1;min-width:0"></div>
+      <div class="row"><label class="ctl" for="rb-path">Path</label><input type="text" id="rb-path" class="mono" value="/private/notes.html" autocomplete="off" spellcheck="false" style="flex:1;min-width:0"></div>
+      <div class="row"><span class="small muted">Try:</span>
+        <button class="btn sm" type="button" data-rp="/public/index.html">/public/index.html</button>
+        <button class="btn sm" type="button" data-rp="/private/notes.html">/private/notes.html</button>
+        <button class="btn sm" type="button" data-rp="/private/public/a.html">/private/public/a.html</button>
+        <button class="btn sm" type="button" data-rp="/catalogue/page-2.html">/catalogue/page-2.html</button>
+      </div>
+      <div class="kpis" id="rb-kpis"></div>
+      <div class="msg" id="rb-msg"></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.12–14</span><span class="ref">Lab 5 · Part 2</span></div>
+  </section>
+
+  <section class="sub" id="c5-polite">
+  <h3>5.8 Politeness, and why the real web is hard</h3>
+  <p>Obeying robots.txt is the minimum. A polite crawler also:</p>
+  <ol class="boxes">
+    <li><b>Limits its scope:</b> 2 listing pages, not 50.</li>
+    <li><b>Waits between requests</b> and keeps concurrency low: one request at a time.</li>
+    <li><b>Says who it is</b> with a descriptive User-Agent.</li>
+    <li><b>Honours 429</b> and stops, instead of evading the limit.</li>
+    <li><b>Prefers an official API</b> or already-published data when there is one.</li>
+  </ol>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 5 · Part 2: polite_get</h4></div>
+    <div class="lab-body">
+<pre class="code">def polite_get(url):
+    if not url.startswith(BASE) or not is_allowed(url):        # scope + robots
+        raise PermissionError(f"Out-of-scope or disallowed URL: {url}")
+    if _last_request[0] is not None:                           # wait before *each* next fetch
+        time.sleep(max(0.0, effective_delay - (time.monotonic() - _last_request[0])))
+    r = requests.get(url, headers=HEADERS, timeout=20)
+    ...</pre>
+      <p>Every single request in Part A goes through this one function, so no request can skip the checks or the delay.</p>
+    </div>
+  </div>
+  <p>Even a polite crawler meets a messy web. Each problem on the lecture's list has a counterpart in Lab 5:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>What makes the real web hard</th><th>What Lab 5 does about it</th></tr></thead>
+    <tbody>
+      <tr><td>Millions of pages, changing all the time</td><td>A bounded crawl that can be re-run later to refresh the data</td></tr>
+      <tr><td>Duplicate and near-duplicate content</td><td>A visited set, Scrapy's duplicate filter, and a <code>doc_id</code> from the URL</td></tr>
+      <tr><td>Noisy HTML, missing fields, inconsistent formats</td><td>Selectors that return <code>None</code> instead of crashing, then counting the empties</td></tr>
+      <tr><td>JavaScript-rendered content, complex URLs</td><td>A server-rendered practice site, and <code>urljoin</code> / <code>response.follow</code></td></tr>
+      <tr><td>Terms, privacy, rate limits, access rules</td><td>robots check, delay, honest User-Agent, and the Part 8 checklist</td></tr>
+    </tbody></table></div>
+  <div class="refs"><span class="ref">Lesson 5 · s.15–16</span><span class="ref">Lab 5 · Part 2</span></div>
+  </section>
+
+  <section class="sub" id="c5-scrapy">
+  <h3>5.9 Scrapy: a real crawler project</h3>
+  <p>Beautiful Soup only parses, and <code>requests</code> only downloads. Everything else in Part A (the queue, the visited set, the delay, robots) was code we wrote ourselves, and each piece was a chance to get it wrong. <b>Scrapy</b> is a framework that does those jobs for you: a request scheduler, asynchronous downloading, robots handling, retries, CSS selectors and exporters.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Beautiful Soup + requests</th><th>Scrapy</th></tr></thead>
+    <tbody>
+      <tr><td><code>soup.select("article.product_pod")</code></td><td><code>response.css("article.product_pod")</code></td></tr>
+      <tr><td><code>tag.get("href")</code></td><td><code>card.css("a::attr(href)").get()</code></td></tr>
+      <tr><td><code>urljoin(page_url, href)</code></td><td><code>response.follow(href, callback=...)</code></td></tr>
+      <tr><td><code>requests.get</code> + <code>time.sleep</code></td><td>The engine + <code>DOWNLOAD_DELAY</code></td></tr>
+      <tr><td><code>json.dump(records, ...)</code></td><td><code>scrapy crawl books -O books_scrapy.json</code></td></tr>
+    </tbody></table></div>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 5 · Parts 5–6: project, settings, spider</h4></div>
+    <div class="lab-body">
+<pre class="code">scrapy startproject bookcrawler
+cd bookcrawler
+scrapy genspider books books.toscrape.com
+scrapy crawl books -a max_pages=2 -O books_scrapy.json -O books_scrapy.csv</pre>
+<pre class="code"># bookcrawler/settings.py
+USER_AGENT = "CADT-IR-Lab5/1.0 (educational sandbox crawler)"
+ROBOTSTXT_OBEY = True
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
+DOWNLOAD_DELAY = 0.5
+DOWNLOAD_TIMEOUT = 20
+FEED_EXPORT_ENCODING = "utf-8"</pre>
+<pre class="code">def parse(self, response):                    # a listing page
+    self.pages_seen += 1
+    for href in response.css("article.product_pod h3 a::attr(href)").getall():
+        yield response.follow(href, callback=self.parse_book)
+    next_href = response.css("li.next a::attr(href)").get()
+    if next_href and self.pages_seen &lt; self.max_pages:
+        yield response.follow(next_href, callback=self.parse)
+
+def parse_book(self, response):               # a book's page: one IR-ready record
+    yield {"doc_id": hashlib.sha1(response.url.encode("utf-8")).hexdigest()[:12],
+           "title": title, "text": " ".join(p for p in (title, description) if p), ...}</pre>
+      <p><code>.get()</code> returns the first match or <code>None</code>; <code>.getall()</code> returns every match. The key line is <code>yield response.follow(...)</code>. A plain <code>return href</code> would hand Scrapy a string, and nothing would be downloaded. <code>response.follow</code> makes a real request: it resolves the relative link like <code>urljoin</code>, and passes it to the scheduler, which drops duplicates, checks robots, waits the delay, downloads later, and then calls <code>parse_book</code> with the response. Because it's <code>yield</code>, one <code>parse()</code> call sends out all 20 book requests and the next page.</p>
+    </div>
+  </div>
+  <div class="lab" id="lab-crawl">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Watch a polite crawl</h4></div>
+    <div class="lab-body">
+      <div class="row">
+        <label class="ctl" for="cr-pages">max_pages</label><input type="range" id="cr-pages" min="1" max="3" value="2"><b class="mono" id="cr-pv">2</b>
+        <label class="ctl" for="cr-delay">DOWNLOAD_DELAY</label><select id="cr-delay"><option value="0.25">0.25 s</option><option value="0.5" selected>0.5 s</option><option value="1">1 s</option><option value="2">2 s</option></select>
+        <label class="ctl"><input type="checkbox" id="cr-429"> Server sends one 429</label>
+      </div>
+      <div class="player" id="cr-player"></div>
+      <div class="msg" id="cr-msg"></div>
+      <div class="kpis" id="cr-kpis"></div>
+      <div class="grid2">
+        <div style="min-width:0;display:grid;gap:6px;align-content:start"><b class="small" style="text-transform:uppercase;letter-spacing:.05em">Scheduler queue <span class="muted" id="cr-qn"></span></b><div class="crq" id="cr-q"></div></div>
+        <div style="min-width:0;display:grid;gap:6px;align-content:start"><b class="small" style="text-transform:uppercase;letter-spacing:.05em">Log</b><pre class="out" id="cr-log" style="margin:0;max-height:220px;overflow:auto"></pre></div>
+      </div>
+    </div>
+  </div>
+  <div class="lab nb">
+    <div class="lab-head"><span class="tag">In the lab</span><h4>Lab 5 · Parts 6–7: the real run, then validation</h4></div>
+    <div class="lab-body">
+<pre class="out">'downloader/request_count': 43,              # 1 robots.txt + 2 listing pages + 40 books
+'downloader/response_status_count/200': 42,
+'downloader/response_status_count/404': 1,   # robots.txt
+'elapsed_time_seconds': 25.4,
+'item_scraped_count': 40,</pre>
+<pre class="out">Rows: 40 | unique doc_id: 40 | unique url: 40
+Empty title: 0   Empty description: 0   Empty text: 0
+Shared URLs with Beautiful Soup: 3 of 3      (same title, same doc_id, same description)
+Removed the '...more' teaser from 39 of 40 texts
+Wrote 40 documents to ir_books_corpus.jsonl</pre>
+      <p>Why only 40 books when the site has 1,000? Because the crawl is bounded on purpose: 2 listing pages × 20 books. The count could come out lower if some detail pages failed, robots blocked some URLs, or the crawl was stopped early. Notice also that <code>books_scrapy.json</code> starts with <i>It's Only the Himalayas</i>, the last book on page 1: items arrive in the order downloads finish, not page order. That's one more reason every record carries its own <code>doc_id</code>.</p>
+      <p>Validation found one problem that crashed nothing: 39 of 40 descriptions end with the site's own <code>...more</code> teaser. That's a word no reader ever typed, so it is kept in the raw export and removed from the searchable <code>text</code>.</p>
+    </div>
+  </div>
+  <h4>A page, an item, a document</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Stage</th><th>What it is</th><th>Lab 5 example</th></tr></thead>
+    <tbody>
+      <tr><td><b>HTML page</b></td><td>The raw response: markup, navigation, buttons, scripts, and the content somewhere inside</td><td>51 KB for one listing page</td></tr>
+      <tr><td><b>Scraped item</b></td><td>The structured record pulled out of the page: a table row</td><td><code>books_scrapy.json</code>, with price, rating, availability</td></tr>
+      <tr><td><b>IR document</b></td><td>What the search engine indexes and returns: an id, searchable text, a URL</td><td><code>ir_books_corpus.jsonl</code>: <code>doc_id</code>, <code>text</code> = title + description, <code>url</code>, <code>category</code></td></tr>
+    </tbody></table></div>
+  <p>Why put the title into <code>text</code>? It's the only field the engine reads, the title holds the most important words, and people often search by title. And a book with no description would otherwise be unfindable. An empty description isn't automatically a crawler bug, either: some books just don't have one. A real failure looks different, like <i>every</i> row empty (a wrong selector).</p>
+  <div class="refs"><span class="ref">Lesson 5 · s.18</span><span class="ref">Lab 5 · Parts 5–7</span></div>
+  </section>
+
+  <section class="sub" id="c5-ethics">
+  <h3>5.10 Permission, copyright and privacy</h3>
+  <div class="grid2">
+    <div class="call key" style="margin:0"><span class="tag">Before collecting</span>
+      <ul>
+        <li>Review the terms, licences and robots.txt.</li>
+        <li>Prefer an official API when there is one.</li>
+        <li>Check whether you may redistribute what you collect.</li>
+      </ul>
+    </div>
+    <div class="call warn" style="margin:0"><span class="tag">Before publishing</span>
+      <ul>
+        <li>Don't publish content you have no rights to.</li>
+        <li>Collect and keep as little personal information as possible.</li>
+        <li>Store data securely, with rules for how long you keep it.</li>
+      </ul>
+    </div>
+  </div>
+  <p>Three different things, often confused: <b>robots.txt</b> is a technical request about which paths to crawl. The <b>terms of service</b> are the legal side, and can ban scraping even with no robots file. <b>Privacy</b> is about the people in the data: names, emails and photos have their own rules, whatever robots and the terms say. Books to Scrape is fine because it was built for practice and its data is fake. That doesn't carry over to real sites.</p>
+  <div class="call use"><span class="tag">Lab 5 · Part 8: your own project</span>
+    <p>Group 6's Open Source Project Discovery Engine plans to use the <b>GitHub REST API</b> (repository metadata and READMEs) instead of scraping github.com pages, with a personal access token kept in <code>.env</code> and never committed, inside the API's rate limits. READMEs make good IR documents because they describe what a project does and what it's built with. Each repo's own licence (MIT, GPL, none) decides what can be shown, so the engine stores links and short snippets, not whole files.</p>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>In <i>hiQ Labs v. LinkedIn</i>, a US company scraped public LinkedIn profiles. The courts said scraping public pages probably wasn't "hacking" under US computer-crime law, but hiQ still lost in 2022 for breaking LinkedIn's user agreement, and agreed to delete the data. "It's public" and "I'm allowed to use it" are different questions.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 5 · s.17</span><span class="ref">Lab 5 · Part 8</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 5 recap</h3>
+    <ul>
+      <li>Crawling picks URLs, scraping picks fields, indexing organizes, search answers queries.</li>
+      <li>URL → HTTP request → HTML response → parse → structured record → index.</li>
+      <li>Read the status code first. 429 means back off, and 401/403 mean stop.</li>
+      <li>CSS selectors grab elements from the DOM. Resolve relative links with <code>urljoin</code> or <code>response.follow</code>.</li>
+      <li>Decode from bytes to avoid mojibake (<code>Â£</code>), and check the output, not just for errors.</li>
+      <li>robots.txt is a request, not a login or a licence. A 404 publishes no rules, and that isn't permission.</li>
+      <li>Lab 5: 43 requests, 40 books, 0 errors in about 25 s. 40/40 unique ids, 3/3 match Beautiful Soup.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz5">Check yourself: Chapter 5</h3>
+  <div data-xq="5"></div>
+</section>
+
 <!-- ======================================================= SHEET -->
 <section class="chapter" id="exam">
   <div class="chapter-head">
@@ -1445,7 +1917,7 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
     <h2>Final Exam</h2>
   </div>
   <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
-  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>39</b><span>Questions</span></div><div class="kpi"><b>76</b><span>Marks</span></div><div class="kpi"><b>90</b><span>Minutes</span></div></div>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>47</b><span>Questions</span></div><div class="kpi"><b>92</b><span>Marks</span></div><div class="kpi"><b>105</b><span>Minutes</span></div></div>
   <p><a class="btn primary" href="exam-ir.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
 </section>
 
@@ -1468,6 +1940,9 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
       <tr><td>AP / MAP</td><td>\(\frac1R\sum_k P@k\cdot rel(k)\); mean over queries</td><td>L4 s.14–16 · Lab 4 P3</td></tr>
       <tr><td>DCG / NDCG</td><td>\(\sum_i\frac{2^{r_i}-1}{\log_2(i+1)}\); DCG / IDCG</td><td>L4 s.19–23 · Lab 4 P4</td></tr>
       <tr><td>Break-even queries</td><td>\(q=\frac{\text{build}}{\text{scan}-\text{merge}}\)</td><td>Lab 2 P7</td></tr>
+      <tr><td>Polite delay</td><td>\(\text{delay}=\max(0.5\,\text{s},\ \text{Crawl-delay})\)</td><td>L5 s.13–15 · Lab 5 P2</td></tr>
+      <tr><td>Bounded crawl size</td><td>\(\text{items}\approx\text{pages}\times20\); requests \(=1+\text{pages}+\text{items}\)</td><td>Lab 5 P6</td></tr>
+      <tr><td>Stable document id</td><td><code>sha1(url)[:12]</code></td><td>Lab 5 P4, P6</td></tr>
     </tbody></table></div>
   <div class="tbl"><table>
     <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
@@ -1483,6 +1958,15 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
       <tr><td><b>Length normalization</b></td><td>Discounting matches in long documents (BM25's \(b\)).</td></tr>
       <tr><td><b>Qrels</b></td><td>Query relevance judgments: the human answer key of a test collection.</td></tr>
       <tr><td><b>TREC</b></td><td>NIST's long-running evaluation campaign that builds large test collections.</td></tr>
+      <tr><td><b>Crawler / spider</b></td><td>A program that discovers and fetches pages by following links.</td></tr>
+      <tr><td><b>Scraper</b></td><td>Code that extracts structured fields from fetched pages.</td></tr>
+      <tr><td><b>DOM</b></td><td>The tree of nodes a browser or parser builds from HTML.</td></tr>
+      <tr><td><b>CSS selector</b></td><td>A pattern such as <code>article.product_pod h3 a</code> that picks elements out of the DOM.</td></tr>
+      <tr><td><b>Status code</b></td><td>The server's verdict on a request: 200 OK, 403 forbidden, 404 not found, 429 too many requests, 5xx server error.</td></tr>
+      <tr><td><b>robots.txt</b></td><td>A file at the site root with crawl rules per user agent. A request, not a login or a licence.</td></tr>
+      <tr><td><b>User-Agent</b></td><td>The name a client sends with each request. A polite crawler uses an honest, descriptive one.</td></tr>
+      <tr><td><b>Mojibake</b></td><td>Garbled text from decoding bytes with the wrong character set, like <code>Â£</code> for <code>£</code>.</td></tr>
+      <tr><td><b>Client-side rendering</b></td><td>Pages whose data JavaScript loads after the first HTML, invisible to requests + Beautiful Soup.</td></tr>
     </tbody></table></div>
   <h3 id="materials">Course materials</h3>
   <p>The original files this page was built from. Tap one to download it.</p>
@@ -1492,8 +1976,9 @@ p3: raw tf = 10  |  BM25 saturation = 2.17     (ceiling k1+1 = 2.5)</pre>
     <li><a href="materials/ir/text_preprocessing_inverted_index_boolean_retrieval.pdf" download="text_preprocessing_inverted_index_boolean_retrieval.pdf" data-dl>Lesson 2 · Text preprocessing, inverted index and Boolean retrieval</a> <span class="small muted">PDF · 242 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/ir/document_representation.pdf" download="document_representation.pdf" data-dl>Lesson 3 · Document representation and ranking</a> <span class="small muted">PDF · 341 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/ir/evaluation.pdf" download="evaluation.pdf" data-dl>Lesson 4 · Evaluation</a> <span class="small muted">PDF · 340 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/ir/web_scrape.pdf" download="web_scrape.pdf" data-dl>Lesson 5 · Web search and web scraping</a> <span class="small muted">PDF · 320 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
   </ul>
-  <p class="foot">Built from the four Session 1–4 lecture decks (Mr. Natt Korat, CADT) and Labs 1–4. Figures are cropped from those decks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment. Each lab has a line-by-line companion notebook in <code>Lab/explained/</code> that links back to the slides cited here.</p>
+  <p class="foot">Built from the five Session 1–5 lecture decks (Mr. Natt Korat, CADT) and Labs 1–5. Lab 5's numbers come from a real, bounded crawl of books.toscrape.com, a site made for scraping practice; the Chapter 5 demos are simulations and fetch nothing. Figures are cropped from those decks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment. Each lab has a line-by-line companion notebook in <code>Lab/explained/</code> that links back to the slides cited here.</p>
 </section>
 </main>
 </div>
@@ -1587,6 +2072,219 @@ function player(el,o){
   return{refresh:function(atStart){stop();n=Math.max(1,o.count());i=atStart?0:n-1;show();}};
 }
 function scrollInto(box,el){if(!el)return;var top=el.offsetTop;if(top<box.scrollTop+10||top>box.scrollTop+box.clientHeight-40)box.scrollTop=Math.max(0,top-box.clientHeight/2);}
+
+/* ---------- Lab 5: take a URL apart, resolve a link ---------- */
+(function(){
+  var inp=$("ur-in");if(!inp)return;
+  var BASE="https://books.toscrape.com/";
+  var P=[
+    ["https://books.toscrape.com/","catalogue/a-light-in-the-attic_1000/index.html"],
+    ["https://books.toscrape.com/catalogue/page-2.html","in-her-wake_980/index.html"],
+    ["https://books.toscrape.com/catalogue/page-2.html","page-3.html"],
+    ["https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html","../category/books/poetry_23/index.html"],
+    ["https://books.toscrape.com/catalogue/page-2.html","https://docs.scrapy.org/en/latest/"]
+  ];
+  function parts(){
+    var s=inp.value.trim(),u;
+    try{u=new URL(s);}catch(e){$("ur-show").innerHTML='<span class="off"><i>not a full URL</i>'+esc(s||" ")+'</span>';$("ur-parts").textContent="A full URL needs at least a scheme and a host, like https://books.toscrape.com/.";return;}
+    var seg=[["scheme",u.protocol+"//"],["host",u.host],["path",u.pathname],["query",u.search],["fragment",u.hash]];
+    $("ur-show").innerHTML=seg.map(function(x){return x[1]?'<span'+(x[0]==="fragment"?' class="off"':'')+'><i>'+x[0]+'</i>'+esc(x[1])+'</span>':"";}).join("");
+    var n=[u.hostname==="books.toscrape.com"?"The host is books.toscrape.com, so Lab 5's scope check allows it.":"The host is "+u.hostname+", so Lab 5's scope check would refuse it."];
+    if(u.search)n.push("The query "+u.search+" can make one page look like a new URL.");
+    if(u.hash)n.push("The fragment "+u.hash+" never reaches the server: the request is for "+u.origin+u.pathname+u.search+".");
+    $("ur-parts").textContent=n.join(" ");
+  }
+  function onSite(s){
+    var u;try{u=new URL(s);}catch(e){return [0,"not a valid URL"];}
+    if(u.hostname!=="books.toscrape.com")return [0,"another site: out of scope"];
+    var p=u.pathname;
+    if(p==="/"||p==="/index.html"||/^\/catalogue\/(page-\d+\.html|[a-z0-9-]+_\d+\/index\.html|category\/books(_1)?\/([a-z0-9-]+_\d+\/)?index\.html)$/.test(p))return [1,"a real page"];
+    return [0,"404 Not Found"];
+  }
+  function resolve(){
+    var page=$("ur-page").value.trim(),href=$("ur-href").value.trim(),naive=BASE+href,good=null;
+    try{good=new URL(href,page).href;}catch(e){}
+    var a=onSite(naive),b=good?onSite(good):[0,"can't resolve: the page URL isn't valid"];
+    $("ur-res").innerHTML='<tr><td><code>BASE + href</code></td><td class="mono" style="word-break:break-all">'+esc(naive)+'</td><td>'+(a[0]?"✓ ":"✗ ")+a[1]+'</td></tr>'+
+      '<tr><td><code>urljoin(page, href)</code></td><td class="mono" style="word-break:break-all">'+esc(good||"n/a")+'</td><td>'+(b[0]?"✓ ":"✗ ")+b[1]+'</td></tr>';
+    var same=false;try{same=new URL(naive).href===good;}catch(e){}
+    var dir=page.replace(/[^\/]*$/,""),m;
+    if(/^[a-z][a-z0-9+.-]*:/i.test(href))m="An <b>absolute</b> link replaces everything, so <code>urljoin</code> returns it unchanged. Gluing makes nonsense. And this one is on another host, so Lab 5's scope check would refuse to fetch it anyway.";
+    else if(same)m="Same answer. On the home page, links are relative to the site root, so gluing <i>happens</i> to work. That's why the bug hides until page 2.";
+    else if(href.indexOf("../")===0)m="<code>../</code> means \"one folder up from the page's folder\". <code>urljoin</code> climbs from <b>"+esc(dir)+"</b>; gluing climbs from the root, which leaves the site's <code>/catalogue/</code> folder behind.";
+    else m="A relative link is relative to the page's own folder, <b>"+esc(dir)+"</b>, not the root. Gluing it to BASE drops <code>catalogue/</code>. Lab 5 tested the glued URL for <code>in-her-wake_980</code>: it's a 404.";
+    $("ur-msg").innerHTML=m;
+  }
+  function load(k){$("ur-page").value=P[k][0];$("ur-href").value=P[k][1];document.querySelectorAll("[data-ur]").forEach(function(b){b.classList.toggle("on",+b.dataset.ur===k);});resolve();}
+  inp.addEventListener("input",parts);
+  ["ur-page","ur-href"].forEach(function(id){$(id).addEventListener("input",function(){document.querySelectorAll("[data-ur]").forEach(function(b){b.classList.remove("on");});resolve();});});
+  document.querySelectorAll("[data-ur]").forEach(function(b){b.addEventListener("click",function(){load(+b.dataset.ur);});});
+  parts();load(0);
+})();
+
+/* ---------- Lab 5: CSS selectors on a listing page ---------- */
+(function(){
+  var inp=$("sl-in");if(!inp)return;
+  var HTML='<ol class="row"><li><article class="product_pod"><div class="image_container"><a href="catalogue/a-light-in-the-attic_1000/index.html"><img alt="A Light in the Attic" class="thumbnail" src="media/cache/2c/da/2cdad67c.jpg"></a></div>'+
+    '<p class="star-rating Three"><i class="icon-star"></i></p><h3><a href="catalogue/a-light-in-the-attic_1000/index.html" title="A Light in the Attic">A Light in the ...</a></h3>'+
+    '<div class="product_price"><p class="price_color">£51.77</p><p class="instock availability">In stock</p></div></article></li>'+
+    '<li><article class="product_pod"><div class="image_container"><a href="catalogue/tipping-the-velvet_999/index.html"><img alt="Tipping the Velvet" class="thumbnail" src="media/cache/26/0c/260c6ae1.jpg"></a></div>'+
+    '<p class="star-rating One"><i class="icon-star"></i></p><h3><a href="catalogue/tipping-the-velvet_999/index.html" title="Tipping the Velvet">Tipping the Velvet</a></h3>'+
+    '<div class="product_price"><p class="price_color">£53.74</p><p class="instock availability">In stock</p></div></article></li></ol>'+
+    '<ul class="pager"><li class="current">Page 1 of 50</li><li class="next"><a href="catalogue/page-2.html">next</a></li></ul>';
+  var doc=new DOMParser().parseFromString("<!doctype html><body>"+HTML+"</body>","text/html"),lines=[],map=new Map();
+  function pp(node,depth){
+    var pad=new Array(depth+1).join("  ");
+    if(node.nodeType===3){var t=node.nodeValue.trim();if(t)lines.push(pad+esc(t));return;}
+    if(node.nodeType!==1)return;
+    var tag=node.tagName.toLowerCase(),at=[].map.call(node.attributes,function(a){return " "+a.name+'="'+esc(a.value)+'"';}).join("");
+    var open="&lt;"+tag+at+"&gt;",close="&lt;/"+tag+"&gt;",start=lines.length;
+    var kids=[].filter.call(node.childNodes,function(c){return c.nodeType===1||(c.nodeType===3&&c.nodeValue.trim());});
+    if(tag==="img")lines.push(pad+open);
+    else if(!kids.length)lines.push(pad+open+close);
+    else if(kids.length===1&&kids[0].nodeType===3)lines.push(pad+open+esc(kids[0].nodeValue.trim())+close);
+    else{lines.push(pad+open);kids.forEach(function(c){pp(c,depth+1);});lines.push(pad+close);}
+    map.set(node,[start,lines.length-1]);
+  }
+  [].forEach.call(doc.body.childNodes,function(c){pp(c,0);});
+  function py(v){return "'"+String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")+"'";}
+  function run(){
+    var sel=inp.value.trim(),m=/^(.*?)(?:::(text|attr\(\s*([\w-]+)\s*\)))?$/.exec(sel),css=m[1].trim(),pseudo=m[2]||"",attr=m[3];
+    var els=[],err="";
+    if(!css)err="Type a CSS selector, such as <code>h3 a</code>.";
+    else try{els=[].slice.call(doc.body.querySelectorAll(css));}catch(e){err="That isn't a valid CSS selector.";}
+    var mark={};
+    els.forEach(function(el){var r=map.get(el);if(!r)return;for(var k=r[0];k<=r[1];k++)mark[k]=mark[k]||"in";mark[r[0]]="hit";});
+    var src=$("sl-src");
+    src.innerHTML=lines.map(function(l,k){return '<span class="'+(mark[k]||"")+'">'+l+'</span>';}).join("\n");
+    var first=src.querySelector(".hit");if(first)scrollInto(src,first);
+    var vals=[];
+    els.forEach(function(el){
+      if(pseudo==="text"){var t=[].filter.call(el.childNodes,function(c){return c.nodeType===3&&c.nodeValue.trim();}).map(function(c){return c.nodeValue.trim();});vals=vals.concat(t);}
+      else if(attr){var v=el.getAttribute(attr);if(v!=null)vals.push(v);}
+      else vals.push(el.outerHTML.length>70?el.outerHTML.slice(0,67)+"...":el.outerHTML);
+    });
+    $("sl-out").textContent=err?"":"["+vals.map(py).join(",\n ")+"]";
+    var msg;
+    if(err)msg=err;
+    else if(!els.length)msg=/(^|\s)p\.price$/.test(css)?"<b>0 matches.</b> The slide's example page used <code>class=\"price\"</code>, but this site calls it <code>price_color</code>. Selectors are written for one site's HTML: always check the real page source.":"<b>0 matches.</b> <code>.get()</code> would return <code>None</code>, so code that uses the value must handle a missing field.";
+    else{
+      msg="<b>"+els.length+" element"+(els.length>1?"s":"")+"</b> matched"+(pseudo||attr?", giving "+vals.length+" value"+(vals.length===1?"":"s"):"")+". <code>.get()</code> returns the first: <code>"+esc(vals.length?py(vals[0]):"None")+"</code>.";
+      if(/h3 a$/.test(css)&&pseudo==="text")msg+=" The visible text is cut short (\"A Light in the ...\"). Lab 5 reads the <code>title</code> attribute for the full name.";
+      else if(attr==="href")msg+=" These links are <b>relative</b>, so follow them with <code>response.follow</code> or <code>urljoin</code>, never by gluing.";
+      else if(attr==="class"&&/star/.test(css))msg+=" The rating is hidden in a class name: Lab 5 maps <code>Three</code> → 3 and <code>One</code> → 1.";
+      else if(/price/.test(css))msg+=" Keep only the digits with <code>re.search(r\"\\d+(?:\\.\\d+)?\", text)</code> to get a number.";
+    }
+    $("sl-msg").innerHTML=msg;
+  }
+  inp.addEventListener("input",run);
+  document.querySelectorAll("[data-sl]").forEach(function(b){b.addEventListener("click",function(){inp.value=b.dataset.sl;run();});});
+  run();
+})();
+
+/* ---------- Lab 5: robots.txt checker ---------- */
+(function(){
+  var ta=$("rb-txt");if(!ta)return;
+  var FILES=["User-agent: *\nDisallow: /private/\nAllow: /public/\nCrawl-delay: 2",
+    "",
+    "User-agent: BadBot\nDisallow: /\n\nUser-agent: *\nDisallow: /search\nCrawl-delay: 1",
+    "User-agent: *\nDisallow: /private/\nAllow: /private/public/"];
+  var none=false;
+  function parse(txt){
+    var groups=[],cur=null,lastUA=false;
+    txt.split(/\r?\n/).forEach(function(raw){
+      var line=raw.replace(/#.*/,"").trim(),m=/^([A-Za-z-]+)\s*:\s*(.*)$/.exec(line);if(!m)return;
+      var k=m[1].toLowerCase(),v=m[2].trim();
+      if(k==="user-agent"){if(!cur||!lastUA){cur={ua:[],rules:[],delay:null};groups.push(cur);}cur.ua.push(v);lastUA=true;return;}
+      lastUA=false;if(!cur)return;
+      if((k==="allow"||k==="disallow")&&v)cur.rules.push({allow:k==="allow",path:v,line:m[1]+": "+v});
+      else if(k==="crawl-delay"&&!isNaN(parseFloat(v)))cur.delay=parseFloat(v);
+    });
+    return groups;
+  }
+  function toRe(p){var end=/\$$/.test(p);if(end)p=p.slice(0,-1);return new RegExp("^"+p.split("*").map(function(s){return s.replace(/[.+?^${}()|[\]\\]/g,"\\$&");}).join(".*")+(end?"$":""));}
+  function check(){
+    var groups=parse(ta.value),ua=$("rb-ua").value.trim()||"*",tok=ua.split("/")[0].toLowerCase(),path=$("rb-path").value.trim()||"/";
+    if(path.charAt(0)!=="/")path="/"+path;
+    var g=null;
+    groups.forEach(function(x){if(!g&&x.ua.some(function(u){return u!=="*"&&tok.indexOf(u.toLowerCase())>=0;}))g=x;});
+    if(!g)groups.forEach(function(x){if(!g&&x.ua.indexOf("*")>=0)g=x;});
+    var std=null,py=null;
+    if(g){
+      g.rules.forEach(function(r){if(toRe(r.path).test(path)){var L=r.path.length;if(!std||L>std.path.length||(L===std.path.length&&r.allow&&!std.allow))std=r;}});
+      g.rules.forEach(function(r){if(!py&&path.indexOf(r.path)===0)py=r;});
+    }
+    var okStd=!std||std.allow,okPy=!py||py.allow,delay=g&&g.delay!=null?g.delay:null,eff=Math.max(0.5,delay||0);
+    function kpi(b,s){return '<div class="kpi"><b>'+b+'</b><span>'+s+'</span></div>';}
+    $("rb-kpis").innerHTML=kpi(none&&!ta.value.trim()?"404":g?esc(g.ua.join(", ")):"none","Group used")+kpi(okStd?"Allowed":"Blocked","Longest match (standard)")+kpi(okPy?"Allowed":"Blocked","Python robotparser")+kpi(eff+" s","Delay Lab 5 would use");
+    var m;
+    if(!ta.value.trim())m=none?"<b>robots.txt returned 404</b>, like Books to Scrape. No rules are published, so <code>can_fetch()</code> says yes to everything. That is <b>not</b> permission: the terms and privacy rules still apply, and Lab 5 still waits 0.5 s.":"An empty file publishes no rules, so everything is allowed. Be polite anyway.";
+    else if(!g)m="No group matches <code>"+esc(tok)+"</code> and there's no <code>User-agent: *</code> group, so no rules apply to this bot.";
+    else{
+      m="This bot gets the <b>"+esc(g.ua.join(", "))+"</b> group"+(g.ua.indexOf("*")<0?", which names it directly. A named group replaces the <code>*</code> group completely.":".")+" ";
+      m+=std?"The longest rule that matches <code>"+esc(path)+"</code> is <code>"+esc(std.line)+"</code>, so it's <b>"+(okStd?"allowed":"blocked")+"</b>.":"No rule matches <code>"+esc(path)+"</code>, so it's <b>allowed</b>.";
+      if(okStd!==okPy)m+=" <b>The two readers disagree.</b> The standard (RFC 9309, which Google follows) uses the most specific rule. Python's <code>robotparser</code>, used in Lab 5, takes the <i>first</i> matching line in file order: <code>"+esc(py.line)+"</code>. When readers disagree, the stricter answer is the polite one.";
+      if(delay!=null)m+=" <code>Crawl-delay: "+delay+"</code> is non-standard, but Lab 5 honours it: delay = max(0.5, "+delay+") = "+eff+" s.";
+    }
+    $("rb-msg").innerHTML=m;
+  }
+  function load(k){ta.value=FILES[k];none=k===1;ta.placeholder=none?"(404 Not Found: there is no file)":"";document.querySelectorAll("[data-rb]").forEach(function(b){b.classList.toggle("on",+b.dataset.rb===k);});
+    if(k===2)$("rb-path").value="/catalogue/page-2.html";if(k===3)$("rb-path").value="/private/public/a.html";if(k===0)$("rb-path").value="/private/notes.html";check();}
+  ta.addEventListener("input",function(){none=false;document.querySelectorAll("[data-rb]").forEach(function(b){b.classList.remove("on");});check();});
+  ["rb-ua","rb-path"].forEach(function(id){$(id).addEventListener("input",check);});
+  document.querySelectorAll("[data-rb]").forEach(function(b){b.addEventListener("click",function(){load(+b.dataset.rb);});});
+  document.querySelectorAll("[data-rp]").forEach(function(b){b.addEventListener("click",function(){$("rb-path").value=b.dataset.rp;check();});});
+  load(0);
+})();
+
+/* ---------- Lab 5: a polite Scrapy crawl, simulated ---------- */
+(function(){
+  var sl=$("cr-pages");if(!sl)return;
+  var P1=["A Light in the Attic","Tipping the Velvet","Soumission","Sharp Objects","Sapiens","The Requiem Red","The Dirty Little Secrets…","The Coming Woman","The Boys in the Boat","The Black Maria","Starving Hearts","Shakespeare's Sonnets","Set Me Free","Scott Pilgrim's…","Rip it Up and…","Our Band Could Be…","Olio","Mesaerion","Libertarianism for…","It's Only the Himalayas"];
+  var ev=[],pl;
+  function build(){
+    var maxp=+sl.value,d=+$("cr-delay").value,r429=$("cr-429").checked,seed=7;
+    function R(){seed=(seed*16807)%2147483647;return seed/2147483647;}
+    $("cr-pv").textContent=maxp;
+    var q=[{k:"pg",n:1,label:"page 1"}],t=0,req=0,items=0,pages=0,delay=d,did429=false;
+    function snap(o){o.q=q.map(function(x){return x;});o.t=t;o.req=req;o.items=items;o.pages=pages;o.delay=delay;ev.push(o);}
+    ev=[];snap({msg:"The spider opens. Its start URL, the home page, is in the scheduler's queue. Before any page, Scrapy asks for robots.txt because <code>ROBOTSTXT_OBEY = True</code>.",log:""});
+    req++;t+=0.1;snap({msg:"<code>GET /robots.txt</code> → <b>404</b>. No rules are published, so nothing is blocked for this bot. It isn't permission to be rude, though.",log:"[robots] GET /robots.txt → 404 (no rules)"});
+    var guard=0;
+    while(q.length&&guard++<400){
+      var r=q.shift(),w=delay*(0.5+R());t+=w;req++;
+      if(r429&&!did429&&req===7){did429=true;t+=0.1;q.unshift(r);var old=delay;delay=delay*2;
+        snap({now:r,msg:"Waited "+w.toFixed(2)+" s, then <code>GET "+esc(r.label)+"</code> → <b>429 Too Many Requests</b>, <code>Retry-After: 5</code>. Back off: put it back in the queue, wait 5 s, and double the delay ("+old+" → "+delay+" s). Scrapy's retry middleware re-queues 429s for you, and <code>AUTOTHROTTLE_ENABLED</code> slows down automatically.",log:"[429] "+r.label+" → retry after 5 s, delay now "+delay+" s"});
+        t+=5;continue;}
+      t+=0.1;
+      if(r.k==="pg"){
+        pages++;var add=[];
+        for(var b=1;b<=20;b++)add.push({k:"bk",n:r.n,b:b,label:r.n===1?P1[b-1]:"page "+r.n+" · book "+b});
+        var nxt=pages<maxp;if(nxt)add.push({k:"pg",n:r.n+1,label:"page "+(r.n+1)});
+        q=q.concat(add);
+        snap({now:r,msg:"Waited "+w.toFixed(2)+" s (a random 0.5–1.5 × <code>DOWNLOAD_DELAY</code>), then <code>GET "+esc(r.label)+"</code> → <b>200</b>. <code>parse()</code> runs: pages_seen = "+pages+" of "+maxp+". It yields 20 book requests"+(nxt?" and the next listing page":", and <b>no</b> next page, because the cap is reached")+".",log:"[200] "+r.label+" → parse(): 20 books"+(nxt?" + next":" (cap reached)")});
+      }else{
+        items++;var id="";for(var h=0;h<12;h++)id+="0123456789abcdef".charAt(Math.floor(R()*16));
+        snap({now:r,msg:"Waited "+w.toFixed(2)+" s, then <code>GET</code> the book page for <b>"+esc(r.label)+"</b> → <b>200</b>. <code>parse_book()</code> yields one record, <code>doc_id = "+id+"</code>, straight to the JSON and CSV exporters.",log:"[200] "+r.label+" → item "+id});
+      }
+    }
+    var last=ev[ev.length-1];
+    last.msg="<b>Finished:</b> "+last.req+" requests (1 robots.txt + "+last.pages+" listing page"+(last.pages>1?"s":"")+" + "+last.items+" books"+(did429?" + 1 retry":"")+"), "+last.items+" items, about "+last.t.toFixed(1)+" s. "+(maxp===2&&d===0.5&&!r429?"The real Lab 5 run: 43 requests, 40 items, 25.4 s.":"Lab 5's real run (2 pages, 0.5 s): 43 requests, 40 items, 25.4 s.")+" Almost all of that time is the polite delay, on purpose.";
+  }
+  function render(i){
+    var e=ev[Math.min(i,ev.length-1)];
+    $("cr-msg").innerHTML=e.msg;
+    function kpi(b,s){return '<div class="kpi"><b>'+b+'</b><span>'+s+'</span></div>';}
+    $("cr-kpis").innerHTML=kpi(e.req,"Requests")+kpi(e.items,"Items")+kpi(e.pages+" / "+sl.value,"Pages seen")+kpi(e.t.toFixed(1)+" s","Elapsed")+kpi(e.delay+" s","Delay");
+    $("cr-qn").textContent="· "+e.q.length+" waiting";
+    $("cr-q").innerHTML=(e.now?'<span class="now'+(e.now.k==="pg"?" pg":"")+'">▶ '+esc(e.now.label)+'</span>':"")+e.q.slice(0,30).map(function(x){return '<span class="'+(x.k==="pg"?"pg":"")+'">'+esc(x.label)+'</span>';}).join("")+(e.q.length>30?'<span class="more">+'+(e.q.length-30)+' more</span>':"")+(!e.q.length&&!e.now?'<span class="more">empty</span>':"");
+    var lg=$("cr-log");lg.textContent=ev.slice(1,i+1).map(function(x){return x.log;}).filter(Boolean).join("\n");lg.scrollTop=lg.scrollHeight;
+  }
+  pl=player($("cr-player"),{count:function(){return ev.length;},render:render,interval:420});
+  function refresh(){build();pl.refresh(true);}
+  sl.addEventListener("input",refresh);$("cr-delay").addEventListener("change",refresh);$("cr-429").addEventListener("change",refresh);
+  refresh();
+})();
 
 /* ---------- Theme ---------- */
 (function(){

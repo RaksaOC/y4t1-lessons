@@ -2,8 +2,8 @@
 window.QUIZ_BANK = {
   subject: 'devops', page: 'devops.html', course: 'DevOps',
   exam: {
-    minutes: 90, pass: 60,
-    intro: 'Covers Weeks 1, 2 and 4 and Lab 1: DevOps culture and lifecycle, Git and CI/CD, testing, GitHub Actions, virtualization and containers, and Docker.',
+    minutes: 105, pass: 60,
+    intro: 'Covers Weeks 1, 2, 4 and 6 and Lab 1: DevOps culture and lifecycle, Git and CI/CD, testing, GitHub Actions, virtualization and containers, Docker, and microservices.',
     sections: [
       { ch: 1, name: 'DevOps and its lifecycle', q: [
         { t: 'match', q: 'A change has just done each thing below. Name the stage it was in.',
@@ -142,6 +142,33 @@ window.QUIZ_BANK = {
           buckets: ['Image', 'Container'],
           items: [['Read-only', 0], ['Like a class', 0], ['Stored in a registry', 0], ['Has its own state', 1], ['Like an object', 1], ['Can be stopped and listed by docker ps -a', 1]],
           why: 'Write the class once, and make as many instances as you like.' }
+      ] },
+      { ch: 7, name: 'Microservices', q: [
+        { t: 'order', q: 'Trace one order through an event-driven shop.',
+          items: ['Customer presses Place order', 'Payment Service charges the card', 'Order Service publishes OrderCreated', 'The broker puts the event on its queues', 'Inventory consumes the event and reduces stock'],
+          why: 'Payment is a synchronous call. Everything after the event happens independently and eventually.' },
+        { t: 'mc', q: 'A monolithic shop needs more checkout capacity for a sale. What must it do?',
+          o: ['Run more copies of the whole application', 'Scale only the checkout module on its own', 'Move checkout into its own database first', 'Nothing, since monoliths scale on their own'], a: 0,
+          why: 'You can\'t scale one component of a monolith on its own, so you copy everything, including the parts that aren\'t busy.' },
+        { t: 'tf', q: 'Judge each statement about rolling updates.',
+          s: [['Old and new versions run side by side for a while.', true], ['It needs double the servers during the release.', false], ['Rolling back is a single, instant switch.', false], ['It suits apps running on many servers or containers.', true]],
+          why: 'Double resources and an instant switch back describe blue/green. A rolling rollback goes batch by batch.' },
+        { t: 'fill', q: 'Production runs on 8 servers.',
+          text: 'During a blue/green release you run {0} servers. A canary on 1 of the 8 servers gets about {1}% of traffic.',
+          blanks: [{ num: 16 }, { num: 12.5, tol: .5 }],
+          why: 'Blue/green needs a full second copy. 1/8 = 12.5%.' },
+        { t: 'match', q: 'Match each problem to what fixes it.',
+          pairs: [['Mobile apps call 12 services directly', 'An API gateway'], ['A slow service stalls everything that calls it', 'Timeouts and a circuit breaker'], ['An Inventory schema change breaks Shipping\'s SQL', 'Database per service'], ['Users wait 4 s for the confirmation email to send', 'Publish an event instead of calling'], ['Deploying 30 services by hand', 'CI/CD pipelines']],
+          why: 'Each row is one of the lecture\'s principles or tools doing its job.' },
+        { t: 'mc', q: 'What question does A/B testing answer?',
+          o: ['Which of two versions performs better on a metric', 'Whether the new version can be rolled back instantly', 'How many servers the new version needs to run well', 'Whether old and new versions can run side by side'], a: 0,
+          why: 'Blue/green, canary and rolling ask "is it safe to ship?". A/B asks "which do users prefer?".' },
+        { t: 'spot', hint: 'Click the call that should become an event', q: 'Customers lose orders whenever the email service is down. Which line should publish an event instead of waiting?',
+          lines: ['order = orders.save(cart)', 'payment.charge(order)            # waits for the answer', 'inventory.reserve(order)         # waits for the answer', 'email.send_confirmation(order)   # waits for the answer', 'return 201'], a: [3],
+          why: 'The order doesn\'t need the email to finish. Publishing <code>OrderCreated</code> lets the email service catch up later.' },
+        { t: 'ms', q: 'A three-person startup wants microservices from day one. Which concerns are valid?',
+          o: ['Each service needs its own pipeline, hosting and monitoring', 'Service boundaries get drawn before the domain is understood', 'Debugging spans several services\' logs', 'Infrastructure costs more', 'Microservices can\'t run in containers'], a: [0, 1, 2, 3],
+          why: 'The lecture\'s first best practice: start with a monolith, and split when there\'s a clear need.' }
       ] },
       { ch: 0, name: 'Putting it together', q: [
         { t: 'order', q: 'Follow a change through this course\'s full chain. Put it in order.',

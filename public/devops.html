@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- seo -->
-<meta name="description" content="DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, with quizzes and an exam.">
+<meta name="description" content="DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, microservices and deployment strategies, with quizzes and an exam.">
 <link rel="canonical" href="http://y4t1.chanraksa.com/devops.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -11,7 +11,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Year 4 Study Hub">
 <meta property="og:title" content="DevOps: From Commit to Container · Year 4 Study Hub">
-<meta property="og:description" content="DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, with quizzes and an exam.">
+<meta property="og:description" content="DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, microservices and deployment strategies, with quizzes and an exam.">
 <meta property="og:url" content="http://y4t1.chanraksa.com/devops.html">
 <meta property="og:image" content="http://y4t1.chanraksa.com/assets/og/devops.png">
 <meta property="og:image:width" content="1200">
@@ -19,9 +19,9 @@
 <meta property="og:image:alt" content="DevOps: From Commit to Container">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="DevOps: From Commit to Container · Year 4 Study Hub">
-<meta name="twitter:description" content="DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, with quizzes and an exam.">
+<meta name="twitter:description" content="DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, microservices and deployment strategies, with quizzes and an exam.">
 <meta name="twitter:image" content="http://y4t1.chanraksa.com/assets/og/devops.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "DevOps: From Commit to Container", "url": "http://y4t1.chanraksa.com/devops.html", "description": "DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, with quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "DevOps", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "DevOps: From Commit to Container", "url": "http://y4t1.chanraksa.com/devops.html", "description": "DevOps from commit to container: the lifecycle, Git and CI/CD, testing, a GitHub Actions pipeline, virtual machines, containers and Docker, microservices and deployment strategies, with quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "DevOps", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
 <!-- /seo -->
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 
@@ -353,6 +353,21 @@ mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;margin:.4em 0 !i
   .boxes{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:380px){.boxes{grid-template-columns:minmax(0,1fr)}}
+/* chapter 7 demos */
+.svcs{display:flex;flex-wrap:wrap;gap:6px}
+.svcs .svc{font-weight:700;font-size:13px;border:var(--bw15,1.5px) solid var(--box,var(--ink));padding:6px 10px;transition:background .2s,color .2s}
+.svcs .svc i{font-style:normal;font-weight:400;font-size:11.5px;color:var(--muted)}
+.svcs .svc.on{background:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}
+.svcs .svc.on i{color:inherit;opacity:.8}
+.svcs .svc.down{border-style:dashed;color:var(--neg)}
+.fleet{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.fleet span{width:36px;height:36px;display:grid;place-items:center;font:700 12px var(--f-mono);border:var(--bw15,1.5px) solid var(--box,var(--ink));transition:background .3s,color .3s}
+.fleet span.v2{background:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}
+.fleet span.idle{border-style:dashed;color:var(--muted)}
+.fleet i.gap{font-style:normal;font-size:11px;color:var(--muted);padding:0 6px}
+.split{display:flex;height:26px;border:var(--bw15,1.5px) solid var(--box,var(--ink));font:700 12px var(--f-mono)}
+.split s,.split b{display:flex;align-items:center;justify-content:center;text-decoration:none;overflow:hidden;white-space:nowrap;transition:width .4s}
+.split b{background:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}
 </style>
 
 <script>
@@ -527,6 +542,19 @@ pre,code,textarea,.mono,.readout{font-variant-ligatures:none;font-feature-settin
           <li><a href="#c6-term">Try the commands</a></li>
           <li><a href="#quiz6">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#ch7">7 · Microservices</a>
+        <ol>
+          <li><a href="#c7-arch">Software architecture</a></li>
+          <li><a href="#c7-mono">The monolith</a></li>
+          <li><a href="#c7-micro">Microservices</a></li>
+          <li><a href="#c7-choose">Which one?</a></li>
+          <li><a href="#c7-principles">Design principles</a></li>
+          <li><a href="#c7-comm">Sync and async</a></li>
+          <li><a href="#c7-tools">DevOps and the tools</a></li>
+          <li><a href="#c7-best">Best practices</a></li>
+          <li><a href="#c7-deploy">Deployment strategies</a></li>
+          <li><a href="#quiz7">Check yourself</a></li>
+        </ol></li>
       <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Commands and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
@@ -537,7 +565,7 @@ pre,code,textarea,.mono,.readout{font-variant-ligatures:none;font-feature-settin
 <main>
 <!-- ======================================================= HERO -->
 <header class="hero" id="start">
-  <div class="slidebar"><span>DevOps</span><span>Weeks 1, 2, 4 · Lab 1</span></div>
+  <div class="slidebar"><span>DevOps</span><span>Weeks 1, 2, 4, 6 · Lab 1</span></div>
   <h1>From Commit to Container</h1>
   <p class="lede">Hi. Writing code is only half of shipping software. Someone has to build it, test it, put it on a server and keep it running, and for a long time that was a different team who found out about your change last. DevOps is how those two halves became one process. This page follows a single change from your editor to a running container, and stops at every tool and command along the way.</p>
   <div class="legend" aria-label="How to read the boxes">
@@ -547,7 +575,7 @@ pre,code,textarea,.mono,.readout{font-variant-ligatures:none;font-feature-settin
     <span class="chip inv">Careful</span>
     <span class="chip lab">In the lab</span>
   </div>
-  <p class="small muted"><b>Pictures come from your slides,</b> and each caption says which week and slide, so you can flip back to it. Tap any picture to see it larger. The code is the code from Lab 1 and the Week 4 deck. The demos run in your browser, so nothing here touches a real server. There's no Week 3 deck in the folder, so the page goes from testing straight to containers.</p>
+  <p class="small muted"><b>Pictures come from your slides,</b> and each caption says which week and slide, so you can flip back to it. Tap any picture to see it larger. The code is the code from Lab 1 and the Week 4 deck. The demos run in your browser, so nothing here touches a real server. There are no Week 3 or Week 5 decks in the folder, so the page goes from testing straight to containers, and from Docker to microservices.</p>
   <div class="call key"><span class="tag">The plan</span>
     <ul>
       <li><b>Chapter 1</b> says what DevOps is, where it came from, and the eight stages every change goes through. (Week 1)</li>
@@ -556,6 +584,7 @@ pre,code,textarea,.mono,.readout{font-variant-ligatures:none;font-feature-settin
       <li><b>Chapter 4</b> walks through Lab 1 line by line and runs its pipeline. (Lab 1)</li>
       <li><b>Chapter 5</b> goes from physical servers to virtual machines to containers. (Week 4)</li>
       <li><b>Chapter 6</b> gets hands-on with Docker. (Week 4)</li>
+      <li><b>Chapter 7</b> zooms out to architecture: monoliths vs microservices, how services talk, and how to roll out a new version safely. (Week 6)</li>
     </ul>
   </div>
 </header>
@@ -1420,6 +1449,222 @@ docker run -d -p 3000:3000 my-app    # start a container, map port 3000 to the h
   <div data-xq="6"></div>
 </section>
 
+<!-- ======================================================= CHAPTER 7 -->
+<section class="chapter" id="ch7">
+  <div class="chapter-head">
+    <span class="num">Chapter 7</span>
+    <h2>Microservices</h2>
+  </div>
+  <div class="refs"><span class="ref">Wk 6 · s.1–28</span></div>
+
+  <section class="sub" id="c7-arch">
+  <h3>7.1 What is software architecture?</h3>
+  <p>A system's <b>architecture</b> is its fundamental structure: the parts it's made of and how they interact. In practice it answers five questions:</p>
+  <ol class="boxes">
+    <li>How are the application's components <b>organized</b>?</li>
+    <li>How do the components <b>communicate</b>?</li>
+    <li>How is <b>data</b> stored and managed?</li>
+    <li>How is the application <b>deployed</b>?</li>
+    <li>How does it <b>scale</b>?</li>
+  </ol>
+  <p>The last two are why this is a DevOps topic. Chapters 2–6 built the pipeline and the containers. Architecture decides how many things that pipeline has to build, test and deploy, and how they fail. The lecture's question for the cloud era: which model is best for you?</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w6-vs.webp" width="1098" height="702" loading="lazy" alt="Monolith versus microservices: on the left one big block holding all the parts together; on the right the same parts as separate small circles linked by dotted lines"></span><figcaption><span class="ref">Wk 6 · s.3</span>One block that holds everything, or many small pieces that talk to each other.</figcaption></figure>
+  <div class="refs"><span class="ref">Wk 6 · s.2–3</span></div>
+  </section>
+
+  <section class="sub" id="c7-mono">
+  <h3>7.2 The monolith</h3>
+  <p>A <b>monolithic</b> application is the traditional model: one program, with every feature packaged and deployed together. Its components are <b>tightly coupled</b> and share resources and one database. Any change means rebuilding and redeploying the whole thing.</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w6-mono.webp" width="1200" height="891" loading="lazy" alt="A monolithic application: a browser calls a single deployment unit containing a web layer and components A to D, all reading and writing one shared database"></span><figcaption><span class="ref">Wk 6 · s.5</span>One deployment unit, one shared database.</figcaption></figure>
+  <p>A request goes in, the right module handles it, the app talks to the database, and the response comes back. The lecture's example is a user placing an order. All four modules run inside the same deployable application:</p>
+  <div class="pipe" aria-label="Monolith order flow"><span>Order module creates it</span><i>→</i><span>Inventory reduces stock</span><i>→</i><span>Payment charges</span><i>→</i><span>Notification confirms</span></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Advantages</th><th>Disadvantages</th></tr></thead>
+    <tbody>
+      <tr><td><b>Easy deployment:</b> one executable or directory</td><td><b>Slower development</b> as the codebase grows large and complex</td></tr>
+      <tr><td><b>Easy development:</b> one codebase</td><td><b>Scaling:</b> you can't scale one component on its own</td></tr>
+      <tr><td><b>Performance:</b> one in-process call can replace many network APIs</td><td><b>Reliability:</b> an error in any module can take down the whole app</td></tr>
+      <tr><td><b>Simpler testing:</b> end-to-end tests run on one unit</td><td><b>Technology lock-in:</b> changing the framework or language touches everything</td></tr>
+      <tr><td><b>Easy debugging:</b> follow one request through one place</td><td><b>Deployment:</b> a one-line change redeploys the whole monolith</td></tr>
+    </tbody></table></div>
+  <p>Monoliths are convenient early in a project: less code management, less to keep in your head, and everything ships at once.</p>
+  <div class="refs"><span class="ref">Wk 6 · s.4–7</span></div>
+  </section>
+
+  <section class="sub" id="c7-micro">
+  <h3>7.3 Microservices</h3>
+  <p>A <b>microservices</b> architecture splits the application into a set of <b>independently deployable services</b>. Each one has a specific business goal, its own logic and its own database. Updating, testing, deploying and scaling happen <i>per service</i>, and services talk to each other through simple interfaces.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w6-split.webp" width="491" height="301" loading="lazy" alt="Left: one Node.js API service containing users, threads and posts. Right: the same three features as a separate users service, threads service and posts service"></span><figcaption><span class="ref">Wk 6 · s.8</span>The same three features, split into three services.</figcaption></figure>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w6-micro.webp" width="886" height="639" loading="lazy" alt="Microservice architecture: a client browser talks to a UI microservice, which talks to separate payment, shopping cart and inventory services"></span><figcaption><span class="ref">Wk 6 · s.10</span>A shop as microservices behind a UI service.</figcaption></figure>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>Microservices <b>don't reduce complexity</b>. They make it <b>visible and more manageable</b>, by splitting the work into smaller processes that run independently. The complexity that was hidden inside one codebase is now out in the open, as network calls between services.</p>
+  </div>
+  <p>Containers suit microservices well: each service is packaged with its own dependencies, so you can focus on the service and not on what's installed where. Modern cloud-native applications are usually microservices in containers, which is everything from <a href="#ch5">Chapter 5</a> and <a href="#ch6">Chapter 6</a> put to work.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Advantages</th><th>Disadvantages</th></tr></thead>
+    <tbody>
+      <tr><td><b>Agility:</b> small independent teams move faster</td><td><b>Development sprawl:</b> more services across more teams</td></tr>
+      <tr><td><b>Flexible scaling:</b> scale only the busy service</td><td><b>Higher infrastructure cost:</b> each service needs its own deployment, testing, hosting and monitoring</td></tr>
+      <tr><td><b>Easy deployment:</b> release one service, and roll it back quickly</td><td><b>Organizational overhead:</b> teams must coordinate on interfaces and updates</td></tr>
+      <tr><td><b>Technology freedom:</b> the best tool for each job</td><td><b>Harder debugging:</b> one request leaves logs in many services</td></tr>
+      <tr><td><b>Resilience:</b> one failing service doesn't have to crash everything</td><td><b>Less standardization:</b> different languages, log formats and tools</td></tr>
+    </tbody></table></div>
+  <p>Read the two tables side by side: almost every advantage of one is a disadvantage of the other. Choosing is a trade, not an upgrade.</p>
+  <div class="refs"><span class="ref">Wk 6 · s.8–12</span></div>
+  </section>
+
+  <section class="sub" id="c7-choose">
+  <h3>7.4 Monolith or microservices?</h3>
+  <p>The lecture asks you to choose for three scenarios, and to say what goes wrong if you choose badly. One reasonable answer:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Scenario</th><th>Choose</th><th>Why</th><th>If you choose wrong</th></tr></thead>
+    <tbody>
+      <tr><td><b>A.</b> A university website, 500 students reading course information</td><td>Monolith</td><td>Small, steady load and one small team. Nothing needs to scale on its own</td><td>Microservices here add servers, pipelines and network failures for no benefit</td></tr>
+      <tr><td><b>B.</b> An online shop with millions of customers</td><td>Microservices</td><td>Search, cart and payment have very different loads, and many teams need to ship independently</td><td>A monolith can't scale checkout alone, every release redeploys everything, and one bug takes the whole shop down</td></tr>
+      <tr><td><b>C.</b> A startup's first app, three developers</td><td>Monolith (keep it modular)</td><td>Speed of change matters most, and the product will change shape</td><td>Three people end up running ten services, and the service boundaries are drawn before anyone knows the domain</td></tr>
+    </tbody></table></div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Both directions happen. Netflix moved from one large application to hundreds of microservices from about 2009, after a database corruption in 2008 stopped it shipping DVDs for three days. In 2023, Amazon's Prime Video team went the other way: it merged one monitoring tool's distributed parts back into a single process and reported cutting that tool's cost by 90%. Same company group, opposite choices, because the scale and the job were different.</p>
+  </div>
+  <div class="refs"><span class="ref">Wk 6 · s.13</span></div>
+  </section>
+
+  <section class="sub" id="c7-principles">
+  <h3>7.5 Design principles</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Principle</th><th>Means</th><th>Ignore it and…</th></tr></thead>
+    <tbody>
+      <tr><td><b>Single responsibility</b></td><td>Each service does one business job, and does it well</td><td>You get small monoliths that all change together</td></tr>
+      <tr><td><b>Loose coupling</b></td><td>Services talk through APIs and can change independently</td><td>One change forces releases of five services at once</td></tr>
+      <tr><td><b>Decentralized data</b></td><td>Each service owns its data and picks the database that fits</td><td>Services read each other's tables, and a schema change breaks strangers</td></tr>
+      <tr><td><b>Fault isolation</b></td><td>One failure doesn't crash the app: timeouts, retries, circuit breakers</td><td>A slow service makes everything that calls it slow, then everything that calls <i>those</i></td></tr>
+      <tr><td><b>API-first design</b></td><td>Clear, standard APIs, whatever language each service uses</td><td>Every integration is a one-off, and nobody can swap a service out</td></tr>
+    </tbody></table></div>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w6-dbper.webp" width="947" height="645" loading="lazy" alt="Database per service pattern: a client calls a product microservice, an order microservice and a shipping microservice, each with its own database"></span><figcaption><span class="ref">Wk 6 · s.14</span>Database per service: each service owns its data.</figcaption></figure>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>"Database per service" means <b>logical ownership</b>, not necessarily a separate database server. Several services' databases can run on the same database infrastructure. The rule is that only the owning service touches its data, and everyone else asks that service.</p>
+  </div>
+  <p>A <b>circuit breaker</b> works like the one in your house. After enough failed calls to a service, it "trips" and fails the next calls immediately for a while, instead of letting every caller wait for a timeout. That gives the struggling service room to recover.</p>
+  <div class="refs"><span class="ref">Wk 6 · s.14</span></div>
+  </section>
+
+  <section class="sub" id="c7-comm">
+  <h3>7.6 Synchronous and asynchronous communication</h3>
+  <div class="grid2">
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Synchronous</h4>
+      <p>The caller sends a request and <b>waits</b> for the answer. Order Service asks Payment Service to charge, Payment processes it and returns success or failure, and only then does Order Service carry on.</p>
+      <p><b>Pros:</b> simple to build, easy to debug and trace, an immediate answer. <b>Cons:</b> tightly coupled. If the receiver is slow or down, the caller is stuck, and it copes worse under heavy load.</p>
+    </div>
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Asynchronous</h4>
+      <p>The caller sends a message or <b>event</b> and carries on <b>without waiting</b>. Order Service publishes <code>OrderCreated</code>. A message broker (Kafka, RabbitMQ, AWS SNS/SQS) delivers it to Inventory and every other interested service, which each handle it in their own time.</p>
+      <p><b>Pros:</b> loosely coupled, keeps working when some services are down, handles big volumes. <b>Cons:</b> harder to debug, and <b>eventual</b> consistency instead of immediate.</p>
+    </div>
+  </div>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w6-sync.webp" width="1200" height="1400" loading="lazy" alt="Synchronous versus asynchronous communication: service A calls service B and waits for the response, or puts requests on a queue; below, four protocols: REST over HTTP with JSON, gRPC between services in different languages, AMQP with an exchange and queues, and MQTT with a broker and subscribers"></span><figcaption><span class="ref">Wk 6 · s.15</span>Sync waits for a reply, async goes through a queue. REST and gRPC are usually sync; AMQP and MQTT are messaging.</figcaption></figure>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w6-event.webp" width="1200" height="621" loading="lazy" alt="Event-driven architecture: the order service, as producer, sends OrderPlaced to a broker with two queues, which delivers it to the inventory, email and shipping services as consumers"></span><figcaption><span class="ref">Wk 6 · s.17</span>One event, many consumers, all independent.</figcaption></figure>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p><b>Eventual consistency:</b> right after an order, the stock count may not have dropped yet, because Inventory hasn't processed the event. A moment later, it has. The system is always correct <i>eventually</i>, not at every instant. Most shops accept that for stock and emails. Nobody accepts it for "did the payment go through?", which is why that call usually stays synchronous.</p>
+  </div>
+  <div class="lab" id="lab-order">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Place one order, and break something</h4></div>
+    <div class="lab-body">
+      <div class="tabs" role="group" aria-label="Architecture"><button class="btn on" type="button" data-om="mono">Monolith</button><button class="btn" type="button" data-om="sync">Microservices: sync calls</button><button class="btn" type="button" data-om="async">Microservices: events</button></div>
+      <div class="row" role="group" aria-label="Break a part"><span class="small muted">Break:</span>
+        <button class="btn sm" type="button" data-ob="pay" aria-pressed="false">Payment</button>
+        <button class="btn sm" type="button" data-ob="inv" aria-pressed="false">Inventory</button>
+        <button class="btn sm" type="button" data-ob="note" aria-pressed="false">Notification</button>
+      </div>
+      <div class="svcs" id="or-svcs"></div>
+      <div class="player" id="or-player"></div>
+      <div class="msg" id="or-msg"></div>
+      <div class="kpis" id="or-kpis"></div>
+      <pre class="out" id="or-log" style="max-height:200px;overflow:auto"></pre>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Wk 6 · s.15–17</span></div>
+  </section>
+
+  <section class="sub" id="c7-tools">
+  <h3>7.7 Microservices need DevOps, and the tools that help</h3>
+  <p>Microservices and DevOps <b>enable and require</b> each other. Microservices let teams build and deploy services independently. DevOps supplies the automation to build, test, deploy, monitor and operate them reliably. With 20 or 50 services, doing any of that by hand stops being possible.</p>
+<figure class="fig md"><span class="frame"><img src="assets/dv/w6-pipeline.webp" width="1126" height="624" loading="lazy" alt="A CI/CD flow for containers: a developer submits code to version control; the CI system builds a new Docker container and uploads it to a container registry; CI runs it in a test environment; an ops engineer verifies the tests and deploys the container to production"></span><figcaption><span class="ref">Wk 6 · s.18</span>The Chapter 2 pipeline, now producing a container per service.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Tool</th><th>What it does</th><th>Why microservices need it</th></tr></thead>
+    <tbody>
+      <tr><td><b>Containers</b> (Docker)</td><td>Package each service with its code and dependencies. Lighter than VMs because they share the host OS, so they start and stop quickly</td><td>Run every service independently, in its own container</td></tr>
+      <tr><td><b>API gateway</b></td><td>One entry point for clients. Routes each request to the right service, and can handle authentication, security, rate limits and combining responses</td><td>Clients don't have to know about, or call, every service directly</td></tr>
+      <tr><td><b>Messaging and event streaming</b></td><td>Services publish messages or events to a broker, and others process them when ready (Apache Kafka, RabbitMQ, Amazon SNS and SQS)</td><td>Fewer direct dependencies between services</td></tr>
+      <tr><td><b>Serverless</b></td><td>Small functions that run when an event or request triggers them, with no servers to manage (AWS Lambda)</td><td>Small jobs that don't need a service running all the time, like sending an order confirmation email</td></tr>
+    </tbody></table></div>
+  <div class="grid2">
+<figure class="fig" style="margin:0"><span class="frame"><img src="assets/dv/w6-docker.webp" width="1200" height="655" loading="lazy" alt="Docker in microservices architecture: code and libraries are built and packaged into service A, B and C images, which run as isolated containers on a shared network, giving isolation, portability and consistency"></span><figcaption><span class="ref">Wk 6 · s.19</span>One image per service, one container per running copy.</figcaption></figure>
+<figure class="fig" style="margin:0"><span class="frame"><img src="assets/dv/w6-gateway.webp" width="1200" height="612" loading="lazy" alt="An API gateway between clients (web browser, application, mobile app) and the user, product and order services, each with its own database"></span><figcaption><span class="ref">Wk 6 · s.20</span>Clients see one address. The gateway knows the rest.</figcaption></figure>
+<figure class="fig" style="margin:0"><span class="frame"><img src="assets/dv/w6-broker.webp" width="1200" height="675" loading="lazy" alt="A message broker such as Kafka or RabbitMQ: three producers send events A, B and C into it, and three consumers receive the events they subscribed to"></span><figcaption><span class="ref">Wk 6 · s.21</span>Producers and consumers never call each other directly.</figcaption></figure>
+<figure class="fig" style="margin:0"><span class="frame"><img src="assets/dv/w6-serverless.webp" width="1200" height="544" loading="lazy" alt="A serverless shop on AWS: an API gateway routes to product, basket and ordering microservices, each made of an API, a Lambda function and a DynamoDB table; a checkout event goes through EventBridge to an SQS queue"></span><figcaption><span class="ref">Wk 6 · s.22</span>Each microservice here is just a function and a table.</figcaption></figure>
+  </div>
+  <div class="refs"><span class="ref">Wk 6 · s.18–22</span></div>
+  </section>
+
+  <section class="sub" id="c7-best">
+  <h3>7.8 Best practices</h3>
+  <ol class="boxes">
+    <li><b>Don't start with microservices.</b> Start with a monolith. Split it when it becomes hard to maintain, update or scale, and only where there's a clear need.</li>
+    <li><b>Don't use microservices without DevOps.</b> Many services need CI/CD pipelines for building, testing and deploying, and monitoring and logging to spot problems.</li>
+    <li><b>Don't create too many small services.</b> Start with services that group related tasks. Split one only when it gets hard to maintain, deploy or scale, because every extra service adds communication and management work.</li>
+  </ol>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>A restaurant kitchen. A food stall with one cook doesn't need a separate grill station, sauce station and dessert station, and passing plates between them would only slow it down. A hotel kitchen serving 2,000 meals a night does need stations, a head chef calling orders, and a pass where dishes are checked. Split the kitchen when the volume demands it, not on day one.</p>
+  </div>
+  <div class="refs"><span class="ref">Wk 6 · s.23</span></div>
+  </section>
+
+  <section class="sub" id="c7-deploy">
+  <h3>7.9 Deployment strategies</h3>
+  <p>Independent deployment is the point of microservices, so <i>how</i> a new version reaches users matters. The lecture covers four strategies:</p>
+<figure class="fig sm"><span class="frame"><img src="assets/dv/w6-deploy.webp" width="1050" height="1400" loading="lazy" alt="The most popular deployment strategies: blue/green switches traffic from the blue environment to the green one; canary sends 25% of traffic to the new version and 75% to the old; A/B testing sends users to v1 or v2; a feature flag turns a new feature on for 20% of users; rolling replaces servers stage by stage"></span><figcaption><span class="ref">Wk 6 · s.24–27</span>The same picture on all four slides. Feature flags (fourth row) are a bonus.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Strategy</th><th>How it works</th><th>Pros</th><th>Cons</th><th>Use case</th></tr></thead>
+    <tbody>
+      <tr><td><b>Blue/green</b></td><td>Two identical environments: blue is live, green gets the new version. Test green, then switch all traffic</td><td>No downtime, instant rollback (switch back)</td><td>Double the resources, higher cost</td><td>Mission-critical apps that need zero downtime</td></tr>
+      <tr><td><b>Canary</b></td><td>Release to a small group of users first, watch the metrics, then widen step by step</td><td>Limits who meets a bug. A safe way to test in production</td><td>Needs more careful monitoring</td><td>Large apps with millions of users</td></tr>
+      <tr><td><b>A/B testing</b></td><td>Show two versions to different user groups at the same time, and compare key metrics</td><td>Pick the winner from real user behaviour</td><td>Only some users see the new version, and metrics must be tracked carefully</td><td>UI changes, new features, marketing content</td></tr>
+      <tr><td><b>Rolling</b></td><td>Replace old instances with new ones one batch at a time</td><td>Minimal downtime, a gradual switch</td><td>Old and new run side by side, so they must be compatible</td><td>Apps on many servers or containers</td></tr>
+    </tbody></table></div>
+  <div class="lab" id="lab-roll">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Roll out version 2</h4></div>
+    <div class="lab-body">
+      <div class="tabs" role="group" aria-label="Strategy"><button class="btn on" type="button" data-rs="bg">Blue/green</button><button class="btn" type="button" data-rs="canary">Canary</button><button class="btn" type="button" data-rs="rolling">Rolling</button><button class="btn" type="button" data-rs="ab">A/B test</button></div>
+      <div class="row"><label class="ctl"><input type="checkbox" id="rl-bug"> Version 2 has a bug that only real traffic finds</label></div>
+      <div class="player" id="rl-player"></div>
+      <div class="msg" id="rl-msg"></div>
+      <div class="fleet" id="rl-fleet" aria-label="Servers"></div>
+      <div class="split" id="rl-split" aria-label="Traffic split"></div>
+      <div class="kpis" id="rl-kpis"></div>
+    </div>
+  </div>
+  <p>Notice that A/B testing answers a different question. Blue/green, canary and rolling ask "is v2 safe to ship?" A/B testing asks "which version do users prefer?", so it runs for days and needs enough users to make the comparison meaningful.</p>
+  <div class="refs"><span class="ref">Wk 6 · s.24–27</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 7 recap</h3>
+    <ul>
+      <li>Architecture decides how an app is organized, communicates, stores data, deploys and scales.</li>
+      <li>A monolith is one deployable unit with one shared database: simple, but it scales and fails as one.</li>
+      <li>Microservices are independently deployable services, each with its own data. They make complexity visible, not smaller.</li>
+      <li>Principles: single responsibility, loose coupling, decentralized data, fault isolation, API first.</li>
+      <li>Sync calls wait and couple. Async events decouple, at the price of eventual consistency.</li>
+      <li>Containers, an API gateway, a message broker and serverless functions make microservices workable. Without DevOps automation, they aren't.</li>
+      <li>Start with a monolith. Roll out with blue/green, canary or rolling, and use A/B tests to compare features.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz7">Check yourself: Chapter 7</h3>
+  <div data-xq="7"></div>
+</section>
+
 <!-- ======================================================= SHEET -->
 <section class="chapter" id="exam">
   <div class="chapter-head">
@@ -1427,7 +1672,7 @@ docker run -d -p 3000:3000 my-app    # start a container, map port 3000 to the h
     <h2>Final Exam</h2>
   </div>
   <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
-  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>41</b><span>Questions</span></div><div class="kpi"><b>84</b><span>Marks</span></div><div class="kpi"><b>90</b><span>Minutes</span></div></div>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>49</b><span>Questions</span></div><div class="kpi"><b>98</b><span>Marks</span></div><div class="kpi"><b>105</b><span>Minutes</span></div></div>
   <p><a class="btn primary" href="exam-devops.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
 </section>
 
@@ -1468,6 +1713,19 @@ docker run -d -p 3000:3000 my-app    # start a container, map port 3000 to the h
       <tr><td><b>Registry</b></td><td>Where images are stored, such as Docker Hub.</td></tr>
       <tr><td><b>Namespace</b></td><td>Kernel feature that gives a container its own view of processes, network and files.</td></tr>
       <tr><td><b>Orchestration</b></td><td>Scheduling, scaling and healing many containers automatically, as Kubernetes does.</td></tr>
+      <tr><td><b>Monolith</b></td><td>One application, built and deployed as a single unit with a shared database.</td></tr>
+      <tr><td><b>Microservice</b></td><td>A small, independently deployable service with one business job and its own data.</td></tr>
+      <tr><td><b>Loose coupling</b></td><td>Services interact only through APIs, so each can change without breaking the others.</td></tr>
+      <tr><td><b>Circuit breaker</b></td><td>Stops calling a failing service for a while and fails fast, so callers don't all wait for timeouts.</td></tr>
+      <tr><td><b>Sync / async communication</b></td><td>The caller waits for a reply / sends a message or event and carries on.</td></tr>
+      <tr><td><b>Message broker</b></td><td>Middleware such as Kafka or RabbitMQ that receives events and delivers them to subscribers.</td></tr>
+      <tr><td><b>Eventual consistency</b></td><td>Data across services agrees after a short delay, not at every instant.</td></tr>
+      <tr><td><b>API gateway</b></td><td>The single entry point that routes client requests to services, with auth and rate limits.</td></tr>
+      <tr><td><b>Serverless</b></td><td>Functions that run on demand while the cloud provider manages the servers (AWS Lambda).</td></tr>
+      <tr><td><b>Blue/green</b></td><td>Two identical environments; switch all traffic to the new one, switch back to roll back.</td></tr>
+      <tr><td><b>Canary</b></td><td>Release to a small slice of users first, then widen while the metrics stay healthy.</td></tr>
+      <tr><td><b>Rolling update</b></td><td>Replace instances batch by batch, so old and new versions run side by side for a while.</td></tr>
+      <tr><td><b>A/B testing</b></td><td>Two versions to two user groups at once, to see which performs better on a metric.</td></tr>
     </tbody></table></div>
   <h3 id="materials">Course materials</h3>
   <p>The original files this page was built from. Tap one to download it.</p>
@@ -1476,12 +1734,13 @@ docker run -d -p 3000:3000 my-app    # start a container, map port 3000 to the h
     <li><a href="materials/dv/Wk_1_-_Intro_to_DevOps.pdf" download="Wk 1 - Intro to DevOps.pdf" data-dl>Week 1 · Introduction to DevOps and DevOps in practice</a> <span class="small muted">PDF · 11.8 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/dv/Wk_2_-_Testing_in_DevOps.pdf" download="Wk 2 - Testing in DevOps.pdf" data-dl>Week 2 · Testing in DevOps</a> <span class="small muted">PDF · 5.3 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/dv/W4_-_Containerization.pdf" download="W4 - Containerization.pdf" data-dl>Week 4 · Containerization and Docker</a> <span class="small muted">PDF · 1.5 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/dv/Wk_6_-_Microservices.pdf" download="Wk 6 - Microservices.pdf" data-dl>Week 6 · Microservices architecture</a> <span class="small muted">PDF · 5.8 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
   </ul>
   <h4>Lab</h4>
   <ul class="dl">
     <li><a href="materials/dv/Lab_1_-_CI_CD.pdf" download="Lab 1 - CI_CD.pdf" data-dl>Lab 1 · Building a CI/CD pipeline with GitHub Actions</a> <span class="small muted">PDF · 141 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
   </ul>
-  <p class="foot">Built from the DevOps decks for Weeks 1, 2 and 4 and the Lab 1 handout (Chandara Chea, CADT). Figures are cropped from those slides, as credited under each one. The demos are simulations: nothing runs on GitHub or Docker. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
+  <p class="foot">Built from the DevOps decks for Weeks 1, 2, 4 and 6 and the Lab 1 handout (Chandara Chea, CADT). Figures are cropped from those slides, as credited under each one. The demos are simulations: nothing runs on GitHub or Docker. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
 </section>
 </main>
 </div>
@@ -1517,6 +1776,120 @@ function player(el,o){
   return{refresh:function(atStart){stop();n=Math.max(1,o.count());i=atStart?0:n-1;show();}};
 }
 function scrollInto(box,el){if(!el)return;var top=el.offsetTop;if(top<box.scrollTop+10||top>box.scrollTop+box.clientHeight-40)box.scrollTop=Math.max(0,top-box.clientHeight/2);}
+
+/* ---------- Week 6: one order, three architectures ---------- */
+(function(){
+  if(!$("or-player"))return;
+  var mode="mono",broken={pay:false,inv:false,note:false},ev=[],pl;
+  var NAME={order:"Order",pay:"Payment",inv:"Inventory",note:"Notification"};
+  var NODES={mono:[["user","Customer"],["app","Shop app (order · inventory · payment · notification)"],["db","Shared DB"]],
+    sync:[["user","Customer"],["order","Order svc"],["pay","Payment svc"],["inv","Inventory svc"],["note","Notification svc"]],
+    async:[["user","Customer"],["order","Order svc"],["pay","Payment svc"],["broker","Broker"],["inv","Inventory svc"],["note","Notification svc"]]};
+  function build(){
+    ev=[];var t=0,res={order:"…",wait:"…",site:"Up",later:"—"},down=[],q=0;
+    function add(msg,log,act){ev.push({msg:msg,log:log,act:act||[],down:down.slice(),t:t,res:Object.assign({},res),q:q});}
+    if(mode!=="mono")Object.keys(broken).forEach(function(k){if(broken[k])down.push(k);});
+    add("The customer presses <b>Place order</b>. "+(mode==="mono"?"In the monolith, all four modules run inside one process and share one database.":mode==="sync"?"Order Service will call Payment, Inventory and Notification one after another, waiting for each answer.":"Order Service will call Payment and wait (it must know the card worked), then publish one <code>OrderCreated</code> event and stop waiting."),"",["user"]);
+    if(mode==="mono"){
+      t+=0.05;add("The order module creates the order in the shared database.","[app] order module: order #1042 created",["app","db"]);
+      var steps=[["inv","reduces the stock",0.05],["pay","charges the card",0.2],["note","sends the confirmation email",0.05]];
+      for(var i=0;i<steps.length;i++){var s=steps[i];
+        if(broken[s[0]]){t+=0.05;down=["app"];res={order:"Failed",wait:t.toFixed(2)+" s, then an error page",site:"Down",later:"Restart and redeploy the whole app"};
+          add("The "+NAME[s[0]].toLowerCase()+" module crashes (say, it runs out of memory). It lives in the <b>same process</b> as everything else, so the whole app goes down with it. The order is lost halfway, and every other page (browsing, login, the cart) is down until the app restarts.","[app] "+NAME[s[0]].toLowerCase()+" module crashed: whole process down",["app"]);return;}
+        t+=s[2];add("The "+NAME[s[0]].toLowerCase()+" module "+s[1]+". It's an in-process function call: fast, with nothing to go wrong in between.","[app] "+NAME[s[0]].toLowerCase()+" module: done",["app","db"]);}
+      t+=0.02;res={order:"Placed",wait:t.toFixed(2)+" s",site:"Up",later:"—"};
+      add("<b>201 Created</b> after "+t.toFixed(2)+" s. Fast and simple. But scaling checkout means copying the <i>whole</i> app, and changing one line means redeploying all of it.","[app] 201 Created",["user","app"]);return;
+    }
+    t+=0.05;add("Order Service saves the order in <b>its own</b> database.","[order] order #1042 saved (status: pending)",["order"]);
+    var chain=mode==="sync"?["pay","inv","note"]:["pay"],w={pay:0.2,inv:0.1,note:0.1};
+    for(var j=0;j<chain.length;j++){var k=chain[j];
+      if(broken[k]){t+=3;res={order:"Failed",wait:t.toFixed(2)+" s, then \"try again\"",site:"Up, except "+NAME[k],later:"Customer may not come back"};
+        add("Order Service calls "+NAME[k]+" and <b>waits</b>… no answer. After a 3 s timeout it gives up and returns <b>503 Try again</b>. "+(k==="pay"?"For payment that's the right call: never confirm an order you couldn't charge.":"<b>A broken "+NAME[k].toLowerCase()+" service just cost a sale.</b> That's tight coupling: the order didn't really need an answer from it.")+" The rest of the site stays up, though: that's fault isolation. (A circuit breaker would fail the next calls instantly instead of making each customer wait 3 s.)","[order] call "+NAME[k]+" → timeout after 3 s → 503",["order",k]);return;}
+      t+=w[k];add("Order Service calls "+NAME[k]+" over HTTP and waits "+w[k]+" s for the answer: "+(k==="pay"?"card charged.":k==="inv"?"stock reduced.":"email queued."),"[order] call "+NAME[k]+" → 200 ("+w[k]+" s)",["order",k]);}
+    if(mode==="sync"){t+=0.02;res={order:"Placed",wait:t.toFixed(2)+" s",site:"Up",later:"—"};
+      add("<b>201 Created</b> after "+t.toFixed(2)+" s: every call was made, and waited for, in a row. Easy to trace, but the customer waits for the <i>slowest chain</i>, and any link breaking breaks the order.","[order] 201 Created",["user","order"]);return;}
+    t+=0.01;q=2;add("Order Service publishes one <code>OrderCreated</code> event to the broker. It doesn't know or care who's listening.","[order] publish OrderCreated → broker",["order","broker"]);
+    t+=0.01;res={order:"Placed",wait:t.toFixed(2)+" s",site:"Up",later:"…"};
+    add("<b>201 Created</b> after "+t.toFixed(2)+" s, before Inventory or Notification have done anything. The customer is already done.","[order] 201 Created",["user","order"]);
+    var late=[];
+    ["inv","note"].forEach(function(k){
+      if(broken[k]){late.push(k);add("The broker tries to deliver the event to "+NAME[k]+", which is down. Nothing fails: the event just <b>waits in the queue</b>.","[broker] "+NAME[k]+" down → event waits in queue",["broker",k]);}
+      else{q--;add(NAME[k]+" receives the event and "+(k==="inv"?"reduces the stock":"sends the confirmation email")+", in its own time.","[broker] → "+NAME[k]+": "+(k==="inv"?"stock −1":"email sent"),["broker",k]);}
+    });
+    if(late.length){
+      down=down.filter(function(x){return late.indexOf(x)<0;});q=0;
+      res.later=late.map(function(k){return NAME[k];}).join(" and ")+(late.length>1?" catch up":" catches up")+" from the queue";
+      add("Ten minutes later "+late.map(function(k){return NAME[k];}).join(" and ")+" "+(late.length>1?"come":"comes")+" back and work"+(late.length>1?"":"s")+" through the queue. "+(late.indexOf("inv")>=0?"The stock count was wrong for ten minutes, then right: ":"The email arrived late, but it arrived: ")+"<b>eventual consistency</b>.","[broker] "+late.map(function(k){return NAME[k];}).join(", ")+" back: queue drained",late);
+    }else{res.later="—";ev[ev.length-1].res=Object.assign({},res);}
+  }
+  function render(i){
+    var e=ev[Math.min(i,ev.length-1)];
+    $("or-svcs").innerHTML=NODES[mode].map(function(n){var dn=e.down.indexOf(n[0])>=0;return '<span class="svc'+(e.act.indexOf(n[0])>=0?" on":"")+(dn?" down":"")+'">'+esc(n[1])+(n[0]==="broker"?' <i>'+e.q+' waiting</i>':"")+(dn?' <i>down</i>':"")+'</span>';}).join("");
+    $("or-msg").innerHTML=e.msg;
+    function kpi(b,s){return '<div class="kpi"><b>'+esc(b)+'</b><span>'+s+'</span></div>';}
+    var r=e.res;$("or-kpis").innerHTML=kpi(r.order,"Order")+kpi(r.wait,"Customer waited")+kpi(r.site,"Rest of the site")+kpi(r.later,"Later");
+    var lg=$("or-log");lg.textContent=ev.slice(1,i+1).map(function(x){return x.log;}).filter(Boolean).join("\n")||"(press Run)";lg.scrollTop=lg.scrollHeight;
+  }
+  pl=player($("or-player"),{count:function(){return ev.length;},render:render,interval:1100});
+  function refresh(){build();pl.refresh(true);}
+  document.querySelectorAll("[data-om]").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.om;document.querySelectorAll("[data-om]").forEach(function(x){x.classList.toggle("on",x===b);});refresh();});});
+  document.querySelectorAll("[data-ob]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.ob;broken[k]=!broken[k];b.setAttribute("aria-pressed",broken[k]?"true":"false");b.classList.toggle("on",broken[k]);refresh();});});
+  refresh();
+})();
+
+/* ---------- Week 6: roll out version 2 ---------- */
+(function(){
+  if(!$("rl-player"))return;
+  var strat="bg",ev=[],pl,REQ=10000,FAIL=0.05;
+  function build(){
+    var bug=$("rl-bug").checked,failed=0;ev=[];
+    function st(msg,fleet,v2,servers,rollback,extra){var f=bug&&strat!=="ab"?Math.round(REQ*v2/100*FAIL):0;failed+=f;ev.push({msg:msg,fleet:fleet,v2:v2,servers:servers,failed:failed,rb:rollback,ab:extra});}
+    function fl(a,b,c){var x=[];for(var k=0;k<a;k++)x.push("v1");for(k=0;k<b;k++)x.push("v2");for(k=0;k<(c||0);k++)x.push("idle");return x;}
+    if(strat==="bg"){
+      st("<b>Blue</b> (v1) serves every user. Green is empty.",["v1","v1","v1","v1","v1","|","idle","idle","idle","idle","idle"],0,5,"—");
+      st("Deploy v2 to <b>green</b>, a full copy of production. While both exist you pay for <b>twice</b> the servers.",["v1","v1","v1","v1","v1","|","v2","v2","v2","v2","v2"],0,10,"—");
+      st("Test green privately: smoke tests pass. No user has seen v2 yet.",["v1","v1","v1","v1","v1","|","v2","v2","v2","v2","v2"],0,10,"—");
+      st("Switch the router: <b>100%</b> of traffic now goes to green, all at once, with no downtime."+(bug?" <b>Errors spike</b>: every user is on v2, so every user can meet the bug.":" Watch the error rate."),["v1","v1","v1","v1","v1","|","v2","v2","v2","v2","v2"],100,10,"—");
+      if(bug)st("Switch the router back to blue. Rollback is <b>one switch</b>, done in seconds, and green stays up so you can debug it.",["v1","v1","v1","v1","v1","|","v2","v2","v2","v2","v2"],0,10,"Instant");
+      else st("All good. Keep blue for a while as the way back, then turn it off. Next release, the colours swap roles.",["idle","idle","idle","idle","idle","|","v2","v2","v2","v2","v2"],100,5,"Instant (while blue exists)");
+    }else if(strat==="canary"){
+      st("Ten servers run v1.",fl(10,0),0,10,"—");
+      st("Make <b>one</b> server the canary: it runs v2 and gets 10% of traffic. Watch its errors and latency closely.",fl(9,1),10,10,"—");
+      if(bug){st("The canary's error rate jumps. <b>Stop the rollout</b> and put v1 back on that one server. Only 10% of traffic ever saw v2, and only for one stage.",fl(10,0),0,10,"One server");}
+      else{st("The canary looks healthy. Widen to 3 servers, 30% of traffic.",fl(7,3),30,10,"—");
+        st("Still healthy. 6 servers, 60%.",fl(4,6),60,10,"—");
+        st("Healthy at 60%: finish the rollout. 100% on v2, and the same 10 servers the whole time.",fl(0,10),100,10,"—");}
+    }else if(strat==="rolling"){
+      st("Ten servers run v1.",fl(10,0),0,10,"—");
+      st("Replace the first batch of 3 servers with v2. About 30% of requests now hit v2. <b>Old and new run side by side</b>, so v2 must work with v1's data and APIs.",fl(7,3),30,10,"—");
+      st("Next batch: 6 of 10 are v2. No extra servers needed at any point."+(bug?" With 60% of traffic on v2, the error graphs finally make the bug obvious.":""),fl(4,6),60,10,"—");
+      if(bug){st("Roll back the way you came: batch by batch, v2 servers go back to v1. Users keep meeting the bug until the last batch is done.",fl(7,3),30,10,"Batch by batch");
+        st("Back on v1. A rollback takes as long as a rollout.",fl(10,0),0,10,"Batch by batch");}
+      else st("Last batch: all 10 servers run v2. Minimal downtime, gradual switch.",fl(0,10),100,10,"Batch by batch");
+    }else{
+      st("Everyone sees version A, the current checkout page.",fl(10,0),0,10,"—",{a:"3.1%",b:"—"});
+      st("Split users at random, 50/50, and keep each user on their version: half see the new checkout page, <b>B</b>.",fl(5,5),50,10,"—",{a:"…",b:"…"});
+      st("Run it for a week and measure the key metric, the share of visits that end in a purchase.",fl(5,5),50,10,"—",bug?{a:"3.1%",b:"2.4%"}:{a:"3.1%",b:"3.6%"});
+      if(bug)st("B converts <b>worse</b> (2.4% vs 3.1%). Keep A and send everyone back. A/B testing didn't make the release safer. It answered which design users prefer.",fl(10,0),0,10,"—",{a:"3.1%",b:"2.4%"});
+      else st("B wins (3.6% vs 3.1%), so roll B out to everyone. A/B testing picked the better design from real behaviour, not opinions.",fl(0,10),100,10,"—",{a:"3.1%",b:"3.6%"});
+    }
+  }
+  function render(i){
+    var e=ev[Math.min(i,ev.length-1)],bug=$("rl-bug").checked;
+    $("rl-msg").innerHTML=e.msg;
+    var lab=strat==="ab"?{v1:"A",v2:"B"}:{v1:"v1",v2:"v2"};
+    $("rl-fleet").innerHTML=e.fleet.map(function(x){return x==="|"?'<i class="gap">'+(strat==="bg"?"blue | green":"")+'</i>':'<span class="'+x+(bug&&x==="v2"&&strat!=="ab"&&e.v2>0?" bad":"")+'">'+(x==="idle"?"·":lab[x]+(bug&&x==="v2"&&strat!=="ab"&&e.v2>0?"!":""))+'</span>';}).join("");
+    $("rl-split").innerHTML='<s style="width:'+(100-e.v2)+'%">'+(100-e.v2?lab.v1+" "+(100-e.v2)+"%":"")+'</s><b style="width:'+e.v2+'%">'+(e.v2?lab.v2+" "+e.v2+"%":"")+'</b>';
+    function kpi(b,s){return '<div class="kpi"><b>'+b+'</b><span>'+s+'</span></div>';}
+    $("rl-kpis").innerHTML=strat==="ab"?kpi(e.v2+"%","Users on B")+kpi(e.ab.a,"Conversion A")+kpi(e.ab.b,"Conversion B")+kpi(e.servers,"Servers running"):
+      kpi(e.v2+"%","Traffic on v2")+kpi(e.servers,"Servers running")+kpi(e.failed.toLocaleString("en-US"),"Failed requests")+kpi(e.rb,"Rollback");
+  }
+  pl=player($("rl-player"),{count:function(){return ev.length;},render:render,interval:1300});
+  function refresh(){build();pl.refresh(true);}
+  document.querySelectorAll("[data-rs]").forEach(function(b){b.addEventListener("click",function(){strat=b.dataset.rs;document.querySelectorAll("[data-rs]").forEach(function(x){x.classList.toggle("on",x===b);});refresh();});});
+  $("rl-bug").addEventListener("change",refresh);
+  refresh();
+})();
 
 /* ---------- Theme ---------- */
 (function(){

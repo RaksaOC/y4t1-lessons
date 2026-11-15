@@ -2,8 +2,8 @@
 window.QUIZ_BANK = {
   subject: 'ir', page: 'ir.html', course: 'Information Retrieval',
   exam: {
-    minutes: 90, pass: 60,
-    intro: 'Covers all four sessions: what retrieval is, preprocessing and the inverted index, ranking with TF-IDF and BM25, and evaluation.',
+    minutes: 105, pass: 60,
+    intro: 'Covers all five sessions: what retrieval is, preprocessing and the inverted index, ranking with TF-IDF and BM25, evaluation, and collecting documents by crawling and scraping.',
     sections: [
       { ch: 1, name: 'Foundations of retrieval', q: [
         { t: 'match', q: 'Match each term to its example from the lab collection.',
@@ -134,6 +134,35 @@ window.QUIZ_BANK = {
         { t: 'mc', q: 'P = 0.9 and R = 0.1. What does F1 tell you that the plain average doesn\'t?',
           o: ['F1 is 0.18, exposing the poor recall that an average of 0.5 hides', 'F1 is 0.50, confirming that the two values balance out across the board', 'F1 is 0.90, showing that precision matters most for any real user need', 'F1 is 0.10, showing that it simply repeats the lower of the two numbers'], a: 0,
           why: '2(0.9)(0.1)/1.0 = 0.18. The harmonic mean is pulled toward the weaker number.' }
+      ] },
+      { ch: 5, name: 'Collecting documents', q: [
+        { t: 'order', q: 'Your team builds a corpus from a new site. Put the work in a sensible order.',
+          items: ['Check robots.txt and the site\'s terms', 'Read the page source and choose selectors', 'Write parse() and parse_book()', 'Run a one-page preview crawl', 'Run the bounded crawl', 'Validate ids, empty fields and a sample', 'Write the index-ready JSONL'],
+          why: 'Permission first, then selectors, then a small test before the real run. Validation catches silent problems such as mojibake and the ...more teasers.' },
+        { t: 'fill', q: 'A crawl sends 81 requests. The delay averages 0.5 s between requests, and each response takes about 0.1 s.',
+          text: 'It takes roughly {0} seconds.',
+          blanks: [{ num: 48, tol: 1.5 }],
+          why: '80 waits × 0.5 s + 81 × 0.1 s ≈ 48 s. Lab 5\'s 43 requests took 25.4 s for the same reason: the delay dominates, on purpose.' },
+        { t: 'mc', q: 'A site has no robots.txt (404), but its terms of service forbid automated collection. What should your team do?',
+          o: ['Not scrape it; ask for permission or use an official API instead', 'Scrape it, since a missing robots.txt means every path is allowed', 'Scrape it slowly, since a delay makes any crawl acceptable to the site', 'Scrape it, but leave out a User-Agent so that the site can\'t object'], a: 0,
+          why: 'robots.txt, terms and privacy are separate. A 404 publishes no rules. It grants nothing.' },
+        { t: 'match', q: 'Match each Beautiful Soup step to its Scrapy equivalent.',
+          pairs: [['soup.select("article")', 'response.css("article")'], ['tag.get("href")', 'css("a::attr(href)").get()'], ['urljoin(page, href)', 'response.follow(href, callback=...)'], ['requests.get + time.sleep', 'The engine + DOWNLOAD_DELAY'], ['json.dump(records, f)', 'scrapy crawl books -O books.json']],
+          why: 'Scrapy takes over the queue, the delay, robots and the export, which were all hand-written in Part A.' },
+        { t: 'tf', q: 'Judge each claim about validating Lab 5\'s export.',
+          s: [['An empty description always means the selector is wrong.', false], ['Every row being empty points to a wrong selector.', true], ['The site\'s "...more" teaser should be removed from the searchable text.', true], ['Items arrive in page order, so a row\'s position can serve as its id.', false], ['Price and rating are left out of the IR corpus because nobody searches with them.', true]],
+          why: 'Some books really have no description. Items arrive as downloads finish (the export starts with the last book on page 1), so each record needs its own <code>doc_id</code>.' },
+        { t: 'bucket', q: 'Sort the lecture\'s checklist.',
+          buckets: ['Before collecting', 'Before publishing'],
+          items: [['Review terms, licences and robots.txt', 0], ['Prefer an official API', 0], ['Check redistribution conditions', 0], ['Don\'t publish content without rights', 1], ['Minimize personal information', 1], ['Store data securely, with retention rules', 1]],
+          why: 'Permission decides what you may collect. Rights and privacy decide what you may keep and share.' },
+        { t: 'mc', q: '<code>requests.get</code> returns 200, but the product list isn\'t in the HTML. DevTools\' Elements panel shows the products. Most likely?',
+          o: ['JavaScript loads the products after the page opens; look for the site\'s API', 'The server returned a 404 page that has been disguised as a 200 response', 'Beautiful Soup removed the products because their HTML is invalid', 'The User-Agent was rejected, so the site sent the page without data'], a: 0,
+          why: 'The Elements panel shows the live DOM after JavaScript ran. View source shows what the server sent, which is what <code>requests</code> gets.' },
+        { t: 'fill', q: 'Complete Lab 5\'s politeness settings.', code: true,
+          text: 'ROBOTSTXT_OBEY = {0}\nCONCURRENT_REQUESTS_PER_DOMAIN = {1}\nDOWNLOAD_DELAY = {2}',
+          blanks: [{ opts: ['True', 'False'], a: 0 }, { num: 1, w: 3 }, { num: .5, tol: .001, w: 4 }],
+          why: 'Obey robots, one request at a time, half a second apart. Never switch ROBOTSTXT_OBEY off to make a crawl "work".' }
       ] },
       { ch: 0, name: 'Putting it together', q: [
         { t: 'match', q: 'Each failure has a fix somewhere in the course. Match them.',
