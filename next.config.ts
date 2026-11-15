@@ -4,6 +4,7 @@ import type { NextConfig } from "next";
    Next.js only adds the API routes in app/api, which hold the voice keys. */
 const config: NextConfig = {
   poweredByHeader: false,
+  output: "standalone", // small self-contained server for the Docker image
   async rewrites() {
     return { beforeFiles: [{ source: "/", destination: "/index.html" }], afterFiles: [], fallback: [] };
   },
