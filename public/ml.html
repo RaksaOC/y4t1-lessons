@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- seo -->
-<meta name="description" content="Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing and evaluation, with quizzes and an exam.">
+<meta name="description" content="Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing, evaluation, SVMs and neural networks, with quizzes and an exam.">
 <link rel="canonical" href="http://y4t1.chanraksa.com/ml.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -11,7 +11,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Year 4 Study Hub">
 <meta property="og:title" content="Machine Learning: From Rules to Recall · Year 4 Study Hub">
-<meta property="og:description" content="Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing and evaluation, with quizzes and an exam.">
+<meta property="og:description" content="Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing, evaluation, SVMs and neural networks, with quizzes and an exam.">
 <meta property="og:url" content="http://y4t1.chanraksa.com/ml.html">
 <meta property="og:image" content="http://y4t1.chanraksa.com/assets/og/ml.png">
 <meta property="og:image:width" content="1200">
@@ -19,9 +19,9 @@
 <meta property="og:image:alt" content="Machine Learning: From Rules to Recall">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Machine Learning: From Rules to Recall · Year 4 Study Hub">
-<meta name="twitter:description" content="Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing and evaluation, with quizzes and an exam.">
+<meta name="twitter:description" content="Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing, evaluation, SVMs and neural networks, with quizzes and an exam.">
 <meta name="twitter:image" content="http://y4t1.chanraksa.com/assets/og/ml.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Machine Learning: From Rules to Recall", "url": "http://y4t1.chanraksa.com/ml.html", "description": "Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing and evaluation, with quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Machine Learning", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Machine Learning: From Rules to Recall", "url": "http://y4t1.chanraksa.com/ml.html", "description": "Machine Learning from rules to recall: kinds of learning, NumPy and pandas, linear and logistic regression, preprocessing, evaluation, SVMs and neural networks, with quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Machine Learning", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
 <!-- /seo -->
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 
@@ -408,6 +408,10 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
 .fdc i{flex:1;height:16px;border:var(--bw15,1.5px) solid var(--box,var(--ink));display:block}
 .fdc i.t{background:var(--fill,var(--ink))}
 #im-vals span.ans{background:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}
+.c-street{fill:var(--surface-2)}
+.c-sv{fill:none;stroke:var(--ink);stroke-width:1.6}
+.c-heat{fill:var(--ink)}
+.c-curve2{fill:none;stroke:var(--ink);stroke-width:2;stroke-dasharray:1.5 3.5;stroke-linecap:round}
 </style>
 <style>
 /* Phones and tablets: the progress bar stays on screen and opens the menu */
@@ -538,6 +542,30 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
           <li><a href="#c7-cm">Confusion matrix</a></li>
           <li><a href="#quiz7">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#ch8">8 · Support vector machines</a>
+        <ol>
+          <li><a href="#c8-what">A better question</a></li>
+          <li><a href="#c8-parts">Hyperplane, support vectors, margin</a></li>
+          <li><a href="#c8-why">Why the widest margin?</a></li>
+          <li><a href="#c8-lin">Linear and nonlinear</a></li>
+          <li><a href="#c8-soft">Hard, soft and C</a></li>
+          <li><a href="#c8-kernel">The kernel trick</a></li>
+          <li><a href="#c8-use">Uses and limits</a></li>
+          <li><a href="#quiz8">Check yourself</a></li>
+        </ol></li>
+      <li class="chap"><a href="#ch9">9 · Neural networks</a>
+        <ol>
+          <li><a href="#c9-why">Rules too hard to write</a></li>
+          <li><a href="#c9-deep">ML and deep learning</a></li>
+          <li><a href="#c9-neuron">One neuron</a></li>
+          <li><a href="#c9-layers">Layers</a></li>
+          <li><a href="#c9-act">Activation functions</a></li>
+          <li><a href="#c9-loss">Forward pass and loss</a></li>
+          <li><a href="#c9-back">Backpropagation</a></li>
+          <li><a href="#c9-gd">Batches and learning rate</a></li>
+          <li><a href="#c9-use">Uses and costs</a></li>
+          <li><a href="#quiz9">Check yourself</a></li>
+        </ol></li>
       <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
@@ -548,7 +576,7 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
 <main>
 <!-- ======================================================= HERO -->
 <header class="hero" id="start">
-  <div class="slidebar"><span>Fundamentals of Machine Learning</span><span>Decks ML 01–08 · Labs</span></div>
+  <div class="slidebar"><span>Fundamentals of Machine Learning</span><span>Decks ML 01–08 · Labs · SVM and ANN team decks</span></div>
   <h1>From Rules to Recall</h1>
   <p class="lede">Hi. Some problems you can solve by writing the rule yourself: area is width times height, done. Others you can't, because nobody can write down the rule for "will it rain tomorrow?" or "is this email spam?". This page starts at that exact wall and climbs: we let the computer learn the rule from data, clean the data it learns from, and finish by proving, with numbers, whether what it learned is any good.</p>
   <div class="legend" aria-label="How to read the boxes">
@@ -558,7 +586,7 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
     <span class="chip inv">Careful</span>
     <span class="chip lab">In the lab</span>
   </div>
-  <p class="small muted"><b>Pictures come from your slides and notebooks,</b> and each caption says which deck and slide, so you can flip back to it. Tap any picture to see it larger. Numbers quoted from the labs are the ones the notebooks print. The syllabus also lists neural networks, SVM, clustering and PCA, but those decks aren't in the folder yet, so they aren't here yet.</p>
+  <p class="small muted"><b>Pictures come from your slides and notebooks,</b> and each caption says which deck and slide, so you can flip back to it. Tap any picture to see it larger. Numbers quoted from the labs are the ones the notebooks print. Chapters 8 and 9 come from our team presentations on SVMs and neural networks. The syllabus also lists clustering and PCA, but those decks aren't in the folder yet, so they aren't here yet.</p>
   <div class="call key"><span class="tag">The plan</span>
     <ul>
       <li><b>Chapter 1</b> asks what AI actually is. (Deck 02)</li>
@@ -568,6 +596,8 @@ tr.rowcur td{background:var(--surface-2);font-weight:700}
       <li><b>Chapter 5</b> cleans the data, because real data arrives broken. (Deck 06)</li>
       <li><b>Chapter 6</b> bends the line into a yes-or-no answer. (Deck 07)</li>
       <li><b>Chapter 7</b> measures whether any of it works. (Deck 08)</li>
+      <li><b>Chapter 8</b> asks which line is best, and finds the widest street. (SVM deck)</li>
+      <li><b>Chapter 9</b> joins neurons into networks that learn their own features. (ANN deck)</li>
     </ul>
   </div>
 </header>
@@ -1758,6 +1788,436 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
   <div data-xq="7"></div>
 </section>
 
+<!-- ======================================================= CHAPTER 8 -->
+<section class="chapter" id="ch8">
+  <div class="chapter-head">
+    <span class="num">Chapter 8</span>
+    <h2>Support Vector Machines</h2>
+  </div>
+  <div class="refs"><span class="ref">SVM deck · s.1–15</span><span class="ref g">Team presentation</span></div>
+
+  <section class="sub" id="c8-what">
+  <h3>8.1 Another line, a better question</h3>
+  <p>Chapter 6 ended with a straight line splitting two classes. Gradient descent found <i>a</i> line that worked. But when two groups have a gap between them, lots of lines work. Which one should you trust with points you haven't seen yet?</p>
+  <p>A <b>support vector machine</b> (SVM) is built around that question. Like logistic regression it is <b>supervised</b>: it learns from labelled examples and is mainly used for <b>classification</b>.</p>
+  <div class="pipe" aria-label="How an SVM is used"><span>Labelled data</span><i>→</i><span>Train the SVM</span><i>→</i><span>New point</span><i>→</i><span>Class A or B</span></div>
+<figure class="fig sm"><span class="frame"><img src="assets/ml/svm-linear.webp" width="1067" height="832" loading="lazy" alt="Filled and hollow points separated by one straight line, with dashed lines on either side touching the closest points"></span><figcaption><span class="ref">SVM deck · s.4</span>A linear SVM splitting filled from hollow points. Image: Qwertyus, CC0, via Wikimedia Commons.</figcaption></figure>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>The ideas go back to Vladimir Vapnik's work in the Soviet Union in the 1960s. The SVM as we use it was finished at AT&amp;T Bell Labs: the kernel trick in 1992 (Boser, Guyon and Vapnik) and the soft margin in 1995 (Cortes and Vapnik). The 1995 paper tested it on handwritten digits from the US Postal Service. For about a decade after that, SVMs were the method to beat, until deep networks took over (Chapter 9).</p>
+  </div>
+  </section>
+
+  <section class="sub" id="c8-parts">
+  <h3>8.2 Four words: hyperplane, support vectors, margin, best boundary</h3>
+  <ol class="boxes">
+    <li><b>Hyperplane.</b> The decision boundary. In 2D it's a line, in 3D a flat plane, and in more dimensions we still call it a hyperplane.</li>
+    <li><b>Support vectors.</b> The training points closest to the boundary.</li>
+    <li><b>Margin.</b> The gap between the boundary and those closest points.</li>
+    <li><b>Optimal boundary.</b> The one with the widest possible margin.</li>
+  </ol>
+<figure class="fig sm"><span class="frame"><img src="assets/ml/svm-maxsep.webp" width="800" height="862" loading="lazy" alt="Two classes split by a solid line, with two dashed lines through the closest points on each side and the gap between them marked"></span><figcaption><span class="ref">SVM deck · s.5</span>Solid: the hyperplane. Dashed: the edges of the margin. The points on the dashed lines are the support vectors. Image: Cyc, public domain, via Wikimedia Commons.</figcaption></figure>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p><b>Only the support vectors decide where the boundary goes.</b> Move a point far from the line, or delete it, and nothing changes. That is where the name comes from: the closest points "support" the boundary, like the posts holding up a fence.</p>
+  </div>
+  <p>The slides keep it in pictures. If you want the short version in symbols, it uses the same weighted sum as Chapters 4 and 6:</p>
+  <div class="math">\[ \text{boundary: } \mathbf w\cdot\mathbf x+b=0 \qquad \text{margin edges: } \mathbf w\cdot\mathbf x+b=\pm1 \qquad \text{width}=\frac{2}{\lVert\mathbf w\rVert} \]</div>
+  <p class="say">To predict, check which side a point is on: class +1 if \(\mathbf w\cdot\mathbf x+b\ge 0\), class −1 if not. Training makes the street as wide as possible, which means making \(\lVert\mathbf w\rVert\) as small as possible, while keeping every point on its own side.</p>
+  <div class="refs"><span class="ref">SVM deck · s.5</span><span class="ref g">Formulas: Cortes &amp; Vapnik (1995), not on the slides</span></div>
+  </section>
+
+  <section class="sub" id="c8-why">
+  <h3>8.3 Why the widest margin?</h3>
+<figure class="fig sm"><span class="frame"><img src="assets/ml/svm-hyper.webp" width="1200" height="1040" loading="lazy" alt="Black and white points with three lines: H1 cuts through the classes, H2 separates them closely, H3 separates them with the widest gap"></span><figcaption><span class="ref">SVM deck · s.6</span>H1 doesn't separate the classes. H2 does, with a thin margin. H3 has the widest margin, so that's the SVM's choice. Image: ZackWeinberg, CC BY-SA 3.0, via Wikimedia Commons.</figcaption></figure>
+  <p>New data is never exactly like the training data. A point that lands a little off from its group should still fall on the right side, and a wide margin leaves room for that. So a wider margin usually <b>generalizes</b> better and is <b>less likely to overfit</b> the exact training points (Chapter 7).</p>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Driving a truck between two rows of parked cars. You could squeeze past one row, but the safest path is right down the middle of the widest street. The SVM drives down that middle line.</p>
+  </div>
+  <div class="lab" id="lab-street">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Find the widest street</h4></div>
+    <div class="lab-body">
+      <p class="small muted" style="margin:0">Turn and slide the line. The shaded street stretches out to the nearest point on each side. Ringed points are the ones touching it: your support vectors.</p>
+      <div class="row"><label class="ctl" for="st-a">Angle</label><input type="range" id="st-a" min="0" max="179" value="0"><b class="mono" id="st-av"></b></div>
+      <div class="row"><label class="ctl" for="st-o">Shift</label><input type="range" id="st-o" min="-200" max="200" value="10"><b class="mono" id="st-ov"></b></div>
+      <div class="row"><button class="btn" type="button" id="st-best">Show the SVM's answer</button></div>
+      <div class="svgwrap" id="st-svg"></div>
+      <div class="kpis" id="st-kpis"></div>
+      <div class="msg" id="st-msg"></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">SVM deck · s.6</span></div>
+  </section>
+
+  <section class="sub" id="c8-lin">
+  <h3>8.4 Linear and nonlinear data</h3>
+  <p>Can one straight line split the data? If yes, the data is <b>linearly separable</b> and a linear SVM handles it directly. If the classes are mixed so no line works, the boundary has to curve.</p>
+  <div class="grid2">
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-sepyes.webp" width="955" height="952" loading="lazy" alt="Red and blue points that a single straight line separates"></span><figcaption><span class="ref">SVM deck · s.7</span>Linear: one straight line works. Image: Mekeor, CC BY-SA 3.0.</figcaption></figure>
+    </div>
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-sepno.webp" width="955" height="952" loading="lazy" alt="Red and blue points arranged so that no straight line separates them"></span><figcaption><span class="ref">SVM deck · s.7</span>Nonlinear: no straight line works. Image: Mekeor, CC BY-SA 3.0.</figcaption></figure>
+    </div>
+  </div>
+  <p>Logistic regression hit this same wall in 6.7: its boundary is always straight. SVMs get past it with kernels (8.6). Neural networks get past it a different way (Chapter 9).</p>
+  </section>
+
+  <section class="sub" id="c8-soft">
+  <h3>8.5 Hard margin, soft margin, and C</h3>
+  <p>A <b>hard margin</b> is strict: every training point must be on its own side and outside the margin. That only works on perfectly separable data, and one outlier can drag the line or make it impossible. A <b>soft margin</b> lets a few points sit inside the margin, or even on the wrong side, in exchange for a wider, more sensible street.</p>
+  <div class="grid2">
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-hard.webp" width="988" height="843" loading="lazy" alt="Two clean clusters split by a line; nothing inside the margin; circled support vectors on the dashed lines"></span><figcaption><span class="ref">SVM deck · s.8</span>Hard margin (C = 1,000,000): all points correct, nothing inside the margin.</figcaption></figure>
+    </div>
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-soft.webp" width="988" height="843" loading="lazy" alt="The same clusters plus three noisy points on the wrong side; the margin stays wide and many points are circled"></span><figcaption><span class="ref">SVM deck · s.8</span>Soft margin (C = 0.3): three noisy points end up on the wrong side, and the margin stays wide.</figcaption></figure>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Hard margin</th><th>Soft margin</th></tr></thead>
+    <tbody>
+      <tr><td><b>Mistakes allowed</b></td><td>None</td><td>A few</td></tr>
+      <tr><td><b>Needs</b></td><td>Perfectly separable data</td><td>Works with noisy, overlapping data</td></tr>
+      <tr><td><b>One outlier</b></td><td>Can ruin it</td><td>Is accepted as a mistake</td></tr>
+    </tbody></table></div>
+  <p>The dial between the two is <b>C</b>, the penalty for each training mistake. It's a hyperparameter (7.2), so you set it before training:</p>
+  <div class="math">\[ \min_{\mathbf w,b}\ \tfrac12\lVert\mathbf w\rVert^2+C\sum_{i=1}^{n}\xi_i \]</div>
+  <p class="say">The first part wants a wide street. Each \(\xi_i\) is how far point \(i\) pokes into the margin or past the line, zero if it's safely outside. C decides how much those pokes cost compared with a narrow street.</p>
+  <div class="grid2">
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-chigh.webp" width="988" height="843" loading="lazy" alt="A narrow margin squeezed between the classes with few circled points"></span><figcaption><span class="ref">SVM deck · s.9</span>High C (C = 1): narrow margin, fewer training errors, risk of overfitting.</figcaption></figure>
+    </div>
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-clow.webp" width="988" height="843" loading="lazy" alt="A wide margin with many points inside it, all circled"></span><figcaption><span class="ref">SVM deck · s.9</span>Low C (C = 0.05): wide margin, more errors allowed, risk of underfitting.</figcaption></figure>
+    </div>
+  </div>
+  <div class="lab" id="lab-c">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Turn the C dial</h4></div>
+    <div class="lab-body">
+      <p class="small muted" style="margin:0">A real soft-margin SVM is trained in your browser each time you move the slider. Ringed points are support vectors. Filled points are on the wrong side.</p>
+      <div class="row"><label class="ctl" for="cc-c">C =</label><input type="range" id="cc-c" min="0" max="7" value="3"><b class="mono" id="cc-cv"></b></div>
+      <div class="svgwrap" id="cc-svg"></div>
+      <div class="kpis" id="cc-kpis"></div>
+      <div class="msg" id="cc-msg"></div>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>Don't pick C by its training score. High C always looks best on training data, because that's what it optimizes. Try a few values and keep the one that scores best on <b>validation</b> data, or with k-fold cross-validation (7.4).</p>
+  </div>
+  <div class="refs"><span class="ref">SVM deck · s.8–9</span></div>
+  </section>
+
+  <section class="sub" id="c8-kernel">
+  <h3>8.6 The kernel trick</h3>
+  <p>What about one class in the middle and the other in a ring around it? No straight line works in 2D. So <b>add a dimension</b>: give each point a third feature, roughly its distance from the centre. Inner points stay low, outer points rise, and now a flat plane slices between them. Look back down at the 2D picture and that flat plane has become a circle.</p>
+  <div class="grid2">
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-trick2d.webp" width="741" height="688" loading="lazy" alt="Red points in the centre surrounded by a ring of purple points, with a circle between them"></span><figcaption><span class="ref">SVM deck · s.10</span>2D: no straight line works. Image: Shiyu Ji, CC BY-SA 4.0.</figcaption></figure>
+    </div>
+    <div style="min-width:0">
+<figure class="fig "><span class="frame"><img src="assets/ml/svm-trick3d.webp" width="585" height="579" loading="lazy" alt="The same points lifted into 3D: red points stay near the floor, purple points rise above a flat plane"></span><figcaption><span class="ref">SVM deck · s.10</span>3D: a flat plane splits them. Image: Shiyu Ji, CC BY-SA 4.0.</figcaption></figure>
+    </div>
+  </div>
+  <div class="lab" id="lab-lift">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Lift the ring</h4></div>
+    <div class="lab-body">
+      <p class="small muted" style="margin:0">Left: the data from above. Right: the same points seen from the side after adding \(z=x_1^2+x_2^2\). Slide the flat cut up and down, and watch what it becomes on the left.</p>
+      <div class="row"><label class="ctl" for="lf-t">Cut at z =</label><input type="range" id="lf-t" min="5" max="90" value="20"><b class="mono" id="lf-tv"></b></div>
+      <div class="svgwrap" id="lf-svg"></div>
+      <div class="kpis" id="lf-kpis"></div>
+      <div class="msg" id="lf-msg"></div>
+    </div>
+  </div>
+  <div class="call key"><span class="tag">The trick</span>
+    <p>Adding features by hand gets expensive fast, and some useful spaces have infinitely many dimensions. The SVM never needs the new coordinates, though. Its maths only ever asks <b>how similar two points are</b>. A <b>kernel</b> is a function that gives that similarity as if the points had been lifted, without ever lifting them.</p>
+  </div>
+  <h4>Common kernels</h4>
+<figure class="fig md" data-flip data-caps="Linear: a straight boundary. Best for data that is almost linearly separable.||Polynomial: a curved boundary for more complex relationships.||RBF: flexible, closed shapes. A good general-purpose default."><span class="frame"><img src="assets/ml/svm-klin.webp" width="988" height="843" alt="The same sixteen points classified by linear, polynomial and RBF kernels"><img src="assets/ml/svm-kpoly.webp" width="988" height="843" alt="The same sixteen points classified by linear, polynomial and RBF kernels" hidden><img src="assets/ml/svm-krbf.webp" width="988" height="843" alt="The same sixteen points classified by linear, polynomial and RBF kernels" hidden></span><div class="flipnav"><button class="btn" type="button" data-d="-1" aria-label="Previous slide">←</button><span></span><button class="btn" type="button" data-d="1" aria-label="Next slide">→</button></div><figcaption><span class="ref">SVM deck · s.11</span><span data-cap></span></figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Kernel</th><th>Similarity \(K(\mathbf x,\mathbf x')\)</th><th>Boundary</th><th>Use it for</th></tr></thead>
+    <tbody>
+      <tr><td><b>Linear</b></td><td>\(\mathbf x\cdot\mathbf x'\)</td><td>Straight</td><td>Nearly separable data, text with many features</td></tr>
+      <tr><td><b>Polynomial</b></td><td>\((\gamma\,\mathbf x\cdot\mathbf x'+r)^d\)</td><td>Curved</td><td>Interactions between features</td></tr>
+      <tr><td><b>RBF</b></td><td>\(e^{-\gamma\lVert\mathbf x-\mathbf x'\rVert^2}\)</td><td>Closed shapes</td><td>The default to try first</td></tr>
+    </tbody></table></div>
+  <p class="say">RBF similarity is 1 for identical points and fades toward 0 as they move apart. \(\gamma\) sets how fast it fades: a big \(\gamma\) means each point only influences its close neighbours, so the boundary can wiggle around single points and overfit.</p>
+  <div class="refs"><span class="ref">SVM deck · s.10–11</span><span class="ref g">Kernel formulas: scikit-learn User Guide</span></div>
+  </section>
+
+  <section class="sub" id="c8-use">
+  <h3>8.7 Where SVMs are used, and when not to</h3>
+  <ul>
+    <li><b>Images:</b> recognising objects in photos</li>
+    <li><b>Text:</b> spam detection, sorting news articles</li>
+    <li><b>Healthcare:</b> classifying medical data, such as tumour samples</li>
+    <li><b>Handwriting:</b> reading handwritten digits</li>
+    <li><b>Bioinformatics:</b> classifying genes and proteins</li>
+  </ul>
+  <p>They share one thing: <b>many features per example</b> and a clear yes-or-no, or which-class, question.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>In 2000, Furey and colleagues used SVMs to classify cancer tissue from gene-expression data: thousands of genes measured per sample, but only a few dozen patients. That is <i>more features than examples</i>, where many models fall apart. The SVM coped because its boundary depends only on the few support vectors. Two years earlier, Joachims had shown the same strength on text, where every word in the vocabulary is a feature.</p>
+  </div>
+  <div class="grid2">
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Advantages</h4>
+      <ul>
+        <li>Effective with high-dimensional data</li>
+        <li>Works well when classes are clearly separated</li>
+        <li>Handles nonlinear data with kernels</li>
+        <li>Memory-efficient: only the support vectors define the boundary</li>
+      </ul>
+    </div>
+    <div style="min-width:0">
+      <h4 style="margin-top:0">Limitations</h4>
+      <ul>
+        <li>Slow to train on very large datasets (hundreds of thousands of rows and up)</li>
+        <li>Choosing the kernel and C takes trial and error</li>
+        <li>Sensitive to feature scaling</li>
+        <li>Harder to explain than simpler models</li>
+      </ul>
+    </div>
+  </div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p><b>Scale first.</b> The margin is a distance. If one feature is income in dollars and another is age in years, income dominates every distance and age is ignored. Standardize the features (5.5), fitting the scaler on training data only (7.3).</p>
+  </div>
+<pre class="code">from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+
+model = make_pipeline(StandardScaler(), SVC(kernel="rbf", C=1.0, gamma="scale"))
+model.fit(X_train, y_train)
+print(model.score(X_test, y_test))</pre>
+  <p class="small muted">The pipeline fits the scaler on the training data and reuses it on the test data, so you can't make the mistake from Chapter 7's quiz.</p>
+<figure class="fig sm"><span class="frame"><img src="assets/ml/svm-margin.webp" width="1200" height="1168" loading="lazy" alt="A labelled diagram of an SVM: the hyperplane w·x − b = 0, margin lines at ±1, and the margin width 2 over the norm of w"></span><figcaption><span class="ref">SVM deck · s.14</span>"SVM doesn't just separate data. It finds the boundary with the best margin." Image: Larhmam, CC BY-SA 4.0.</figcaption></figure>
+  <div class="refs"><span class="ref">SVM deck · s.12–14</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 8 recap</h3>
+    <ul>
+      <li>An SVM is supervised and mainly used for classification.</li>
+      <li>It picks the boundary with the widest margin, and only the support vectors decide where it goes.</li>
+      <li>Boundary \(\mathbf w\cdot\mathbf x+b=0\), margin width \(2/\lVert\mathbf w\rVert\).</li>
+      <li>Hard margin allows no mistakes. Soft margin allows a few, and C sets their price: high C narrows the margin and risks overfitting, low C widens it and risks underfitting.</li>
+      <li>Kernels measure similarity as if the data were lifted into more dimensions, so a flat cut there becomes a curved boundary here.</li>
+      <li>Linear for nearly separable data, RBF as the default. Always scale the features.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz8">Check yourself: Chapter 8</h3>
+  <div data-xq="8"></div>
+</section>
+
+<!-- ======================================================= CHAPTER 9 -->
+<section class="chapter" id="ch9">
+  <div class="chapter-head">
+    <span class="num">Chapter 9</span>
+    <h2>Artificial Neural Networks</h2>
+  </div>
+  <div class="refs"><span class="ref">ANN deck · s.1–18</span><span class="ref g">Team presentation</span></div>
+
+  <section class="sub" id="c9-why">
+  <h3>9.1 Rules too hard to write</h3>
+  <p>What exactly makes a "7" a 7? A slanted stroke joined to a flat top, usually, except when it has a bar through the middle, or a curly top, or when it's written fast. Try to write that rule down and you'll be at it forever. That's the wall from Chapter 2 again, only steeper.</p>
+  <p>An <b>artificial neural network</b> (ANN) is a model built from many simple units, called <b>neurons</b>, connected in layers. Instead of us choosing the features, the network <b>learns them</b> from examples, and it keeps improving with more data. The idea is loosely inspired by the brain.</p>
+<figure class="fig md"><span class="frame"><img src="assets/ml/ann-neuron.webp" width="1200" height="774" loading="lazy" alt="A biological neuron with branching dendrites, a cell body, and a long axon ending in terminals"></span><figcaption><span class="ref">ANN deck · s.4</span>A biological neuron: dendrites collect signals, the axon passes one signal on. Image: BruceBlaus, CC BY 3.0, via Wikimedia Commons.</figcaption></figure>
+  <p>Your brain has about <b>86 billion</b> neurons. A classic network that reads handwritten digits has about <b>300</b> hidden neurons. "Loosely inspired" is doing a lot of work in that sentence.</p>
+  <p>You've already built one neuron without calling it that. Logistic regression (6.3) is a weighted sum pushed through a sigmoid. <b>A neural network is lots of those, joined up in layers.</b></p>
+  </section>
+
+  <section class="sub" id="c9-deep">
+  <h3>9.2 Machine learning and deep learning</h3>
+  <p><b>Deep learning</b> is machine learning with many-layer neural networks. It sits inside ML, which sits inside AI, the nesting from Chapter 2.</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Machine learning</th><th>Deep learning</th></tr></thead>
+    <tbody>
+      <tr><td><b>Features</b></td><td>Chosen by people</td><td>Learned by the network</td></tr>
+      <tr><td><b>Data</b></td><td>Works with less</td><td>Needs a lot</td></tr>
+      <tr><td><b>Hardware</b></td><td>A normal CPU is enough</td><td>Usually GPUs</td></tr>
+      <tr><td><b>Example</b></td><td>Logistic regression, SVM</td><td>Many-layer neural networks</td></tr>
+    </tbody></table></div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>In 2012 a deep network called <b>AlexNet</b> entered the ImageNet competition: sort 1.2 million photos into 1,000 categories. Its top-5 error was 15.3%. The next best entry, built on hand-designed features, scored 26.2%. That gap started the deep learning boom, and within a few years almost every entry was a neural network.</p>
+  </div>
+  <div class="refs"><span class="ref">ANN deck · s.5</span></div>
+  </section>
+
+  <section class="sub" id="c9-neuron">
+  <h3>9.3 One neuron</h3>
+  <p>A neuron does three things: <b>weigh</b> its inputs, <b>add a bias</b>, then <b>activate</b>.</p>
+  <div class="math">\[ z=\sum_{i} w_i x_i+b \qquad y=f(z) \]</div>
+  <ul>
+    <li><b>Weights</b> \(w\): how much each input matters</li>
+    <li><b>Bias</b> \(b\): shifts the result up or down</li>
+    <li><b>Activation function</b> \(f\): turns the sum into the output, and adds the bends (9.5)</li>
+  </ul>
+  <p>The slide's example: inputs 1.0 and 0.5, weights 0.8 and −0.4, bias 0.1.</p>
+  <div class="math">\[ z=0.8\times1.0+(-0.4)\times0.5+0.1=0.7 \qquad y=\text{ReLU}(0.7)=0.7 \]</div>
+  <div class="lab" id="lab-neuron">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Be the neuron</h4></div>
+    <div class="lab-body">
+      <div class="tabs" role="group" aria-label="Activation function"><button class="btn on" type="button" data-nf="relu">ReLU</button><button class="btn" type="button" data-nf="sig">Sigmoid</button><button class="btn" type="button" data-nf="tanh">Tanh</button><button class="btn" type="button" data-nf="none">None</button></div>
+      <div class="row" id="nn-in"></div>
+      <div class="svgwrap" id="nn-svg"></div>
+      <div class="msg" id="nn-msg"></div>
+    </div>
+  </div>
+  <p><b>The network learns the weights and biases.</b> Everything else, how many neurons, which activation, is set by you.</p>
+  <div class="refs"><span class="ref">ANN deck · s.6</span></div>
+  </section>
+
+  <section class="sub" id="c9-layers">
+  <h3>9.4 Layers</h3>
+  <p>Neurons are stacked in layers. Every neuron in one layer feeds every neuron in the next.</p>
+  <ol class="boxes">
+    <li><b>Input layer.</b> One neuron per feature. For an image, one per pixel.</li>
+    <li><b>Hidden layers.</b> Learn useful features, like strokes and loops.</li>
+    <li><b>Output layer.</b> One score per class, turned into probabilities by softmax (6.6).</li>
+  </ol>
+  <p>A 28×28 digit image from MNIST is 784 numbers, so the network needs 784 input neurons. Our team's experiment used scikit-learn's smaller digits, 8×8 = 64 pixels each:</p>
+<figure class="fig md"><span class="frame"><img src="assets/ml/ann-digits.webp" width="1200" height="516" loading="lazy" alt="Ten blocky 8 by 8 pixel handwritten digits, 0 to 9, in grey squares"></span><figcaption><span class="ref">ANN deck · experiment</span>scikit-learn's digits: 1,797 images, 8×8 pixels each, so 64 inputs.</figcaption></figure>
+  <p><b>"Deep" just means many hidden layers.</b> Each one builds on the one before: edges, then strokes, then whole shapes.</p>
+  <div class="call key"><span class="tag">Count the weights</span>
+    <p>A layer of \(n\) inputs feeding \(m\) neurons has \(n\times m\) weights plus \(m\) biases. The classic 784 → 300 → 10 network has \(784\times300+300=235{,}500\) in the first layer and \(300\times10+10=3{,}010\) in the second: <b>238,510 numbers</b> for gradient descent to tune. Logistic regression on the same pixels would have 785.</p>
+  </div>
+  <div class="refs"><span class="ref">ANN deck · s.7</span></div>
+  </section>
+
+  <section class="sub" id="c9-act">
+  <h3>9.5 Activation functions</h3>
+  <p>Why not skip the activation and just pass the weighted sum on? Because a weighted sum of weighted sums is still one weighted sum:</p>
+  <div class="math">\[ W_2(W_1\mathbf x+\mathbf b_1)+\mathbf b_2=(W_2W_1)\mathbf x+(W_2\mathbf b_1+\mathbf b_2) \]</div>
+  <p class="say">Ten layers without activations collapse into one linear model, so going deeper would add nothing. The activation function bends each neuron's output, and those bends are what let the network draw curved boundaries.</p>
+<figure class="fig lg"><span class="frame"><img src="assets/ml/ann-act.webp" width="1200" height="297" loading="lazy" alt="Four small plots: sigmoid from 0 to 1, tanh from minus 1 to 1, ReLU flat at zero then rising, and a dashed straight line for no activation"></span><figcaption><span class="ref">ANN deck · s.8</span>Sigmoid, tanh, ReLU, and no activation (grey dashed): just a straight line.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Function</th><th>Formula</th><th>Output</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td><b>Sigmoid</b></td><td>\(\frac{1}{1+e^{-z}}\)</td><td>0 to 1</td><td>Yes-or-no output</td></tr>
+      <tr><td><b>Tanh</b></td><td>\(\frac{e^{z}-e^{-z}}{e^{z}+e^{-z}}\)</td><td>−1 to 1</td><td>Hidden layers (older)</td></tr>
+      <tr><td><b>ReLU</b></td><td>\(\max(0,z)\)</td><td>0 to ∞</td><td>Hidden layers, the default</td></tr>
+      <tr><td><b>Softmax</b></td><td>\(\frac{e^{z_i}}{\sum_j e^{z_j}}\)</td><td>0 to 1, sums to 1</td><td>Multi-class output</td></tr>
+    </tbody></table></div>
+  <div class="call key"><span class="tag">Rule of thumb</span>
+    <p><b>ReLU in the hidden layers, sigmoid or softmax at the output.</b> ReLU is cheap to compute and its slope is 1 for any positive input. Sigmoid's slope is at most 0.25, and almost zero far from the middle, so in deep stacks the error signal fades as it travels back (9.7).</p>
+  </div>
+  <div class="refs"><span class="ref">ANN deck · s.8–9</span></div>
+  </section>
+
+  <section class="sub" id="c9-loss">
+  <h3>9.6 Forward pass and loss</h3>
+  <div class="pipe" aria-label="Forward pass"><span>Pixels of a 7</span><i>→</i><span>Weighted sums + activations</span><i>→</i><span>P("7") = 0.66</span><i>→</i><span>Loss = 0.42</span></div>
+  <p>The <b>forward pass</b> runs an input through every layer to make a guess. The <b>loss function</b> turns "how wrong" into one number. For classes it's the cross-entropy you met in 6.5, which for one example becomes:</p>
+  <div class="math">\[ L=-\ln\big(\text{probability given to the right answer}\big) \]</div>
+  <div class="tbl"><table>
+    <thead><tr><th>The network says</th><th>P(right answer)</th><th>Loss</th></tr></thead>
+    <tbody>
+      <tr><td>Right and sure</td><td>0.99</td><td>0.01</td></tr>
+      <tr><td>Right but unsure</td><td>0.66</td><td>0.42</td></tr>
+      <tr><td>Mostly wrong</td><td>0.10</td><td>2.30</td></tr>
+    </tbody></table></div>
+  <p>Lower is better. For predicting numbers, like prices, you'd use mean squared error instead, as in Chapter 4.</p>
+  <div class="refs"><span class="ref">ANN deck · s.10</span></div>
+  </section>
+
+  <section class="sub" id="c9-back">
+  <h3>9.7 Backpropagation</h3>
+  <p>The loss says how wrong the network was. With 238,510 weights, which ones should change, and by how much? <b>Backpropagation</b> answers that by sending the error backwards through the network.</p>
+  <ol class="boxes">
+    <li><b>Forward:</b> make a prediction.</li>
+    <li><b>Loss:</b> measure the error.</li>
+    <li><b>Backward:</b> find each weight's share of the blame, its gradient.</li>
+    <li><b>Update:</b> nudge every weight to reduce the error.</li>
+  </ol>
+  <p>Repeat for every batch of examples. One full pass over the training data is one <b>epoch</b> (7.2). The backward step is the chain rule from calculus: multiply the slopes, layer by layer, from the output back.</p>
+  <div class="math">\[ \frac{\partial L}{\partial w}=\frac{\partial L}{\partial y}\cdot\frac{\partial y}{\partial z}\cdot\frac{\partial z}{\partial w} \]</div>
+  <p class="say">How much the loss moves when the output moves, times how much the output moves when the sum moves (the activation's slope), times how much the sum moves when this weight moves (the input it was multiplied by).</p>
+  <p>Here's the payoff. Four groups of points in an XOR pattern: opposite corners belong together. No straight line can split them, so logistic regression and a linear SVM both fail. Add one hidden layer of four neurons and train with backprop:</p>
+  <div class="lab" id="lab-xor">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Train a network on XOR</h4></div>
+    <div class="lab-body">
+      <div class="player" id="xr-player"></div>
+      <div class="svgwrap" id="xr-svg"></div>
+      <div class="kpis" id="xr-kpis"></div>
+      <div class="msg" id="xr-msg"></div>
+    </div>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>XOR nearly ended the field once. In 1969 Minsky and Papert proved that a single-layer perceptron can't learn it, and funding for neural networks dried up for over a decade. Everyone knew hidden layers could fix it. Nobody had a good way to train them until Rumelhart, Hinton and Williams popularized backpropagation in 1986. The demo above is that fix.</p>
+  </div>
+  <div class="refs"><span class="ref">ANN deck · s.11</span></div>
+  </section>
+
+  <section class="sub" id="c9-gd">
+  <h3>9.8 Gradient descent, batches and the learning rate</h3>
+  <p>Backprop finds the gradients. Gradient descent takes the step, with the same rule as Chapter 4, applied to every weight and bias:</p>
+  <div class="math">\[ w\leftarrow w-\eta\,\frac{\partial L}{\partial w} \]</div>
+  <p class="say">The gradient points uphill, \(\eta\) is the learning rate, and the minus sign turns you downhill.</p>
+<figure class="fig md"><span class="frame"><img src="assets/ml/ann-gd.webp" width="1200" height="800" loading="lazy" alt="A U-shaped loss curve with dots stepping down from the start toward a star at the lowest loss, steps shrinking as the slope flattens"></span><figcaption><span class="ref">ANN deck · s.12</span>Each dot is one step. Steps shrink as the slope flattens.</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Batch</th><th>Stochastic (SGD)</th><th>Mini-batch</th></tr></thead>
+    <tbody>
+      <tr><td><b>Examples per update</b></td><td>All of them</td><td>1</td><td>A small group (e.g. 32)</td></tr>
+      <tr><td><b>Updates per epoch</b></td><td>1</td><td>One per example</td><td>One per group</td></tr>
+      <tr><td><b>Path downhill</b></td><td>Smooth but slow</td><td>Fast but noisy</td><td>A good balance</td></tr>
+      <tr><td><b>Memory</b></td><td>All data at once</td><td>Tiny</td><td>Small, suits GPUs</td></tr>
+    </tbody></table></div>
+  <div class="lab nb" id="lab-lr">
+    <div class="lab-head"><span class="tag">Our experiment</span><h4>A from-scratch network on the digits</h4></div>
+    <div class="lab-body">
+      <p>Our team wrote a 64 → 32 (ReLU) → 10 (softmax) network in NumPy, with backprop by hand, and trained it on scikit-learn's digits: 1,437 training images, 360 test images, 30 epochs. These are the real training losses it printed.</p>
+      <div class="tabs" role="group" aria-label="Which comparison"><button class="btn on" type="button" data-lr="lr">Learning rate</button><button class="btn" type="button" data-lr="batch">Batch size</button></div>
+      <div class="svgwrap" id="lr-svg"></div>
+      <div class="tbl" id="lr-tbl"></div>
+      <div class="msg" id="lr-msg"></div>
+    </div>
+  </div>
+  <p><b>Mini-batch with a well-chosen \(\eta\) is the usual default.</b> Too small and training crawls. Too big and it jumps over the minimum and never settles, which is exactly the divergence you saw in 4.6.</p>
+  <div class="refs"><span class="ref">ANN deck · s.12–13</span><span class="ref g">Experiment: ann_results.json</span></div>
+  </section>
+
+  <section class="sub" id="c9-use">
+  <h3>9.9 Where they're used, and what they cost</h3>
+<figure class="fig md"><span class="frame"><img src="assets/ml/ann-yolo.webp" width="1200" height="772" loading="lazy" alt="A desk photo with boxes and labels drawn around a keyboard, cups, a laptop and other objects"></span><figcaption><span class="ref">ANN deck · s.14</span>Object detection with YOLO: a box and a label for every object. Image: MTheiler, CC BY-SA 4.0, via Wikimedia Commons.</figcaption></figure>
+  <ul>
+    <li><b>Vision:</b> face unlock, photo search, medical scans</li>
+    <li><b>Speech:</b> voice assistants, live captions</li>
+    <li><b>Language:</b> translation, chatbots</li>
+    <li><b>Recommendations:</b> YouTube and TikTok feeds</li>
+    <li><b>Driving:</b> lane keeping, self-driving research</li>
+    <li><b>Science:</b> AlphaFold predicts protein shapes</li>
+  </ul>
+  <div class="tbl"><table>
+    <thead><tr><th>Advantages</th><th>Limitations</th></tr></thead>
+    <tbody>
+      <tr><td>Learn patterns we can't write as rules</td><td>Need lots of labelled data</td></tr>
+      <tr><td>Work directly on images, sound and text</td><td>Training needs a lot of computing power</td></tr>
+      <tr><td>Get better with more data</td><td>Hard to explain why they decided: a "black box"</td></tr>
+      <tr><td>One method, many different tasks</td><td>Can overfit, and can copy bias from their data</td></tr>
+    </tbody></table></div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>AlexNet shows both columns at once. It won ImageNet 2012 by a mile, and it took five to six days to train on two GPUs. Remember the credit scorecards from 6.7, too: when a bank must explain a refusal, a 238,510-weight black box can lose to a logistic regression with a dozen readable weights.</p>
+  </div>
+  <div class="call key"><span class="tag">SVM or neural network?</span>
+    <p>A few thousand rows of tidy table data and a need to explain the result: try logistic regression or an SVM first. Millions of images, recordings or sentences, and a GPU: that's where neural networks pull ahead.</p>
+  </div>
+  <div class="refs"><span class="ref">ANN deck · s.14–16</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 9 recap</h3>
+    <ul>
+      <li>An ANN is layers of simple neurons: weighted sum, plus bias, then activation.</li>
+      <li>Without activations, any stack of layers collapses into one linear model. ReLU inside, sigmoid or softmax at the output.</li>
+      <li>Forward pass → loss → backpropagation → update. That's how a network learns.</li>
+      <li>Backprop is the chain rule: multiply the slopes from the output back.</li>
+      <li>Gradient descent takes the steps, and the learning rate sets their size. Mini-batch is the practical default.</li>
+      <li>A simple 784 → 300 → 10 network reaches 95.3% on MNIST. Powerful, but data-hungry, compute-hungry and hard to explain.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz9">Check yourself: Chapter 9</h3>
+  <div data-xq="9"></div>
+</section>
+
 <!-- ======================================================= SHEET -->
 <section class="chapter" id="exam">
   <div class="chapter-head">
@@ -1765,7 +2225,7 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
     <h2>Final Exam</h2>
   </div>
   <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
-  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>47</b><span>Questions</span></div><div class="kpi"><b>98</b><span>Marks</span></div><div class="kpi"><b>120</b><span>Minutes</span></div></div>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>60</b><span>Questions</span></div><div class="kpi"><b>126</b><span>Marks</span></div><div class="kpi"><b>150</b><span>Minutes</span></div></div>
   <p><a class="btn primary" href="exam-ml.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
 </section>
 
@@ -1794,6 +2254,14 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
       <tr><td>Accuracy</td><td>\(\frac{TP+TN}{TP+FP+FN+TN}\)</td><td>ML 08 s.34</td></tr>
       <tr><td>Precision / Recall</td><td>\(\frac{TP}{TP+FP}\), \(\frac{TP}{TP+FN}\)</td><td>ML 08 s.36–37</td></tr>
       <tr><td>F1</td><td>\(\frac{2PR}{P+R}\)</td><td>ML 08 s.38</td></tr>
+      <tr><td>SVM boundary / margin</td><td>\(\mathbf w\cdot\mathbf x+b=0\), width \(\frac{2}{\lVert\mathbf w\rVert}\)</td><td>SVM deck s.5</td></tr>
+      <tr><td>Soft-margin objective</td><td>\(\tfrac12\lVert\mathbf w\rVert^2+C\sum\xi_i\)</td><td>SVM deck s.8–9</td></tr>
+      <tr><td>RBF kernel</td><td>\(e^{-\gamma\lVert\mathbf x-\mathbf x'\rVert^2}\)</td><td>SVM deck s.11</td></tr>
+      <tr><td>Neuron</td><td>\(y=f(\sum w_ix_i+b)\)</td><td>ANN deck s.6</td></tr>
+      <tr><td>ReLU / tanh</td><td>\(\max(0,z)\), \(\frac{e^z-e^{-z}}{e^z+e^{-z}}\)</td><td>ANN deck s.9</td></tr>
+      <tr><td>Cross-entropy, one example</td><td>\(-\ln p_{\text{right}}\)</td><td>ANN deck s.10</td></tr>
+      <tr><td>Chain rule</td><td>\(\frac{\partial L}{\partial w}=\frac{\partial L}{\partial y}\frac{\partial y}{\partial z}\frac{\partial z}{\partial w}\)</td><td>ANN deck s.11</td></tr>
+      <tr><td>Weights in a layer</td><td>\(n\times m+m\)</td><td>ANN deck s.7</td></tr>
     </tbody></table></div>
   <div class="tbl"><table>
     <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
@@ -1810,6 +2278,17 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
       <tr><td><b>Selection bias</b></td><td>A sample that doesn't represent the population.</td></tr>
       <tr><td><b>Overfitting / underfitting</b></td><td>Memorised the training data / too simple to learn it.</td></tr>
       <tr><td><b>Leave-one-out</b></td><td>K-fold with \(k=n\).</td></tr>
+      <tr><td><b>Hyperplane</b></td><td>A flat decision boundary: a line in 2D, a plane in 3D.</td></tr>
+      <tr><td><b>Support vectors</b></td><td>The training points closest to an SVM's boundary. Only they decide where it goes.</td></tr>
+      <tr><td><b>Margin</b></td><td>The gap between the boundary and the closest points. SVMs make it as wide as possible.</td></tr>
+      <tr><td><b>Hard / soft margin</b></td><td>No training mistakes allowed / a few allowed, priced by C.</td></tr>
+      <tr><td><b>C</b></td><td>The SVM penalty per mistake. High: narrow margin, overfit risk. Low: wide margin, underfit risk.</td></tr>
+      <tr><td><b>Kernel</b></td><td>A similarity function that acts as if the data were lifted into more dimensions.</td></tr>
+      <tr><td><b>Neuron</b></td><td>Weighted sum plus bias, then an activation function.</td></tr>
+      <tr><td><b>Hidden layer</b></td><td>A layer between input and output that learns its own features. "Deep" means many.</td></tr>
+      <tr><td><b>Activation function</b></td><td>Bends a neuron's output. Without it, stacked layers collapse to one linear model.</td></tr>
+      <tr><td><b>Forward pass / backpropagation</b></td><td>Input to prediction / error sent back to find every weight's gradient.</td></tr>
+      <tr><td><b>Batch / SGD / mini-batch</b></td><td>All examples / one / a small group per update.</td></tr>
     </tbody></table></div>
   <h3 id="materials">Course materials</h3>
   <p>The original files this page was built from. Tap one to download it.</p>
@@ -1826,6 +2305,8 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
     <li><a href="materials/ml/ML_07_Logistic_Regression.pdf" download="ML_07_Logistic Regression.pdf" data-dl>ML 07 · Logistic Regression</a> <span class="small muted">PDF · 2.3 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/ml/ML_08_Confusion_Matrix_Exercise.pdf" download="ML_08_Confusion Matrix Exercise.pdf" data-dl>ML 08 · Confusion Matrix Exercise</a> <span class="small muted">PDF · 11 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/ml/ML_08_Training_and_Evaluation.pdf" download="ML_08_Training and Evaluation.pdf" data-dl>ML 08 · Training and Evaluation</a> <span class="small muted">PDF · 2.9 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/ml/ML_09_Support_Vector_Machines.pdf" download="Support Vector Machines.pdf" data-dl>Team presentation · Support Vector Machines</a> <span class="small muted">PDF · 1.5 MB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/ml/ML_10_Artificial_Neural_Networks.pdf" download="Artificial Neural Networks.pdf" data-dl>Team presentation · Artificial Neural Networks</a> <span class="small muted">PDF · 744 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
   </ul>
   <h4>Notebooks and lab files</h4>
   <ul class="dl">
@@ -1840,7 +2321,7 @@ sns.heatmap(pearson_corr, cmap='PiYG', annot=True, vmin=-1, vmax=1, center=0)</p
     <li><a href="materials/ml/ML_06_Data_Preprocessing_Lab.zip" download="ML_06_Data Preprocessing Lab.zip" data-dl>ML 06 · Data preprocessing lab (Delhi houses)</a> <span class="small muted">ZIP · 26 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/ml/ML_06_data-preprocessing.zip" download="ML_06_data-preprocessing.zip" data-dl>ML 06 · Data preprocessing notebook</a> <span class="small muted">Notebook, zipped · 166 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
   </ul>
-  <p class="foot">Built from the Fundamentals of Machine Learning decks and notebooks (Soklay Heng and Sokchovy Monirath, CADT). Figures are cropped from those slides and notebooks, as credited under each one; the DeepLearning.AI-branded lab figures come with the notebooks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
+  <p class="foot">Built from the Fundamentals of Machine Learning decks and notebooks (Soklay Heng and Sokchovy Monirath, CADT), plus our team presentations on SVMs and neural networks for Chapters 8 and 9, whose image credits are in their captions. Figures are cropped from those slides and notebooks, as credited under each one; the DeepLearning.AI-branded lab figures come with the notebooks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment.</p>
 </section>
 </main>
 </div>
@@ -2411,6 +2892,179 @@ function costOf(a,b){var s=0;LX.forEach(function(x,i){var e=a*x+b-LY[i];s+=e*e;}
     $("th-msg").innerHTML=(t>=.7?"<b>High threshold:</b> it only flags what it's very sure about. Precision rises, but plenty of spam gets through. ":t<=.3?"<b>Low threshold:</b> it catches nearly all the spam but flags lots of real mail too. Recall rises and precision falls. ":"<b>Middle:</b> a balance between the two. ")+"Filled shapes are mistakes. Everything right of the line is called spam.";
   }
   $("th-t").addEventListener("input",draw);draw();
+})();
+
+/* ---------- 8.3 Find the widest street ---------- */
+(function(){
+  var A=[[-2.6,-1.4],[-2.0,-2.6],[-1.4,-0.6],[-3.0,-0.2],[-1.0,-2.0],[-2.2,0.4],[-0.6,-1.0],[-1.8,-1.6]];
+  var B=[[1.2,1.6],[2.4,0.8],[0.8,0.4],[2.0,2.6],[3.0,1.4],[1.6,-0.4],[0.4,1.8],[2.6,-0.2]];
+  var W=620,H=380,XH=4.6,u=W/(2*XH),sx=function(v){return W/2+v*u;},sy=function(v){return H/2-v*u;};
+  var BEST=(function(){var b=0;for(var d=0;d<1800;d++){var a=d/10*Math.PI/180,n=[Math.cos(a),Math.sin(a)],pa=A.map(function(p){return p[0]*n[0]+p[1]*n[1];}),pb=B.map(function(p){return p[0]*n[0]+p[1]*n[1];});b=Math.max(b,Math.min.apply(null,pb)-Math.max.apply(null,pa),Math.min.apply(null,pa)-Math.max.apply(null,pb));}return b;})();
+  function pt(p){return sx(p[0]).toFixed(1)+" "+sy(p[1]).toFixed(1);}
+  function draw(){
+    var deg=+$("st-a").value,o=+$("st-o").value/50,a=deg*Math.PI/180,n=[Math.cos(a),Math.sin(a)],d=[-n[1],n[0]];
+    $("st-av").textContent=deg+"°";$("st-ov").textContent=o.toFixed(2);
+    var dA=A.map(function(p){return p[0]*n[0]+p[1]*n[1]-o;}),dB=B.map(function(p){return p[0]*n[0]+p[1]*n[1]-o;});
+    var s1=dA.filter(function(v){return v>=0;}).length+dB.filter(function(v){return v<0;}).length,s2=dA.filter(function(v){return v<0;}).length+dB.filter(function(v){return v>=0;}).length;
+    var sgn=s1<=s2?1:-1,bad=Math.min(s1,s2);/* sgn=1: A on the negative side */
+    var all=dA.map(function(v){return{v:v,c:0};}).concat(dB.map(function(v){return{v:v,c:1};}));
+    var m=bad?0:Math.min.apply(null,all.map(function(q){return Math.abs(q.v);}));
+    var p0=[n[0]*o,n[1]*o],L=20,s='<rect class="c-box" x="1" y="1" width="'+(W-2)+'" height="'+(H-2)+'"/>';
+    function at(k,t){return[p0[0]+n[0]*k+d[0]*t,p0[1]+n[1]*k+d[1]*t];}
+    if(m>0)s+='<path class="c-street" clip-path="url(#stc)" d="M'+pt(at(-m,-L))+'L'+pt(at(-m,L))+'L'+pt(at(m,L))+'L'+pt(at(m,-L))+'Z"/>'+
+      '<line class="c-lin" clip-path="url(#stc)" x1="'+sx(at(-m,-L)[0])+'" y1="'+sy(at(-m,-L)[1])+'" x2="'+sx(at(-m,L)[0])+'" y2="'+sy(at(-m,L)[1])+'"/>'+
+      '<line class="c-lin" clip-path="url(#stc)" x1="'+sx(at(m,-L)[0])+'" y1="'+sy(at(m,-L)[1])+'" x2="'+sx(at(m,L)[0])+'" y2="'+sy(at(m,L)[1])+'"/>';
+    s+='<line class="c-curve" clip-path="url(#stc)" x1="'+sx(at(0,-L)[0])+'" y1="'+sy(at(0,-L)[1])+'" x2="'+sx(at(0,L)[0])+'" y2="'+sy(at(0,L)[1])+'"/>';
+    function shape(p,c,v){var ok=c===0?sgn*v<0:sgn*v>=0,x=sx(p[0]),y=sy(p[1]),r="";
+      if(m>0&&Math.abs(Math.abs(v)-m)<1e-6)r='<circle class="c-sv" cx="'+x+'" cy="'+y+'" r="12"/>';
+      return r+(c?'<path class="'+(ok?"c-tri":"c-tri bad")+'" d="M'+x+' '+(y-7)+'l7 12h-14z"/>':'<circle class="'+(ok?"c-ring":"c-ring bad")+'" cx="'+x+'" cy="'+y+'" r="6"/>');}
+    A.forEach(function(p,i){s+=shape(p,0,dA[i]);});B.forEach(function(p,i){s+=shape(p,1,dB[i]);});
+    $("st-svg").innerHTML=chart(W,H,'<clipPath id="stc"><rect x="1" y="1" width="'+(W-2)+'" height="'+(H-2)+'"/></clipPath>'+s,"Circles and triangles with your line and its street");
+    var width=2*m,sv=all.filter(function(q){return m>0&&Math.abs(Math.abs(q.v)-m)<1e-6;}).length;
+    kpis($("st-kpis"),[[bad?"–":width.toFixed(2),"Street width"],[bad,"Wrong side"],[bad?"–":sv,"Support vectors"],[BEST.toFixed(2),"Widest possible"]]);
+    $("st-msg").innerHTML=bad?"Filled shapes are on the wrong side of your line, so there is no street at all. Turn or slide it until every circle is on one side and every triangle on the other.":
+      width>BEST-0.03?"<b>That's the SVM's line.</b> The street is as wide as it can get, and it's held in place by just "+sv+" points. Every other point could move a little and nothing would change.":
+      width>BEST*0.7?"Every point is on the right side, so logistic regression could happily stop here. But the street is "+width.toFixed(2)+" wide and "+BEST.toFixed(2)+" is possible. Notice it's always the ringed points that limit you.":
+      "It separates them, but the street is thin: a new point landing just off its group could end up on the wrong side. Look for a direction with more room.";
+  }
+  $("st-a").addEventListener("input",draw);$("st-o").addEventListener("input",draw);
+  $("st-best").addEventListener("click",function(){$("st-a").value=45;$("st-o").value=-7;draw();});
+  draw();
+})();
+
+/* ---------- 8.5 Turn the C dial (soft-margin linear SVM, dual coordinate descent) ---------- */
+(function(){
+  var r=rng(9),X=[],Y=[],i,CS=[0.01,0.03,0.1,0.3,1,3,10,100];
+  for(i=0;i<16;i++){X.push([-1+(r()-.5)*2.8,-1+(r()-.5)*2.8]);Y.push(-1);X.push([1+(r()-.5)*2.8,1+(r()-.5)*2.8]);Y.push(1);}
+  function train(C){
+    var n=X.length,a=[],w=[0,0,0],Q=X.map(function(p){return p[0]*p[0]+p[1]*p[1]+1;});for(var i=0;i<n;i++)a.push(0);
+    for(var ep=0;ep<4000;ep++){var mv=0;for(i=0;i<n;i++){var p=X[i],G=Y[i]*(w[0]*p[0]+w[1]*p[1]+w[2])-1,na=Math.min(Math.max(a[i]-G/Q[i],0),C),dd=na-a[i];
+      if(dd){mv=Math.max(mv,Math.abs(dd));w[0]+=dd*Y[i]*p[0];w[1]+=dd*Y[i]*p[1];w[2]+=dd*Y[i];a[i]=na;}}if(mv<1e-7)break;}
+    return{w:w,a:a};
+  }
+  var W=620,H=460,XH=3.4,u=W/(2*XH),sx=function(v){return W/2+v*u;},sy=function(v){return H/2-v*u;};
+  function line(w,k,cls){/* w0 x + w1 y + w2 = k */
+    var n2=w[0]*w[0]+w[1]*w[1],p0=[w[0]*(k-w[2])/n2,w[1]*(k-w[2])/n2],d=[-w[1],w[0]],l=Math.sqrt(n2),L=20/l;
+    return'<line class="'+cls+'" clip-path="url(#ccc)" x1="'+sx(p0[0]-d[0]*L)+'" y1="'+sy(p0[1]-d[1]*L)+'" x2="'+sx(p0[0]+d[0]*L)+'" y2="'+sy(p0[1]+d[1]*L)+'"/>';}
+  function draw(){
+    var C=CS[+$("cc-c").value],m=train(C),w=m.w;$("cc-cv").textContent=C;
+    var s='<rect class="c-box" x="1" y="1" width="'+(W-2)+'" height="'+(H-2)+'"/>'+line(w,-1,"c-lin")+line(w,1,"c-lin")+line(w,0,"c-curve"),bad=0,inm=0,sv=0;
+    X.forEach(function(p,i){var f=Y[i]*(w[0]*p[0]+w[1]*p[1]+w[2]),ok=f>=0,x=sx(p[0]),y=sy(p[1]);if(!ok)bad++;if(f<1-1e-6)inm++;
+      if(m.a[i]>1e-6){sv++;s+='<circle class="c-sv" cx="'+x+'" cy="'+y+'" r="12"/>';}
+      s+=Y[i]>0?'<path class="'+(ok?"c-tri":"c-tri bad")+'" d="M'+x+' '+(y-7)+'l7 12h-14z"/>':'<circle class="'+(ok?"c-ring":"c-ring bad")+'" cx="'+x+'" cy="'+y+'" r="6"/>';});
+    $("cc-svg").innerHTML=chart(W,H,'<clipPath id="ccc"><rect x="1" y="1" width="'+(W-2)+'" height="'+(H-2)+'"/></clipPath>'+s,"Soft-margin SVM boundary and margins for C = "+C);
+    var width=2/Math.hypot(w[0],w[1]);
+    kpis($("cc-kpis"),[[width.toFixed(2),"Margin width"],[bad,"Wrong side"],[inm,"Inside the margin"],[sv,"Support vectors"]]);
+    $("cc-msg").innerHTML=C<=0.03?"<b>Low C:</b> mistakes are cheap, so the SVM buys a very wide street and lets most points sit inside it. Almost every point is now a support vector, and the boundary is pulled toward the average of everything. Push this too far and it underfits.":
+      C<=1?"<b>The middle:</b> a wide street with a handful of points allowed inside. This is usually where the best validation score is, but only trying values on validation data will tell you.":
+      "<b>High C:</b> every mistake is expensive, so the SVM squeezes the street to get as many training points right as it can. A few close points now control the whole line, and that's how it overfits.";
+  }
+  $("cc-c").addEventListener("input",draw);draw();
+})();
+
+/* ---------- 8.6 Lift the ring ---------- */
+(function(){
+  var r=rng(4),P=[],i,a,d;
+  for(i=0;i<22;i++){a=r()*6.283;d=.25+r()*1.4;P.push([d*Math.cos(a),d*Math.sin(a),0]);}
+  for(i=0;i<28;i++){a=r()*6.283;d=2.35+r()*1.2;P.push([d*Math.cos(a),d*Math.sin(a),1]);}
+  var W=620,H=300,PW=290,XH=3.9,u=PW/(2*XH),lx=function(v){return PW/2+v*u;},ly=function(v){return H/2-v*(H/2-8)/XH;};
+  var ZM=13.5,rx=function(v){return W-PW+PW/2+v*u;},rz=function(v){return H-22-v*(H-40)/ZM;};
+  function draw(){
+    var t=+$("lf-t").value/10,R=Math.sqrt(t),bad=0,s="";$("lf-tv").textContent=t.toFixed(1);
+    s+='<rect class="c-box" x="1" y="1" width="'+(PW-2)+'" height="'+(H-2)+'"/><rect class="c-box" x="'+(W-PW+1)+'" y="1" width="'+(PW-2)+'" height="'+(H-2)+'"/>';
+    s+='<text class="c-txt" x="8" y="16">from above: x₁, x₂</text><text class="c-txt" x="'+(W-PW+8)+'" y="16">from the side: x₁, z = x₁² + x₂²</text>';
+    s+='<ellipse class="c-curve" cx="'+lx(0)+'" cy="'+ly(0)+'" rx="'+(R*u)+'" ry="'+(R*(H/2-8)/XH)+'"/>';
+    s+='<line class="c-curve" x1="'+(W-PW+4)+'" x2="'+(W-4)+'" y1="'+rz(t)+'" y2="'+rz(t)+'"/><line class="c-axis" x1="'+(W-PW+4)+'" x2="'+(W-4)+'" y1="'+rz(0)+'" y2="'+rz(0)+'"/>';
+    P.forEach(function(p){var z=p[0]*p[0]+p[1]*p[1],ok=p[2]?z>t:z<=t;if(!ok)bad++;
+      var f=function(x,y){return p[2]?'<path class="'+(ok?"c-tri":"c-tri bad")+'" d="M'+x+' '+(y-6)+'l6 10h-12z"/>':'<circle class="'+(ok?"c-ring":"c-ring bad")+'" cx="'+x+'" cy="'+y+'" r="5"/>';};
+      s+=f(lx(p[0]),ly(p[1]))+f(rx(p[0]),rz(z));});
+    $("lf-svg").innerHTML=chart(W,H,s,"Ring data seen from above with a circle, and from the side with a flat cut");
+    kpis($("lf-kpis"),[[t.toFixed(1),"Flat cut at z"],[R.toFixed(2),"Circle radius √z"],[bad,"Mistakes"]]);
+    $("lf-msg").innerHTML=bad?"Filled shapes are on the wrong side. On the right, the cut is a straight line, so it's a plain linear classifier. Move it into the empty band between the low circles and the high triangles.":
+      "<b>No mistakes.</b> On the right that's a flat cut, the kind a linear SVM draws. On the left the very same cut is a circle of radius "+R.toFixed(2)+". The data didn't change; we gave the classifier one extra feature to look at.";
+  }
+  $("lf-t").addEventListener("input",draw);draw();
+})();
+
+/* ---------- 9.3 Be the neuron ---------- */
+(function(){
+  var V={x1:1,x2:.5,w1:.8,w2:-.4,b:.1},f="relu",N={x1:"x₁",x2:"x₂",w1:"w₁",w2:"w₂",b:"b"};
+  var F={relu:function(z){return Math.max(0,z);},sig:function(z){return 1/(1+Math.exp(-z));},tanh:function(z){return Math.tanh(z);},none:function(z){return z;}};
+  var FN={relu:"ReLU",sig:"sigmoid",tanh:"tanh",none:"no activation"};
+  $("nn-in").innerHTML=Object.keys(V).map(function(k){return'<label class="ctl mono">'+N[k]+' <input type="number" step="0.1" value="'+V[k]+'" data-k="'+k+'" style="width:72px" aria-label="'+N[k]+'"></label>';}).join("");
+  function draw(){
+    var z=V.w1*V.x1+V.w2*V.x2+V.b,y=F[f](z),W=620,H=200,s="";
+    s+='<circle class="c-ring" cx="40" cy="50" r="22"/><text class="c-txt" text-anchor="middle" x="40" y="54">'+fmt(V.x1)+'</text><circle class="c-ring" cx="40" cy="150" r="22"/><text class="c-txt" text-anchor="middle" x="40" y="154">'+fmt(V.x2)+'</text>';
+    s+='<line class="c-axis" x1="62" y1="55" x2="178" y2="95"/><line class="c-axis" x1="62" y1="145" x2="178" y2="105"/><text class="c-txt" x="92" y="62">w₁ = '+fmt(V.w1)+'</text><text class="c-txt" x="92" y="150">w₂ = '+fmt(V.w2)+'</text>';
+    s+='<circle class="c-ring" cx="200" cy="100" r="24"/><text class="c-txt" text-anchor="middle" x="200" y="105" style="font-size:18px">Σ</text><text class="c-txt" text-anchor="middle" x="200" y="142">+ b = '+fmt(V.b)+'</text>';
+    s+='<line class="c-axis" x1="224" y1="100" x2="300" y2="100"/><text class="c-txt" text-anchor="middle" x="262" y="92">z = '+fmt(z)+'</text>';
+    var gx=sc(-4,4,300,470),gy=sc(-2,4,180,20),pth="";for(var i=0;i<=80;i++){var v=-4+i*.1;pth+=(i?"L":"M")+gx(v).toFixed(1)+" "+gy(Math.max(-2,Math.min(4,F[f](v)))).toFixed(1);}
+    s+='<rect class="c-box" x="300" y="20" width="170" height="160"/><line class="c-grid" x1="300" x2="470" y1="'+gy(0)+'" y2="'+gy(0)+'"/><line class="c-grid" x1="'+gx(0)+'" x2="'+gx(0)+'" y1="20" y2="180"/><path class="c-curve" d="'+pth+'"/>';
+    var zc=Math.max(-4,Math.min(4,z)),yc=Math.max(-2,Math.min(4,y));s+='<line class="c-cap" x1="'+gx(zc)+'" x2="'+gx(zc)+'" y1="'+gy(0)+'" y2="'+gy(yc)+'"/><circle class="c-dot" cx="'+gx(zc)+'" cy="'+gy(yc)+'" r="5"/><text class="c-txt" x="306" y="34">'+FN[f]+'</text>';
+    s+='<line class="c-axis" x1="470" y1="100" x2="530" y2="100"/><circle class="c-ring" cx="560" cy="100" r="28"/><text class="c-txt" text-anchor="middle" x="560" y="105">'+fmt(y)+'</text><text class="c-txt" text-anchor="middle" x="560" y="146">output y</text>';
+    $("nn-svg").innerHTML=chart(W,H,s,"One neuron: two inputs, two weights, a bias, a sum and an activation");
+    $("nn-msg").innerHTML="z = "+fmt(V.w1)+" × "+fmt(V.x1)+" + ("+fmt(V.w2)+") × "+fmt(V.x2)+" + "+fmt(V.b)+" = <b>"+fmt(z,3)+"</b>, so y = "+FN[f]+"(z) = <b>"+fmt(y,3)+"</b>. "+
+      (f==="relu"&&z<0?"ReLU switched this neuron <b>off</b>: any negative sum becomes 0. Try making w₂ more negative and watch it happen.":f==="relu"?"ReLU lets a positive sum straight through. Make the sum negative and it outputs 0.":f==="sig"?"Sigmoid squeezes any sum into 0 to 1, the logistic regression neuron from 6.3.":f==="tanh"?"Tanh squeezes into −1 to 1, centred on zero.":"With no activation the output is just z. Stack these and you only ever get a straight line (9.5).");
+  }
+  $("nn-in").addEventListener("input",function(e){var k=e.target.dataset.k,v=parseFloat(e.target.value);if(k&&!isNaN(v)){V[k]=v;draw();}});
+  tabs("[data-nf]",function(b){f=b.dataset.nf;draw();});draw();
+})();
+
+/* ---------- 9.7 Train a network on XOR (2 → 4 tanh → 1 sigmoid) ---------- */
+(function(){
+  var r=rng(3),P=[],Hn=4,W1=[],b1=[],W2=[],b2=0,j,k;
+  [[-1,-1,0],[1,1,0],[-1,1,1],[1,-1,1]].forEach(function(q){for(k=0;k<8;k++)P.push([q[0]+(r()-.5)*.9,q[1]+(r()-.5)*.9,q[2]]);});
+  for(j=0;j<Hn;j++){W1.push([(r()-.5)*2,(r()-.5)*2]);b1.push(r()-.5);W2.push((r()-.5)*2);}
+  function fwd(x,y){var h=[],z=b2;for(var j=0;j<Hn;j++){h.push(Math.tanh(W1[j][0]*x+W1[j][1]*y+b1[j]));z+=h[j]*W2[j];}return{h:h,o:1/(1+Math.exp(-z))};}
+  var GX=31,GY=17,X0=-1.9,X1=1.9,Y0=-1.9,Y1=1.9,hist=[],EVERY=10,EP=300,lr=.5;
+  function snap(ep){var g=[],L=0,acc=0;for(var a=0;a<GY;a++)for(var b=0;b<GX;b++)g.push(fwd(X0+(b+.5)*(X1-X0)/GX,Y1-(a+.5)*(Y1-Y0)/GY).o);
+    var pr=P.map(function(p){var o=fwd(p[0],p[1]).o;L-=p[2]*Math.log(o)+(1-p[2])*Math.log(1-o);if((o>=.5?1:0)===p[2])acc++;return o;});hist.push({ep:ep,g:g,pr:pr,L:L/P.length,acc:acc/P.length});}
+  for(var ep=0;ep<=EP;ep++){
+    if(ep%EVERY===0)snap(ep);if(ep===EP)break;
+    var gW1=W1.map(function(){return[0,0];}),gb1=b1.map(function(){return 0;}),gW2=W2.map(function(){return 0;}),gb2=0;
+    P.forEach(function(p){var f=fwd(p[0],p[1]),d=f.o-p[2];gb2+=d;for(var j=0;j<Hn;j++){gW2[j]+=d*f.h[j];var dh=d*W2[j]*(1-f.h[j]*f.h[j]);gW1[j][0]+=dh*p[0];gW1[j][1]+=dh*p[1];gb1[j]+=dh;}});
+    var n=P.length;b2-=lr*gb2/n;for(j=0;j<Hn;j++){W2[j]-=lr*gW2[j]/n;W1[j][0]-=lr*gW1[j][0]/n;W1[j][1]-=lr*gW1[j][1]/n;b1[j]-=lr*gb1[j]/n;}
+  }
+  var W=620,H=340,sx=sc(X0,X1,0,W),sy=sc(Y0,Y1,H,0),cw=W/GX,ch=H/GY;
+  function render(f){
+    var e=hist[f],s="";
+    for(var a=0;a<GY;a++)for(var b=0;b<GX;b++){var o=e.g[a*GX+b];s+='<rect class="c-heat" x="'+(b*cw).toFixed(1)+'" y="'+(a*ch).toFixed(1)+'" width="'+(cw+.5).toFixed(1)+'" height="'+(ch+.5).toFixed(1)+'" fill-opacity="'+(o*.32).toFixed(3)+'"/>';}
+    s+='<rect class="c-box" x="1" y="1" width="'+(W-2)+'" height="'+(H-2)+'"/>';
+    P.forEach(function(p,i){var ok=(e.pr[i]>=.5?1:0)===p[2],x=sx(p[0]),y=sy(p[1]);s+=p[2]?'<path class="'+(ok?"c-tri":"c-tri bad")+'" d="M'+x+' '+(y-7)+'l7 12h-14z"/>':'<circle class="'+(ok?"c-ring":"c-ring bad")+'" cx="'+x+'" cy="'+y+'" r="6"/>';});
+    $("xr-svg").innerHTML=chart(W,H,s,"XOR points over the network's predicted regions");
+    kpis($("xr-kpis"),[[e.ep,"Epochs"],[e.L.toFixed(3),"Cross-entropy"],[Math.round(e.acc*100)+"%","Accuracy"]]);
+    $("xr-msg").innerHTML=f===0?"Circles are class 0, triangles class 1. Stronger shading means the network leans toward triangle. The weights start random, so it's guessing: filled shapes are wrong. Press <b>Run</b>.":
+      e.acc<1?"Every epoch: forward pass on all 32 points, cross-entropy, backprop through the hidden layer, then one gradient-descent step. Watch the shading start to bend.":
+      f<hist.length-1?"Every point is right now. The loss keeps falling anyway, because the network is growing more <i>confident</i>, just like in 6.4.":
+      "Done. The shaded regions sit in opposite corners, and that boundary isn't a line. Each of the four hidden neurons draws one straight cut; the output neuron combines the cuts into this shape.";
+  }
+  player($("xr-player"),{count:function(){return hist.length;},render:render,interval:220}).refresh(true);
+})();
+
+/* ---------- 9.8 Our experiment: learning rate and batch size ---------- */
+(function(){
+  var D={
+    lr:{rows:[["η = 0.005",[2.297,2.252,2.216,2.184,2.153,2.123,2.092,2.059,2.026,1.992,1.956,1.919,1.881,1.842,1.803,1.763,1.723,1.683,1.642,1.6,1.559,1.518,1.477,1.437,1.397,1.358,1.32,1.282,1.245,1.209,1.174],"78.1%","45","Too small: still walking downhill after 30 epochs"],
+      ["η = 0.3",[2.297,.631,.294,.235,.194,.139,.135,.109,.096,.09,.095,.076,.077,.065,.07,.061,.059,.05,.047,.047,.04,.043,.05,.045,.043,.038,.036,.035,.028,.029,.026],"96.4%","45","About right"],
+      ["η = 8",[2.297,2.383,2.374,2.382,2.457,2.414,2.406,2.38,2.498,2.47,2.518,2.472,2.466,2.377,2.374,2.341,2.417,2.333,2.484,2.45,2.351,2.368,2.4,2.361,2.411,2.436,2.424,2.432,2.446,2.401,2.37],"10.0%","45","Too big: diverged, as good as guessing"]],
+      head:["Run","Test accuracy","Updates per epoch","Verdict"],
+      msg:"All three runs use mini-batches of 32. Same network, same data, same starting weights: only \\(\\eta\\) changed. 10% on ten classes is exactly what random guessing scores."},
+    batch:{rows:[["Batch",[2.297,2.286,2.275,2.266,2.256,2.248,2.239,2.231,2.223,2.216,2.208,2.201,2.194,2.187,2.18,2.173,2.166,2.16,2.153,2.146,2.14,2.133,2.126,2.119,2.113,2.106,2.099,2.092,2.085,2.078,2.071],"39.4%","1","Smooth but slow · 0.02 s"],
+      ["SGD",[2.297,.211,.188,.087,.092,.044,.055,.081,.089,.02,.059,.026,.094,.008,.004,.005,.005,.004,.002,.002,.002,.002,.002,.002,.002,.001,.001,.001,.001,.001,.001],"97.5%","1,437","Fast per epoch but noisy, and slow in seconds · 1.06 s"],
+      ["Mini-batch 32",[2.297,1.959,1.57,1.184,.894,.697,.569,.478,.414,.368,.331,.304,.276,.257,.242,.225,.212,.201,.192,.185,.177,.169,.164,.157,.152,.147,.143,.141,.135,.13,.127],"95.8%","45","A good balance · 0.05 s"]],
+      head:["Run","Test accuracy","Updates per epoch","Verdict and time"],
+      msg:"All three use \\(\\eta=0.05\\) for 30 epochs. Batch made only 30 updates in total, so it barely moved. SGD made 43,110 and wins on accuracy, but took about 20 times longer than mini-batch. Times are from one laptop run and will vary."}
+  };
+  var STY=["c-curve","c-lin","c-curve2"],cur="lr";
+  function draw(){
+    var d=D[cur],W=620,H=300,L=44,R=150,T=18,B=34,sx=sc(0,30,L,W-R),sy=sc(0,2.6,H-B,T),s=axes(W,H,L,R,T,B,[0,10,20,30],[0,1,2],"Epoch","Training loss",sx,sy);
+    d.rows.forEach(function(rw,k){var p=rw[1].map(function(v,i){return(i?"L":"M")+sx(i).toFixed(1)+" "+sy(v).toFixed(1);}).join("");s+='<path class="'+STY[k]+'" d="'+p+'"/>';
+      var ly=sy(rw[1][30]);ly=Math.max(T+8,Math.min(H-B-4,ly+(k===1&&cur==="lr"?0:0)));s+='<line class="'+STY[k]+'" x1="'+(W-R+8)+'" x2="'+(W-R+30)+'" y1="'+(T+14+k*22)+'" y2="'+(T+14+k*22)+'"/><text class="c-txt" x="'+(W-R+36)+'" y="'+(T+18+k*22)+'">'+esc(rw[0])+'</text>';});
+    $("lr-svg").innerHTML=chart(W,H,s,"Training loss over 30 epochs for three runs");
+    $("lr-tbl").innerHTML='<table><thead><tr>'+d.head.map(function(h){return"<th>"+h+"</th>";}).join("")+'</tr></thead><tbody>'+d.rows.map(function(rw){return"<tr><td><b>"+esc(rw[0])+"</b></td><td>"+rw[2]+"</td><td>"+rw[3]+"</td><td>"+esc(rw[4])+"</td></tr>";}).join("")+"</tbody></table>";
+    $("lr-msg").innerHTML=d.msg;if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([$("lr-msg")]).catch(function(){});
+  }
+  tabs("[data-lr]",function(b){cur=b.dataset.lr;draw();});draw();
 })();
 
 /* ---------- Figures: tap to enlarge, flip through slide sequences ---------- */
