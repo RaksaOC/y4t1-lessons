@@ -2,8 +2,8 @@
 window.QUIZ_BANK = {
   subject: 'ir', page: 'ir.html', course: 'Information Retrieval',
   exam: {
-    minutes: 105, pass: 60,
-    intro: 'Covers all five sessions: what retrieval is, preprocessing and the inverted index, ranking with TF-IDF and BM25, evaluation, and collecting documents by crawling and scraping.',
+    minutes: 120, pass: 60,
+    intro: 'Covers all six sessions: what retrieval is, preprocessing and the inverted index, ranking with TF-IDF and BM25, evaluation, collecting documents by scraping, and crawling and the web graph.',
     sections: [
       { ch: 1, name: 'Foundations of retrieval', q: [
         { t: 'match', q: 'Match each term to its example from the lab collection.',
@@ -163,6 +163,39 @@ window.QUIZ_BANK = {
           text: 'ROBOTSTXT_OBEY = {0}\nCONCURRENT_REQUESTS_PER_DOMAIN = {1}\nDOWNLOAD_DELAY = {2}',
           blanks: [{ opts: ['True', 'False'], a: 0 }, { num: 1, w: 3 }, { num: .5, tol: .001, w: 4 }],
           why: 'Obey robots, one request at a time, half a second apart. Never switch ROBOTSTXT_OBEY off to make a crawl "work".' }
+      ] },
+      { ch: 6, name: 'Crawling and the web graph', q: [
+        { t: 'order', q: 'A site\'s links: Start → A, B. A → C. B → C, D. C → E. Put the pages in breadth-first fetch order from Start.',
+          items: ['Start', 'A', 'B', 'C', 'D', 'E'],
+          why: 'FIFO: Start, then its links A and B, then A\'s link C, then B\'s new link D (C is already seen), then C\'s link E.' },
+        { t: 'fill', q: 'Same site: Start → A, B. A → C. B → C, D. C → E. Breadth-first from Start.',
+          text: 'E is at depth {0}. With a depth limit of 2, the crawler fetches {1} pages.',
+          blanks: [{ num: 3 }, { num: 5 }],
+          why: 'Start 0, A and B 1, C and D 2, E 3. A limit of 2 keeps Start, A, B, C, D and skips E.' },
+        { t: 'mc', q: 'A focused crawler\'s frontier holds B (score 0.20), C (0.90) and D (0.60), added in that order. Which URL does it fetch next?',
+          o: ['C, the highest score', 'B, the first one added', 'D, the last one added', 'All three at once, in any order'], a: 0,
+          why: 'A priority queue ignores arrival order. B would be next for breadth-first, and D for depth-first.' },
+        { t: 'mc', q: 'On <code>https://shop.example/books/page-2.html</code> the crawler finds <code>href="../index.html#top"</code>. After normalization, which URL goes to the seen-set check?',
+          o: ['<code>https://shop.example/index.html</code>', '<code>https://shop.example/books/index.html</code>', '<code>https://shop.example/index.html#top</code>', '<code>https://shop.example/books/page-2/index.html</code>'], a: 0,
+          why: 'The page sits in <code>/books/</code>. <code>..</code> climbs to <code>/</code>, and the fragment is dropped.' },
+        { t: 'tf', q: 'True or false?',
+          s: [['Two different URLs can never serve the same content.', false], ['A content hash catches exact duplicates, but changing one character changes the hash.', true], ['A seen set alone stops a calendar spider trap.', false], ['With unlimited budget, breadth-first and focused crawls fetch the same set of reachable pages.', true], ['A link to an out-of-scope host can still be stored as an edge.', true]],
+          why: 'Order matters only when the budget is limited. Traps make endless new URLs, so only limits stop them.' },
+        { t: 'bucket', q: 'Does the crawler send a request for this URL?',
+          buckets: ['No: decided before fetching', 'Yes: fetched, then the result decides'],
+          items: [['robots.txt disallows the path', 0], ['The URL is on another host', 0], ['The URL is past the depth limit', 0], ['The normalized URL is already in the seen set', 0], ['The page turns out to be a 404', 1], ['The server answers 429', 1], ['The page is an exact copy of one already fetched', 1]],
+          why: 'Rules, scope, depth and the seen set are checked first. Status codes and content hashes are only known after a request.' },
+        { t: 'fill', q: 'A crawl records six edges: P → Q, P → R, Q → R, R → P, S → R, R → S.',
+          text: 'In-degree of R = {0}. Out-degree of R = {1}. Sum of all out-degrees = {2}.',
+          blanks: [{ num: 3 }, { num: 2 }, { num: 6 }], marks: 3,
+          why: 'P, Q and S point to R. R points to P and S. Each of the 6 edges adds one out-degree, so the sum is 6, the same as the in-degree sum.' },
+        { t: 'fill', q: 'A graph has four pages and four edges: W → X, X → Y, Y → Z, Z → Y.',
+          text: 'Weak components = {0}. Strong components = {1}.',
+          blanks: [{ num: 1 }, { num: 3 }],
+          why: 'Ignoring direction, everything is joined: 1 weak component. Following arrows, only Y and Z reach each other, so the strong components are {Y, Z}, {X} and {W}: 3.' },
+        { t: 'ms', q: 'After a budget-limited crawl, which conclusions are safe?',
+          o: ['A fetched page with no in-scope links really has out-degree 0', 'An unfetched page\'s out-links are unknown', 'Pages with in-degree 0 in our graph may still be linked from pages we never fetched', 'Every page with out-degree 0 is a dead end on the real web', 'The degree histogram describes the whole web'], a: [0, 1, 2],
+          why: 'A crawl shows the link structure of the pages we observed, nothing more. Keep a fetched flag on every node.' }
       ] },
       { ch: 0, name: 'Putting it together', q: [
         { t: 'match', q: 'Each failure has a fix somewhere in the course. Match them.',

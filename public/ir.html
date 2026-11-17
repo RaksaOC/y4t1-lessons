@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- seo -->
-<meta name="description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.">
+<meta name="description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, collecting documents with web scraping, and crawling the web graph, with demos, quizzes and an exam.">
 <link rel="canonical" href="http://y4t1.chanraksa.com/ir.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -11,7 +11,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Year 4 Study Hub">
 <meta property="og:title" content="Information Retrieval: From Substring to NDCG · Year 4 Study Hub">
-<meta property="og:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.">
+<meta property="og:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, collecting documents with web scraping, and crawling the web graph, with demos, quizzes and an exam.">
 <meta property="og:url" content="http://y4t1.chanraksa.com/ir.html">
 <meta property="og:image" content="http://y4t1.chanraksa.com/assets/og/ir.png">
 <meta property="og:image:width" content="1200">
@@ -19,9 +19,9 @@
 <meta property="og:image:alt" content="Information Retrieval: From Substring to NDCG">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Information Retrieval: From Substring to NDCG · Year 4 Study Hub">
-<meta name="twitter:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.">
+<meta name="twitter:description" content="Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, collecting documents with web scraping, and crawling the web graph, with demos, quizzes and an exam.">
 <meta name="twitter:image" content="http://y4t1.chanraksa.com/assets/og/ir.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Information Retrieval: From Substring to NDCG", "url": "http://y4t1.chanraksa.com/ir.html", "description": "Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, and collecting documents with web scraping, with demos, quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Information Retrieval", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Information Retrieval: From Substring to NDCG", "url": "http://y4t1.chanraksa.com/ir.html", "description": "Information Retrieval from substring search to NDCG: inverted indexes, Boolean retrieval, TF-IDF, cosine and BM25, evaluation, collecting documents with web scraping, and crawling the web graph, with demos, quizzes and an exam.", "inLanguage": "en", "educationalLevel": "Undergraduate, year 4", "learningResourceType": "Lesson notes", "about": "Information Retrieval", "isAccessibleForFree": true, "isPartOf": {"@type": "WebSite", "name": "Year 4 Study Hub", "url": "http://y4t1.chanraksa.com/"}}</script>
 <!-- /seo -->
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 
@@ -439,6 +439,38 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
 .dl li{margin:4px 0}
 .dl a{font-weight:600}
 .dl-st{font-weight:700}
+
+/* Chapter 6: the web-graph demos */
+.wg{width:100%;height:auto;display:block;max-width:470px;color:var(--ink);overflow:visible}
+.wg rect{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.wg text{font-size:13px;font-weight:700;fill:var(--ink);dominant-baseline:middle;text-anchor:middle;font-family:var(--f-body)}
+.wg text.dep{font-size:10px;font-weight:600;fill:var(--muted);font-family:var(--f-mono)}
+.wg .nd{cursor:default}
+#gr-svg .nd{cursor:pointer}
+.wg .nd:focus{outline:none}.wg .nd:focus-visible rect:not(.halo){stroke-width:4}
+.wg rect.halo{fill:none;stroke:var(--ink);stroke-width:2;stroke-dasharray:3 3}
+.wg .n-un rect{stroke:var(--neg);stroke-dasharray:4 3}.wg .n-un text{fill:var(--neg)}
+.wg .n-front rect{stroke-width:3.5}
+.wg .n-done rect:not(.halo){fill:var(--fill,var(--ink));stroke:var(--fill,var(--ink))}.wg .n-done text,.wg .n-done text.dep{fill:var(--on-fill,var(--bg))}
+.wg .n-skip rect{fill:var(--surface-2);stroke:var(--neg)}.wg .n-skip text{fill:var(--muted);text-decoration:line-through}
+.wg .n-reach rect{fill:var(--surface-2);stroke-width:3}
+.wg .n-unf rect{stroke-dasharray:4 3}
+.wg .e{stroke:var(--ink);stroke-width:1.5;fill:none}
+.wg .e.dim{stroke:var(--neg)}
+.wg .e.x{stroke-dasharray:5 3}
+.wg .e.hot{stroke-width:2.6}
+.wg-key{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;color:var(--muted)}
+.wg-key i{display:inline-block;width:14px;height:10px;border:1.5px solid var(--ink);margin-right:5px;vertical-align:-1px}
+.wg-key .k-done,.wg-key .k-sel{background:var(--fill,var(--ink))}
+.wg-key .k-front{border-width:3px}
+.wg-key .k-un{border-style:dashed;border-color:var(--neg)}
+.wg-key .k-skip{background:var(--surface-2);border-color:var(--neg)}
+.wg-key .k-reach{background:var(--surface-2);border-width:3px}
+#gr-hist .grid{stroke:var(--line);stroke-width:1}
+#gr-hist text{fill:var(--muted)}
+#gr-hist .bin{fill:var(--fill,var(--ink))}
+#gr-hist .bout{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+#lab-norm td{word-break:break-word}
 </style>
 <style>.toc a.hub-back{display:block;padding:6px 12px;margin-bottom:8px;border:var(--bw15,1.5px) solid var(--box,var(--ink));color:var(--ink);font-weight:700;font-size:13.5px;text-decoration:none}.toc a.hub-back:hover{background:var(--fill,var(--ink));color:var(--on-fill,var(--bg))}</style>
 <button class="progress-pill" id="pp" type="button" tabindex="-1" aria-hidden="true" aria-controls="toc-nav" aria-expanded="false"><b id="pp-pct">0%</b><span id="pp-sec"></span><em class="pp-menu" aria-hidden="true">Menu</em><i><s id="pp-bar"></s></i></button>
@@ -516,6 +548,23 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
           <li><a href="#c5-ethics">Permission and privacy</a></li>
           <li><a href="#quiz5">Check yourself</a></li>
         </ol></li>
+      <li class="chap"><a href="#ch6">6 · Crawling and the web graph</a>
+        <ol>
+          <li><a href="#c6-why">From scraping to crawling</a></li>
+          <li><a href="#c6-parts">Parts of a crawler</a></li>
+          <li><a href="#c6-loop">The crawler loop</a></li>
+          <li><a href="#c6-bfs">A breadth-first crawl</a></li>
+          <li><a href="#c6-order">Breadth-first vs focused</a></li>
+          <li><a href="#c6-norm">URL normalization</a></li>
+          <li><a href="#c6-dup">Two kinds of duplicates</a></li>
+          <li><a href="#c6-trap">Spider traps and limits</a></li>
+          <li><a href="#c6-fetch">Fetch decisions</a></li>
+          <li><a href="#c6-graph">The web as a graph</a></li>
+          <li><a href="#c6-deg">In- and out-degree</a></li>
+          <li><a href="#c6-comp">Reachability and components</a></li>
+          <li><a href="#c6-dang">Dangling nodes</a></li>
+          <li><a href="#quiz6">Check yourself</a></li>
+        </ol></li>
       <li class="chap"><a href="#exam">Final exam</a></li>
       <li class="chap"><a href="#sheet">Formula sheet and glossary</a></li>
       <li class="chap"><a href="#materials">Course materials</a></li>
@@ -526,9 +575,9 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
 <main>
 <!-- ======================================================= HERO -->
 <header class="hero" id="start">
-  <div class="slidebar"><span>Information &amp; Web Retrieval Analytics</span><span>Sessions 1–5 · Labs 1–5</span></div>
+  <div class="slidebar"><span>Information &amp; Web Retrieval Analytics</span><span>Sessions 1–6 · Labs 1–5</span></div>
   <h1>From Substring to NDCG</h1>
-  <p class="lede">Hi. Let's build a search engine together, one honest mistake at a time. We start with the dumbest thing that could work (look for the query text inside every document), watch it fail, and fix each failure with a real IR idea. By the end you'll be ranking documents with BM25, proving with numbers which ranker is better, and crawling the web for a collection of your own.</p>
+  <p class="lede">Hi. Let's build a search engine together, one honest mistake at a time. We start with the dumbest thing that could work (look for the query text inside every document), watch it fail, and fix each failure with a real IR idea. By the end you'll be ranking documents with BM25, proving with numbers which ranker is better, crawling the web for a collection of your own, and reading the map its links draw.</p>
   <div class="legend" aria-label="How to read the boxes">
     <span class="chip dash">Think of it like…</span>
     <span class="chip fill">Where it's used</span>
@@ -537,7 +586,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
     <span class="chip inv">Careful</span>
     <span class="chip lab">In the lab</span>
   </div>
-  <p class="small muted"><b>One collection, all the way through.</b> Every example and every live demo on this page uses the same 30 short documents (<code>d01</code>…<code>d30</code>) from the labs: guesthouses in Phnom Penh, a ball python, Java the island, an automobile engine, and so on. Some are planted on purpose to trip up naive search. Chapter 5 then steps outside and collects new documents from Books to Scrape, a site built for practice. Numbers quoted from the labs are the ones your notebooks printed.</p>
+  <p class="small muted"><b>One collection, all the way through.</b> Every example and every live demo on this page uses the same 30 short documents (<code>d01</code>…<code>d30</code>) from the labs: guesthouses in Phnom Penh, a ball python, Java the island, an automobile engine, and so on. Some are planted on purpose to trip up naive search. Chapter 5 then steps outside and collects new documents from Books to Scrape, a site built for practice, and Chapter 6 crawls the lecture's seven-page toy site. Numbers quoted from the labs are the ones your notebooks printed.</p>
   <div class="call key"><span class="tag">The plan</span>
     <ul>
       <li><b>Chapter 1</b> asks what IR is and why a database <code>LIKE</code> query is not a search engine. (Lesson 1, Lab 1)</li>
@@ -545,6 +594,7 @@ dialog.zoom button{margin-top:10px;background:#fff;color:#000;border-color:#000}
       <li><b>Chapter 3</b> turns a set of matches into a <b>ranked list</b> with TF-IDF and BM25. (Lesson 3, Lab 3)</li>
       <li><b>Chapter 4</b> measures whether a ranking is any good: P@k, AP, MAP and NDCG. (Lesson 4, Lab 4)</li>
       <li><b>Chapter 5</b> goes back to the start of the pipeline and <b>collects</b> documents from the web, with Beautiful Soup and then a Scrapy crawler. (Lesson 5, Lab 5)</li>
+      <li><b>Chapter 6</b> asks which URL to fetch next and what the links tell us: the <b>frontier</b>, URL normalization, spider traps, and the <b>web graph</b> with its degrees and components. (Lesson 6)</li>
     </ul>
   </div>
 </header>
@@ -1910,6 +1960,383 @@ Wrote 40 documents to ir_books_corpus.jsonl</pre>
   <div data-xq="5"></div>
 </section>
 
+<!-- ======================================================= CHAPTER 6 -->
+<section class="chapter" id="ch6">
+  <div class="chapter-head">
+    <span class="num">Chapter 6</span>
+    <h2>Crawling and the Web Graph</h2>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.1–17</span><span class="ref g">Builds on Lab 5's bookcrawler</span></div>
+
+  <section class="sub" id="c6-why">
+  <h3>6.1 From scraping to crawling</h3>
+  <p>In Chapter 5 the hard part was <b>scraping</b>: pulling a book's title and price out of one page. The crawling was almost free. Lab 5's spider followed exactly two kinds of link, "next page" and "book page", on one tiny site, and stopped after two listing pages.</p>
+  <p>Point a crawler at a real site and two new questions take over:</p>
+  <div class="grid2">
+    <div class="call key" style="margin:0"><span class="tag">Question 1</span><p><b>Which URL should we visit next?</b> There are always more links than you have time to fetch, so the order you fetch them in decides what you end up with.</p></div>
+    <div class="call key" style="margin:0"><span class="tag">Question 2</span><p><b>What do the links tell us?</b> Every link is an arrow from one page to another. Collect the arrows and you have a map of the site: the <b>web graph</b>.</p></div>
+  </div>
+  <p>The first half of this chapter answers question 1 (6.2–6.9), the second half question 2 (6.10–6.13). Both use one small site of seven pages, the same one as the lecture.</p>
+  <div class="refs"><span class="ref">Lesson 6 · s.2</span></div>
+  </section>
+
+  <section class="sub" id="c6-parts">
+  <h3>6.2 The parts of a crawler</h3>
+  <p>Every crawler, from a ten-line script to Google's, has the same four parts. You've already used all of them in Lab 5, under Scrapy's names:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Part</th><th>What it holds or does</th><th>In Lab 5 (Scrapy)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Seeds</b></td><td>The starting URLs, such as the home page</td><td><code>start_urls = ["https://books.toscrape.com/"]</code></td></tr>
+      <tr><td><b>URL frontier</b></td><td>URLs discovered but <i>not yet fetched</i>: the to-do list</td><td>The scheduler's queue</td></tr>
+      <tr><td><b>Seen set</b></td><td>Every normalized URL already scheduled, so nothing is queued twice</td><td>The duplicate filter (<code>RFPDupeFilter</code>)</td></tr>
+      <tr><td><b>Fetcher and parser</b></td><td>Download a page, then pull out its outgoing links (and, for a scraper, its fields)</td><td>The downloader, then <code>parse()</code> / <code>parse_book()</code></td></tr>
+    </tbody></table></div>
+  <div class="call analogy"><span class="tag">Think of it like…</span>
+    <p>Exploring a museum with a notebook. The <b>seed</b> is the entrance. The <b>frontier</b> is your list of "rooms I saw a door to but haven't entered". The <b>seen set</b> is every room name you've ever written down, crossed out or not, so you never add the same room twice. <b>Fetching</b> is walking into a room, and <b>parsing</b> is reading the signs on its doors.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.3</span></div>
+  </section>
+
+  <section class="sub" id="c6-loop">
+  <h3>6.3 The crawler loop</h3>
+  <p>The four parts run in one loop. Here it is in Python, about as short as a working crawler gets:</p>
+<pre class="code">from collections import deque
+from urllib.parse import urljoin, urldefrag
+
+def crawl(seeds, budget=100):
+    frontier = deque()                         # FIFO queue = breadth-first
+    seen = set()
+    for url in seeds:                          # 1. seed the frontier
+        url = normalize(url)
+        frontier.append(url); seen.add(url)    #    ...and mark as seen right away
+    fetched = 0
+    while frontier and fetched &lt; budget:       # 5. stop: empty, or budget used
+        url = frontier.popleft()               # 2. take the next URL
+        if not allowed(url):                   #    host rules: robots.txt, scope
+            log_skip(url); continue
+        html = fetch(url); fetched += 1
+        for href in extract_links(html):       # 3. parse and record each link
+            target = normalize(urljoin(url, href))   # 4. resolve + normalize
+            record_edge(url, target)           #    (source, target) = graph edge
+            if target not in seen and in_scope(target):
+                seen.add(target); frontier.append(target)</pre>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>A URL goes into <code>seen</code> the moment it is <b>queued</b>, not when it is fetched. Otherwise a page linked from ten places would sit in the frontier ten times before the first copy was ever fetched. That's why the lecture calls it the set of URLs "already <i>scheduled</i>".</p>
+  </div>
+  <p>Notice the line <code>record_edge(url, target)</code>. It runs for <i>every</i> link, even ones already seen or out of scope. The frontier decides what we fetch, but the edges are what we learn about the web. Section 6.10 builds the graph from exactly these pairs.</p>
+  <div class="refs"><span class="ref">Lesson 6 · s.4</span></div>
+  </section>
+
+  <section class="sub" id="c6-bfs">
+  <h3>6.4 A breadth-first crawl, step by step</h3>
+  <p>The lecture's toy site has seven pages. The links are: Home → News, Programs. Programs → Computing. Computing → AI, Data. AI → Lab. We start at Home, at <b>depth 0</b>. A page's depth is the number of links you must follow from a seed to reach it.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Page fetched</th><th>Frontier after processing it</th><th class="num">Depth</th></tr></thead>
+    <tbody>
+      <tr><td>Home</td><td><code>[News, Programs]</code></td><td class="num">0</td></tr>
+      <tr><td>News</td><td><code>[Programs]</code></td><td class="num">1</td></tr>
+      <tr><td>Programs</td><td><code>[Computing]</code></td><td class="num">1</td></tr>
+      <tr><td>Computing</td><td><code>[AI, Data]</code></td><td class="num">2</td></tr>
+      <tr><td>AI</td><td><code>[Data, Lab]</code></td><td class="num">3</td></tr>
+      <tr><td>Data</td><td><code>[Lab]</code></td><td class="num">3</td></tr>
+      <tr><td>Lab</td><td><code>[]</code></td><td class="num">4</td></tr>
+    </tbody></table></div>
+  <p>The frontier is a <b>FIFO queue</b>: new links join the back, the next fetch comes off the front. That alone makes the crawl visit every depth-1 page before any depth-2 page. Now change the queue, the budget or the depth limit and watch what you collect change:</p>
+
+  <div class="lab" id="lab-frontier">
+    <div class="lab-head"><span class="tag">Try it</span><h4>The frontier decides what you collect</h4></div>
+    <div class="lab-body">
+      <div class="row"><span class="small muted">Frontier:</span>
+        <button class="btn sm on" type="button" data-fs="bfs">Breadth-first (FIFO queue)</button>
+        <button class="btn sm" type="button" data-fs="focus">Focused on "AI" (priority queue)</button>
+        <button class="btn sm" type="button" data-fs="dfs">Depth-first (LIFO stack)</button>
+      </div>
+      <div class="row">
+        <label class="ctl" for="fs-budget">Fetch budget</label><input type="range" id="fs-budget" min="1" max="7" value="7"><b class="mono" id="fs-bv">7</b>
+        <label class="ctl" for="fs-depth">Depth limit</label><select id="fs-depth"><option value="99" selected>none</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+      </div>
+      <div class="player" id="fs-player"></div>
+      <div class="msg" id="fs-msg" aria-live="polite"></div>
+      <div class="grid2">
+        <div class="svgwrap" style="min-width:0"><svg class="wg" id="fs-svg" viewBox="0 0 470 236" role="img" aria-label="The seven-page site, coloured by crawl state"></svg>
+          <div class="wg-key small"><span><i class="k-done"></i>fetched</span><span><i class="k-front"></i>in frontier</span><span><i class="k-un"></i>not seen yet</span><span><i class="k-skip"></i>skipped</span></div></div>
+        <div style="min-width:0;display:grid;gap:8px;align-content:start">
+          <div class="plist" id="fs-front"></div>
+          <div class="plist" id="fs-seen"></div>
+          <div class="plist" id="fs-got"></div>
+          <div class="kpis" id="fs-kpis"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p>Three things to find in the demo:</p>
+  <ul>
+    <li><b>Budget 4, breadth-first:</b> you fetch Home, News, Programs and Computing, and <b>not one AI page</b>. Switch to <b>focused</b> with the same budget and you get Home, Programs, Computing, AI.</li>
+    <li><b>Depth limit 2:</b> AI and Data are discovered at depth 3, so they're logged and skipped, and Lab is never even discovered.</li>
+    <li><b>Depth-first</b> plunges down one branch before backing up. On a site with an endless chain of links (6.7) it never comes back.</li>
+  </ul>
+  <div class="refs"><span class="ref">Lesson 6 · s.5–6</span></div>
+  </section>
+
+  <section class="sub" id="c6-order">
+  <h3>6.5 Breadth-first vs focused crawling</h3>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Breadth-first</th><th>Focused</th></tr></thead>
+    <tbody>
+      <tr><td><b>Frontier</b></td><td>FIFO queue</td><td>Priority queue, highest score first</td></tr>
+      <tr><td><b>Visiting order</b></td><td>By increasing depth from the seeds</td><td>By how likely the link is to be on topic</td></tr>
+      <tr><td><b>Scores links by</b></td><td>Nothing: first found, first fetched</td><td>Anchor text, URL words, the parent page's topic, or a classifier</td></tr>
+      <tr><td><b>Good for</b></td><td>Sampling broadly near a seed</td><td>A narrow target topic on a big site</td></tr>
+      <tr><td><b>Risk</b></td><td>Spends the budget on everything near the seed, on topic or not</td><td>A bad score function hides whole relevant areas behind "boring" links</td></tr>
+    </tbody></table></div>
+  <p>In the demo the focused crawler scores each link by its anchor text against the topic "AI": AI 0.95, Lab 0.70, Computing 0.60, Data 0.50, Programs 0.40, News 0.10. Those numbers are made up, but the shape is real. A focused crawler only ever sees the <b>link</b>, not the page behind it, so it is always guessing.</p>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>With an unlimited budget, every order fetches the same pages. With a <b>fixed budget</b>, which every real crawl has, <b>the frontier order decides what ends up in your collection</b>. And what isn't in the collection can never be retrieved, however good your BM25 is.</p>
+  </div>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>Big search engines don't crawl breadth-first for long. They prioritize URLs by things like how often the page changes, how many other pages link to it and how good its host is, and they re-crawl fast-changing pages (news front pages) every few minutes and quiet ones every few weeks. Google calls the limit a "crawl budget" per site.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.7</span></div>
+  </section>
+
+  <section class="sub" id="c6-norm">
+  <h3>6.6 URL normalization</h3>
+  <p>Before a URL is checked against the seen set, it is turned into one standard spelling. Otherwise the seen set is fooled by URLs that look different but are the same page. The lecture's rules:</p>
+  <ul>
+    <li><b>Resolve relative links</b> against the URL of the page they were found on (<code>urljoin</code>, Chapter 5).</li>
+    <li><b>Remove the fragment</b> (<code>#…</code>). It's never sent to the server, so <code>/news</code> and <code>/news#latest</code> are one fetch.</li>
+    <li><b>Keep query parameters</b>, unless a rule for that site says one is safe to drop. <code>?page=2</code> is a different page. <code>?utm_source=newsletter</code> usually isn't, but you only know that per site.</li>
+  </ul>
+  <p>Standard URL parsing also lowercases the scheme and host and drops a default port (<code>:443</code> for https), since those never change the page. The path keeps its case: <code>/About</code> and <code>/about</code> can be different pages.</p>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>Slide 8 shows the base page <code>https://example.edu/programs</code>, the link <code>/computing#course</code>, and gives <code>https://example.edu/programs/computing</code>. A link starting with <code>/</code> is <b>root-relative</b>: it restarts from the site root. A browser and <code>urljoin</code> both give <b><code>https://example.edu/computing</code></b>. You only get <code>…/programs/computing</code> from the plain relative link <code>computing</code> on a base ending in a slash, <code>https://example.edu/programs/</code>. Try both in the demo. The point of the slide (resolve, then drop the fragment) is right.</p>
+  </div>
+
+  <div class="lab" id="lab-norm">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Normalize, check the seen set, and spot duplicates</h4></div>
+    <div class="lab-body">
+      <div class="row"><span class="small muted">Load:</span>
+        <button class="btn sm on" type="button" data-nm="0">Links on /programs/</button>
+        <button class="btn sm" type="button" data-nm="1">Slide 8's example</button>
+        <button class="btn sm" type="button" data-nm="2">A calendar trap</button>
+      </div>
+      <div class="row"><label class="ctl" for="nm-base">Page URL</label><input type="text" id="nm-base" class="mono" autocomplete="off" spellcheck="false" style="flex:1;min-width:0"></div>
+      <label class="ctl" for="nm-links">Links found on that page (one href per line)</label>
+      <textarea id="nm-links" rows="7" spellcheck="false" autocomplete="off"></textarea>
+      <div class="row">
+        <label class="ctl"><input type="checkbox" id="nm-utm" checked> Site rule: <code>utm_*</code> params are safe to drop</label>
+        <label class="ctl"><input type="checkbox" id="nm-scope" checked> Stay on the page's host</label>
+        <label class="ctl"><input type="checkbox" id="nm-hash" checked> Hash fetched content</label>
+      </div>
+      <div class="tbl" style="margin:0"><table>
+        <thead><tr><th>href</th><th>Normalized URL</th><th>Decision</th></tr></thead>
+        <tbody id="nm-res"></tbody></table></div>
+      <div class="kpis" id="nm-kpis"></div>
+      <div class="msg" id="nm-msg"></div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.8</span><span class="ref">Lesson 5 · s.5</span></div>
+  </section>
+
+  <section class="sub" id="c6-dup">
+  <h3>6.7 Two kinds of duplicates</h3>
+  <div class="grid2">
+    <div class="call" style="margin:0"><span class="tag">Duplicate URLs</span>
+      <ul>
+        <li>Different links resolve to the <b>same URL</b>.</li>
+        <li>Caught <b>before fetching</b>: check the normalized URL against the seen set before queueing.</li>
+        <li>Example: <code>/news</code> and <code>/news#latest</code>.</li>
+      </ul></div>
+    <div class="call" style="margin:0"><span class="tag">Duplicate content</span>
+      <ul>
+        <li>Different URLs serve the <b>same text</b>.</li>
+        <li>Only caught <b>after fetching</b>: hash the content and look for an exact match.</li>
+        <li>Example: a print view <code>/news?print=1</code> and the regular <code>/news</code>.</li>
+      </ul></div>
+  </div>
+  <p>A content hash such as SHA-1 of the page text gives a short fingerprint. Two pages with the same fingerprint are the same text, so the second is kept out of the index (or kept only as an alias). It's the same trick as Lab 5's <code>doc_id = sha1(url)[:12]</code>, only hashing the text instead of the URL.</p>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>An exact hash catches only <b>exact</b> copies. Change one character, like a timestamp or a view counter, and the hash is completely different. Catching <i>near</i>-duplicates needs fingerprints that change only a little when the text changes a little (shingling, SimHash). That's beyond this lesson, but it's why real engines don't just use SHA-1.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.9</span></div>
+  </section>
+
+  <section class="sub" id="c6-trap">
+  <h3>6.8 Spider traps and crawl limits</h3>
+  <p>A <b>spider trap</b> is a set of pages that generates new URLs forever. The classic one is an events calendar whose "next month →" link always works: <code>?month=2027-01</code>, <code>2027-02</code>, … to the year 3000. Every URL is new, so the seen set never stops it. Others: session ids added to every link, and filter pages that combine into millions of URLs (<code>?color=red&amp;size=m&amp;sort=price</code>).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Limit</th><th>What it caps</th><th>In Scrapy</th></tr></thead>
+    <tbody>
+      <tr><td><b>Depth limit</b></td><td>How far from the seeds the crawler may go</td><td><code>DEPTH_LIMIT = 3</code></td></tr>
+      <tr><td><b>Fetch budget</b></td><td>How many requests it may attempt in total</td><td><code>CLOSESPIDER_PAGECOUNT</code>, or Lab 5's own <code>max_pages</code></td></tr>
+      <tr><td><b>Scope</b></td><td>Which host or URL paths it may fetch</td><td><code>allowed_domains</code>, or a check in <code>parse()</code></td></tr>
+      <tr><td><b>Skip log</b></td><td>Not a cap: a record of every URL skipped and why</td><td>Log lines, or a <code>skipped.jsonl</code> output</td></tr>
+    </tbody></table></div>
+  <p>The skip log matters more than it looks. Months later someone asks why a page is missing from your search engine. Without the log you can't tell "never linked", "blocked by robots.txt", "past the depth limit" and "the budget ran out" apart.</p>
+  <div class="call use"><span class="tag">In the lab</span>
+    <p>Lab 5's bookcrawler used two of these. <code>max_pages = 2</code> was a budget on listing pages, and the spider only followed links on <code>books.toscrape.com</code>, a scope. That's why the real run stopped cleanly at 43 requests, even though the site has 50 listing pages and 1,000 books.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.10</span></div>
+  </section>
+
+  <section class="sub" id="c6-fetch">
+  <h3>6.9 Fetch decisions during a crawl</h3>
+  <p>Not every URL that reaches the front of the frontier should be fetched, and not every fetch succeeds. The lecture's decision table, with the Chapter 5 status codes behind it:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Situation</th><th>Crawler decision</th></tr></thead>
+    <tbody>
+      <tr><td>Disallowed by robots.txt</td><td>Skip <b>before</b> fetching, and record the reason</td></tr>
+      <tr><td>Outside scope (another host)</td><td><b>Keep the edge</b> if it's useful for the graph, but skip the fetch</td></tr>
+      <tr><td>404 or an unsupported type (a .zip, an image)</td><td>Log the result and continue</td></tr>
+      <tr><td>429 Too Many Requests</td><td>Back off, and honour <code>Retry-After</code> when the server sends it</td></tr>
+      <tr><td>Temporary failure (timeout, 503)</td><td>Retry a <b>bounded</b> number of times, or skip</td></tr>
+    </tbody></table></div>
+  <p>The "keep the edge" row is the bridge to the second half. An out-of-scope link is still a fact about the page it was found on: this page points to that one. Edges cost nothing to keep, and they're what the web graph is made of.</p>
+  <div class="refs"><span class="ref">Lesson 6 · s.11</span><span class="ref">Lesson 5 · s.6–7, s.13–15</span></div>
+  </section>
+
+  <section class="sub" id="c6-graph">
+  <h3>6.10 The web as a directed graph</h3>
+  <p>Every <code>record_edge(source, target)</code> call in the loop adds one arrow. Collect them all and the crawl becomes a <b>directed graph</b>:</p>
+  <ul>
+    <li>Each <b>node</b> is a page (a normalized URL).</li>
+    <li>Each <b>edge</b> is a link, and it has a direction. Home → Programs is one edge. Programs → Home would be a <b>different</b> edge, and on our toy site it doesn't exist.</li>
+  </ul>
+  <p>The whole crawl's output can be as simple as a two-column table, an <b>edge list</b>:</p>
+<pre class="code">source,target
+https://example.edu/,https://example.edu/news
+https://example.edu/,https://example.edu/programs
+https://example.edu/programs,https://example.edu/computing
+…</pre>
+
+  <div class="lab" id="lab-graph">
+    <div class="lab-head"><span class="tag">Try it</span><h4>Degrees, reachability and components</h4></div>
+    <div class="lab-body">
+      <p class="small muted">Click a page to see what it links to and what links to it. Add a back-link and watch the strong components change.</p>
+      <div class="row"><span class="small muted">Add a link:</span>
+        <label class="ctl"><input type="checkbox" data-xe="Computing>Programs"> Computing → Programs</label>
+        <label class="ctl"><input type="checkbox" data-xe="Lab>Home"> Lab → Home</label>
+        <label class="ctl"><input type="checkbox" data-xe="News>Home"> News → Home</label>
+        <label class="ctl"><input type="checkbox" data-xe="Data>AI"> Data → AI</label>
+      </div>
+      <div class="row"><span class="small muted">Crawl coverage:</span>
+        <button class="btn sm on" type="button" data-cov="7">All 7 fetched</button>
+        <button class="btn sm" type="button" data-cov="5">Budget 5 (breadth-first)</button>
+      </div>
+      <div class="grid2">
+        <div class="svgwrap" style="min-width:0"><svg class="wg" id="gr-svg" viewBox="0 0 470 236" role="img" aria-label="The site's link graph"></svg>
+          <div class="wg-key small"><span><i class="k-sel"></i>selected</span><span><i class="k-reach"></i>reachable from it</span><span><i class="k-un"></i>not fetched: links unknown</span></div></div>
+        <div style="min-width:0;display:grid;gap:8px;align-content:start">
+          <div class="kpis" id="gr-kpis"></div>
+          <div class="msg" id="gr-msg"></div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="tbl" style="margin:0"><table>
+          <thead><tr><th>Page</th><th class="num">In</th><th class="num">Out</th><th>Strong comp.</th></tr></thead>
+          <tbody id="gr-deg"></tbody></table></div>
+        <div style="min-width:0"><b class="small" style="text-transform:uppercase;letter-spacing:.05em">Degree histogram</b>
+          <svg class="chart" id="gr-hist" viewBox="0 0 300 170" role="img" aria-label="How many pages have each in-degree and out-degree"></svg></div>
+      </div>
+    </div>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.12</span></div>
+  </section>
+
+  <section class="sub" id="c6-deg">
+  <h3>6.11 In-degree, out-degree and their distribution</h3>
+  <p>A page's <b>in-degree</b> is how many links point <i>to</i> it. Its <b>out-degree</b> is how many links it has <i>going out</i>. For the toy site:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Page</th><th class="num">In-degree</th><th class="num">Out-degree</th></tr></thead>
+    <tbody>
+      <tr><td>Home</td><td class="num">0</td><td class="num">2</td></tr>
+      <tr><td>News</td><td class="num">1</td><td class="num">0</td></tr>
+      <tr><td>Programs</td><td class="num">1</td><td class="num">1</td></tr>
+      <tr><td>Computing</td><td class="num">1</td><td class="num">2</td></tr>
+      <tr><td>Data</td><td class="num">1</td><td class="num">0</td></tr>
+      <tr><td>AI</td><td class="num">1</td><td class="num">1</td></tr>
+      <tr><td>Lab</td><td class="num">1</td><td class="num">0</td></tr>
+      <tr><td><b>Total</b></td><td class="num"><b>6</b></td><td class="num"><b>6</b></td></tr>
+    </tbody></table></div>
+  <div class="math">\[\sum_{p}\text{in}(p)\;=\;\sum_{p}\text{out}(p)\;=\;|E|\]</div>
+  <p class="say">Every edge leaves exactly one page and arrives at exactly one page, so it adds 1 to one out-degree and 1 to one in-degree. Both columns therefore add up to the number of edges: 6 here. It's a quick check that your degree counts are right.</p>
+  <p>A <b>degree histogram</b> counts how many pages have each degree: here six pages have in-degree 1 and one page has in-degree 0. Plot in-degree and out-degree <b>separately</b>, because they mean different things. A high out-degree is just a page with many links, like a sitemap. A high in-degree means many other pages chose to point at it, which is a hint that it matters.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>On the real web the in-degree histogram is extremely skewed: most pages have a handful of in-links, and a tiny number (home pages of big sites) have millions. Plotted on log-log axes it looks roughly like a straight line, a <b>power law</b>, the same shape as Zipf's law for words in Chapter 3. Link-analysis methods such as Google's PageRank start from exactly this signal.</p>
+  </div>
+  <div class="call warn"><span class="tag">Careful</span>
+    <p>Your degrees describe <b>the pages you observed</b>, not the web. Out-degree comes from pages you fetched. In-degree only counts links from pages you happened to crawl, so a famous page linked from a million sites you never fetched has in-degree 0 in your graph.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.13, s.15</span></div>
+  </section>
+
+  <section class="sub" id="c6-comp">
+  <h3>6.12 Reachability and components</h3>
+  <p>Page B is <b>reachable</b> from page A if you can follow links, in their direction, from A to B. Home reaches every page. Lab reaches nothing. Grouping pages by reachability gives two kinds of component:</p>
+  <div class="grid2">
+    <div class="call" style="margin:0"><span class="tag">Weakly connected</span>
+      <ul>
+        <li><b>Ignore</b> the arrow direction: treat every link as a two-way road.</li>
+        <li>All 7 pages form <b>one</b> weak component.</li>
+      </ul></div>
+    <div class="call" style="margin:0"><span class="tag">Strongly connected</span>
+      <ul>
+        <li><b>Follow</b> arrows in their direction only.</li>
+        <li>Every page in a strong component must reach <b>every other</b> one, and be reached back.</li>
+        <li>The toy site has no cycles, so each page is <b>alone</b>: 7 strong components.</li>
+      </ul></div>
+  </div>
+  <p>Strong components need cycles. Add <b>Computing → Programs</b> in the demo and Programs and Computing become one strong component, because each now reaches the other. Add <b>Lab → Home</b> instead and you close a loop through Home → Programs → Computing → AI → Lab → Home: five pages in one strong component, while News and Data stay alone.</p>
+  <div class="call real"><span class="tag">Real world</span>
+    <p>A famous 2000 study of a 200-million-page crawl (Broder and colleagues, AltaVista) found the web shaped like a <b>bow tie</b>. About a quarter of the pages formed one giant strongly connected core. Another quarter could reach the core but not be reached from it ("IN"), another quarter could be reached from it but not get back ("OUT"), and the rest hung off the sides or were disconnected. A crawler seeded in "OUT" can never discover the core.</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.14</span></div>
+  </section>
+
+  <section class="sub" id="c6-dang">
+  <h3>6.13 Dangling nodes in a crawl</h3>
+  <p>A node with out-degree 0 is called <b>dangling</b>. In a crawl, out-degree 0 can mean two quite different things:</p>
+  <div class="grid2">
+    <div class="call" style="margin:0"><span class="tag">Fetched page</span>
+      <ul>
+        <li>We fetched and parsed it.</li>
+        <li>It had no outgoing links in scope.</li>
+        <li>Its out-degree of zero is a <b>fact</b>.</li>
+      </ul></div>
+    <div class="call warn" style="margin:0"><span class="tag">Unfetched target</span>
+      <ul>
+        <li>We saw a link <i>to</i> it.</li>
+        <li>The crawl ended, or skipped the fetch.</li>
+        <li>Its out-links are <b>unknown</b>, not zero.</li>
+      </ul></div>
+  </div>
+  <p>Set the demo's coverage to <b>Budget 5</b>. Breadth-first fetches Home, News, Programs, Computing and AI, then stops. Data and Lab are in the graph because links point to them, but nobody looked at their pages. News looks the same on paper, with out-degree 0, but for News that's true.</p>
+  <div class="call key"><span class="tag">Key idea</span>
+    <p>Store whether each node was <b>fetched</b>. Without that flag, the end of your budget looks like a site full of dead ends, and any analysis that counts out-links, such as PageRank, will treat "we never looked" as "there's nothing there".</p>
+  </div>
+  <div class="refs"><span class="ref">Lesson 6 · s.16</span></div>
+  </section>
+
+  <div class="recap">
+    <h3>Chapter 6 recap</h3>
+    <ul>
+      <li>A crawler is seeds + frontier + seen set + fetcher/parser, run in one loop until the frontier is empty or the budget is spent.</li>
+      <li>Mark a URL as seen when it's queued, not when it's fetched.</li>
+      <li>FIFO frontier = breadth-first, by depth. Priority frontier = focused, by topic score.</li>
+      <li>With a fixed budget, frontier order decides what you collect.</li>
+      <li>Normalize before the seen-set check: resolve, drop the fragment, keep the query unless a site rule says otherwise.</li>
+      <li>Duplicate URLs are caught before fetching (seen set); duplicate content after (content hash).</li>
+      <li>Depth limit, fetch budget and scope stop spider traps. Log every skip.</li>
+      <li>Links form a directed graph. Σ in-degree = Σ out-degree = number of edges.</li>
+      <li>Weak components ignore direction. Strong components need every page to reach every other.</li>
+      <li>Out-degree 0 is a fact for a fetched page, and unknown for an unfetched one.</li>
+    </ul>
+  </div>
+
+  <h3 id="quiz6">Check yourself: Chapter 6</h3>
+  <div data-xq="6"></div>
+</section>
+
 <!-- ======================================================= SHEET -->
 <section class="chapter" id="exam">
   <div class="chapter-head">
@@ -1917,7 +2344,7 @@ Wrote 40 documents to ir_books_corpus.jsonl</pre>
     <h2>Final Exam</h2>
   </div>
   <p class="lede">A long paper on its own page, covering every chapter. No feedback until you hand it in, then a score per section and a full review.</p>
-  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>47</b><span>Questions</span></div><div class="kpi"><b>92</b><span>Marks</span></div><div class="kpi"><b>105</b><span>Minutes</span></div></div>
+  <div class="kpis" style="max-width:32rem;margin:1rem 0"><div class="kpi"><b>56</b><span>Questions</span></div><div class="kpi"><b>110</b><span>Marks</span></div><div class="kpi"><b>120</b><span>Minutes</span></div></div>
   <p><a class="btn primary" href="exam-ir.html" style="display:inline-block;text-decoration:none;font-size:15px;padding:10px 20px">Open the final exam</a></p>
 </section>
 
@@ -1943,6 +2370,8 @@ Wrote 40 documents to ir_books_corpus.jsonl</pre>
       <tr><td>Polite delay</td><td>\(\text{delay}=\max(0.5\,\text{s},\ \text{Crawl-delay})\)</td><td>L5 s.13–15 · Lab 5 P2</td></tr>
       <tr><td>Bounded crawl size</td><td>\(\text{items}\approx\text{pages}\times20\); requests \(=1+\text{pages}+\text{items}\)</td><td>Lab 5 P6</td></tr>
       <tr><td>Stable document id</td><td><code>sha1(url)[:12]</code></td><td>Lab 5 P4, P6</td></tr>
+      <tr><td>Crawl depth</td><td>\(\text{depth}(\text{seed})=0,\ \text{depth}(v)=\text{depth}(u)+1\) for the link \(u\to v\) that first queued \(v\)</td><td>L6 s.5–6</td></tr>
+      <tr><td>Degree sum</td><td>\(\sum_p \text{in}(p)=\sum_p \text{out}(p)=|E|\)</td><td>L6 s.13</td></tr>
     </tbody></table></div>
   <div class="tbl"><table>
     <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
@@ -1967,6 +2396,15 @@ Wrote 40 documents to ir_books_corpus.jsonl</pre>
       <tr><td><b>User-Agent</b></td><td>The name a client sends with each request. A polite crawler uses an honest, descriptive one.</td></tr>
       <tr><td><b>Mojibake</b></td><td>Garbled text from decoding bytes with the wrong character set, like <code>Â£</code> for <code>£</code>.</td></tr>
       <tr><td><b>Client-side rendering</b></td><td>Pages whose data JavaScript loads after the first HTML, invisible to requests + Beautiful Soup.</td></tr>
+      <tr><td><b>Seed / frontier / seen set</b></td><td>Starting URLs / URLs discovered but not yet fetched / every normalized URL already scheduled.</td></tr>
+      <tr><td><b>Breadth-first / focused crawl</b></td><td>Frontier as a FIFO queue (by depth) / as a priority queue (by likely topic relevance).</td></tr>
+      <tr><td><b>URL normalization</b></td><td>One standard spelling per URL before the seen-set check: resolve, drop the fragment, keep the query unless a site rule says otherwise.</td></tr>
+      <tr><td><b>Content hash</b></td><td>A fingerprint of a page's text (e.g. SHA-1) that catches exact duplicate content at different URLs.</td></tr>
+      <tr><td><b>Spider trap</b></td><td>Pages that generate new URLs forever, such as a calendar's "next month" link. Stopped by a depth limit, fetch budget and scope.</td></tr>
+      <tr><td><b>Web graph</b></td><td>A directed graph: pages are nodes, links are edges (source → target).</td></tr>
+      <tr><td><b>In-degree / out-degree</b></td><td>Number of links pointing to a page / leaving it.</td></tr>
+      <tr><td><b>Weak / strong component</b></td><td>Pages connected if you ignore arrow direction / pages that can all reach each other following arrows.</td></tr>
+      <tr><td><b>Dangling node</b></td><td>A node with no outgoing edges: a fact for a fetched page, unknown for an unfetched one.</td></tr>
     </tbody></table></div>
   <h3 id="materials">Course materials</h3>
   <p>The original files this page was built from. Tap one to download it.</p>
@@ -1977,8 +2415,9 @@ Wrote 40 documents to ir_books_corpus.jsonl</pre>
     <li><a href="materials/ir/document_representation.pdf" download="document_representation.pdf" data-dl>Lesson 3 · Document representation and ranking</a> <span class="small muted">PDF · 341 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/ir/evaluation.pdf" download="evaluation.pdf" data-dl>Lesson 4 · Evaluation</a> <span class="small muted">PDF · 340 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
     <li><a href="materials/ir/web_scrape.pdf" download="web_scrape.pdf" data-dl>Lesson 5 · Web search and web scraping</a> <span class="small muted">PDF · 320 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
+    <li><a href="materials/ir/web_crawl_and_web_graph.pdf" download="web_crawl_and_web_graph.pdf" data-dl>Lesson 6 · Web crawling and the web graph</a> <span class="small muted">PDF · 163 KB</span> <span class="dl-st small" aria-live="polite"></span></li>
   </ul>
-  <p class="foot">Built from the five Session 1–5 lecture decks (Mr. Natt Korat, CADT) and Labs 1–5. Lab 5's numbers come from a real, bounded crawl of books.toscrape.com, a site made for scraping practice; the Chapter 5 demos are simulations and fetch nothing. Figures are cropped from those decks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment. Each lab has a line-by-line companion notebook in <code>Lab/explained/</code> that links back to the slides cited here.</p>
+  <p class="foot">Built from the six Session 1–6 lecture decks (Mr. Natt Korat, CADT) and Labs 1–5. Lab 5's numbers come from a real, bounded crawl of books.toscrape.com, a site made for scraping practice; the Chapter 5 and 6 demos are simulations and fetch nothing. Figures are cropped from those decks. Facts in the "Real world" boxes are from general knowledge, not the slides, so check them before quoting them in an assignment. Each lab has a line-by-line companion notebook in <code>Lab/explained/</code> that links back to the slides cited here.</p>
 </section>
 </main>
 </div>
@@ -2284,6 +2723,211 @@ function scrollInto(box,el){if(!el)return;var top=el.offsetTop;if(top<box.scroll
   function refresh(){build();pl.refresh(true);}
   sl.addEventListener("input",refresh);$("cr-delay").addEventListener("change",refresh);$("cr-429").addEventListener("change",refresh);
   refresh();
+})();
+
+/* ---------- Chapter 6: the seven-page site, shared by the crawl and graph demos ---------- */
+var WG=(function(){
+  var W=130,H=36;
+  var POS={Home:[20,20],News:[170,20],Programs:[20,100],Computing:[170,100],Data:[320,100],AI:[170,180],Lab:[320,180]};
+  var NODES=["Home","News","Programs","Computing","Data","AI","Lab"];
+  var LINKS={Home:["News","Programs"],News:[],Programs:["Computing"],Computing:["AI","Data"],Data:[],AI:["Lab"],Lab:[]};
+  /* back-links some demos add; each has a hand-drawn route so it never cuts through a page */
+  var EXTRA={"Computing>Programs":"M200,136 Q160,168 120,136","Lab>Home":"M385,216 C385,252 6,252 6,140 L6,50 Q6,38 18,38","News>Home":"M200,20 C188,0 112,0 100,20","Data>AI":null};
+  function c(n){var p=POS[n];return[p[0]+W/2,p[1]+H/2];}
+  function clip(n,dx,dy){var t=Math.min(Math.abs(dx)?(W/2)/Math.abs(dx):1e9,Math.abs(dy)?(H/2)/Math.abs(dy):1e9);var p=c(n);return[p[0]+dx*t,p[1]+dy*t];}
+  function edge(a,b,cls,mk){
+    var k=a+">"+b;
+    if(EXTRA[k])return'<path class="e '+cls+'" d="'+EXTRA[k]+'" marker-end="url(#'+mk+')"/>';
+    var p=c(a),q=c(b),dx=q[0]-p[0],dy=q[1]-p[1],s=clip(a,dx,dy),e=clip(b,-dx,-dy),L=Math.hypot(dx,dy)||1;
+    e=[e[0]-dx/L*2,e[1]-dy/L*2];
+    return'<line class="e '+cls+'" x1="'+s[0].toFixed(1)+'" y1="'+s[1].toFixed(1)+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'" marker-end="url(#'+mk+')"/>';
+  }
+  function node(n,cls,sub,halo){
+    var p=POS[n];
+    return'<g class="nd '+cls+'" data-n="'+n+'"'+(halo?' aria-current="step"':'')+'>'+(halo?'<rect class="halo" x="'+(p[0]-5)+'" y="'+(p[1]-5)+'" width="'+(W+10)+'" height="'+(H+10)+'"/>':'')+
+      '<rect x="'+p[0]+'" y="'+p[1]+'" width="'+W+'" height="'+H+'"/>'+
+      (sub!=null&&sub!==""?'<text x="'+(p[0]+W/2)+'" y="'+(p[1]+13)+'">'+n+'</text><text class="dep" x="'+(p[0]+W/2)+'" y="'+(p[1]+27)+'">'+sub+'</text>'
+        :'<text x="'+(p[0]+W/2)+'" y="'+(p[1]+H/2+1)+'">'+n+'</text>')+'</g>';
+  }
+  function defs(mk){return'<defs><marker id="'+mk+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>';}
+  return{NODES:NODES,LINKS:LINKS,EXTRA:EXTRA,edge:edge,node:node,defs:defs};
+})();
+
+/* ---------- 6.4: the frontier decides what you collect ---------- */
+(function(){
+  var svg=$("fs-svg");if(!svg)return;
+  var SCORE={Home:1,News:.10,Programs:.40,Computing:.60,Data:.50,AI:.95,Lab:.70},TOPIC={AI:1,Lab:1};
+  var mode="bfs",ev=[],pl;
+  function build(){
+    var budget=+$("fs-budget").value,lim=+$("fs-depth").value;
+    $("fs-bv").textContent=budget;
+    var front=["Home"],seen={Home:1},dep={Home:0},got=[],skip={},sk=[];
+    function snap(o){o.front=front.slice();o.seen=Object.keys(seen);o.got=got.slice();o.skip=Object.assign({},skip);o.dep=Object.assign({},dep);ev.push(o);}
+    ev=[];
+    var how=mode==="bfs"?"a FIFO queue: take from the front, add to the back":mode==="dfs"?"a LIFO stack: always take the newest URL":"a priority queue: always take the highest-scoring link";
+    snap({msg:"Seed the frontier with <b>Home</b> (depth 0) and mark it seen. The frontier is "+how+"."});
+    while(front.length&&got.length<budget){
+      var k;
+      if(mode==="bfs")k=0;else if(mode==="dfs")k=front.length-1;
+      else{k=0;front.forEach(function(x,i){if(SCORE[x]>SCORE[front[k]])k=i;});}
+      var u=front.splice(k,1)[0];got.push(u);
+      var why=mode==="bfs"?"the front of the queue":mode==="dfs"?"the newest URL on the stack":"the best score in the frontier, "+SCORE[u].toFixed(2);
+      var notes=[];
+      WG.LINKS[u].forEach(function(v){
+        if(seen[v]){notes.push(v+" is already seen");return;}
+        if(dep[u]+1>lim){if(!skip[v]){skip[v]=1;sk.push(v);}notes.push("<b>"+v+"</b> would be depth "+(dep[u]+1)+", past the limit of "+lim+": logged and skipped");return;}
+        seen[v]=1;dep[v]=dep[u]+1;front.push(v);notes.push("<b>"+v+"</b> is new: mark it seen (depth "+dep[v]+") and add it");
+      });
+      snap({now:u,msg:"Fetch <b>"+u+"</b> (depth "+dep[u]+"), "+why+". "+(WG.LINKS[u].length?"It links to "+WG.LINKS[u].join(", ")+". "+notes.join(". ")+".":"It has no outgoing links, so nothing is added.")});
+    }
+    var last=ev[ev.length-1],on=last.got.filter(function(x){return TOPIC[x];}).length;
+    last.msg+=" <br><b>"+(front.length?"Budget spent.":"Frontier empty: done.")+"</b> Fetched "+got.length+" page"+(got.length>1?"s":"")+": "+got.join(" → ")+". "+
+      (front.length?front.length+" discovered URL"+(front.length>1?"s were":" was")+" never fetched. ":"")+
+      (sk.length?"Skipped by the depth limit: "+sk.join(", ")+". ":"")+
+      "On-topic pages (AI, Lab) collected: <b>"+on+"</b>.";
+  }
+  function render(i){
+    var e=ev[Math.min(i,ev.length-1)],h=WG.defs("ah-fs"),fetched={};
+    e.got.forEach(function(x){fetched[x]=1;});
+    Object.keys(WG.LINKS).forEach(function(a){WG.LINKS[a].forEach(function(b){h+=WG.edge(a,b,fetched[a]?"":"dim","ah-fs");});});
+    WG.NODES.forEach(function(n){
+      var cls=fetched[n]?"n-done":e.skip[n]?"n-skip":e.front.indexOf(n)>=0?"n-front":"n-un";
+      var sub=n in e.dep?"d"+e.dep[n]:"";if(mode==="focus"&&n!=="Home"&&(e.front.indexOf(n)>=0||fetched[n]))sub=SCORE[n].toFixed(2)+" · "+sub;
+      h+=WG.node(n,cls,sub,e.now===n);
+    });
+    svg.innerHTML=h;
+    $("fs-msg").innerHTML=e.msg;
+    var fr=e.front.slice();if(mode==="focus")fr.sort(function(a,b){return SCORE[b]-SCORE[a];});
+    function lst(id,label,arr,mark){$(id).innerHTML='<span class="lbl">'+label+'</span>'+(arr.length?arr.map(function(x){return'<span class="'+(x===mark?"ptr":"")+'">'+x+'</span>';}).join(""):'<span class="done">(empty)</span>');}
+    lst("fs-front",mode==="focus"?"Frontier ↓score":mode==="dfs"?"Stack (top →)":"Queue (front →)",fr,null);
+    lst("fs-seen","Seen",e.seen,null);
+    lst("fs-got","Fetched",e.got,e.now);
+    function kpi(b,s){return'<div class="kpi"><b>'+b+'</b><span>'+s+'</span></div>';}
+    $("fs-kpis").innerHTML=kpi(e.got.length+" / "+$("fs-budget").value,"Fetched / budget")+kpi(e.front.length,"In frontier")+kpi(Object.keys(e.skip).length,"Skipped")+kpi(e.got.filter(function(x){return TOPIC[x];}).length,"On-topic");
+  }
+  pl=player($("fs-player"),{count:function(){return ev.length;},render:render,interval:900});
+  function refresh(){build();pl.refresh(true);}
+  document.querySelectorAll("[data-fs]").forEach(function(b){b.addEventListener("click",function(){mode=b.dataset.fs;document.querySelectorAll("[data-fs]").forEach(function(x){x.classList.toggle("on",x===b);});refresh();});});
+  $("fs-budget").addEventListener("input",refresh);$("fs-depth").addEventListener("change",refresh);
+  refresh();
+})();
+
+/* ---------- 6.6–6.7: normalize, seen set, duplicate content ---------- */
+(function(){
+  var ta=$("nm-links");if(!ta)return;
+  var P=[
+    ["https://example.edu/programs/",["/computing#course","computing","./computing?utm_source=newsletter","https://EXAMPLE.edu:443/programs/computing#fees","../news","/news#latest","/news?print=1","https://partner.org/ai-lab","mailto:info@example.edu"]],
+    ["https://example.edu/programs",["/computing#course","computing","/programs/computing"]],
+    ["https://example.edu/events?month=2026-11",["?month=2026-12","?month=2027-01#top","/events?month=2026-11","?month=2026-12&utm_campaign=autumn","?month=2027-02"]]
+  ];
+  var SITE={"/computing":"Computing at Example University: software engineering, data science and AI.",
+    "/programs/computing":"Bachelor of Computing: course list, fees and entry requirements.",
+    "/news":"Latest news: the AI lab opens a new robotics room.","/news?print=1":"Latest news: the AI lab opens a new robotics room."};
+  var cur=0;
+  function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return("0000000"+h.toString(16)).slice(-8);}
+  function norm(u){
+    u.hash="";
+    if($("nm-utm").checked){var drop=[];u.searchParams.forEach(function(v,k){if(/^utm_/i.test(k))drop.push(k);});drop.forEach(function(k){u.searchParams.delete(k);});}
+    return u.href;
+  }
+  function run(){
+    var base;
+    try{base=new URL($("nm-base").value.trim());}catch(e){$("nm-res").innerHTML="";$("nm-msg").innerHTML="That page URL isn't a valid absolute URL.";$("nm-kpis").innerHTML="";return;}
+    var seen={},hashes={},rows=[],k={q:0,du:0,out:0,dc:0,sk:0};
+    var b0=norm(new URL(base.href));seen[b0]="the page itself";
+    ta.value.split("\n").map(function(s){return s.trim();}).filter(Boolean).forEach(function(href){
+      var u,dec,res="";
+      try{u=new URL(href,base);}catch(e){rows.push([href,"—","<b>Skip:</b> not a valid URL"]);k.sk++;return;}
+      if(!/^https?:$/.test(u.protocol)){rows.push([href,'<span class="muted">'+esc(u.protocol)+'…</span>',"<b>Skip:</b> not a web page, so there's nothing to fetch"]);k.sk++;return;}
+      var n=norm(u);res='<code>'+esc(n)+'</code>';
+      if(seen[n]){dec="<b>Duplicate URL</b>: same as "+seen[n]+". Not queued.";k.du++;}
+      else if($("nm-scope").checked&&u.host!==base.host){dec="<b>Outside scope</b>: keep the edge, skip the fetch.";k.out++;seen[n]="<code>"+esc(href)+"</code>";}
+      else{
+        seen[n]="<code>"+esc(href)+"</code>";k.q++;dec="<b>Queued</b>, and marked seen.";
+        if($("nm-hash").checked){
+          var path=u.pathname+u.search,txt=SITE[path]||("(page text of "+n+")"),h=fnv(txt);
+          if(hashes[h]){dec="Queued and fetched, but content hash <code>"+h+"</code> matches "+hashes[h]+": <b>duplicate content</b>, not indexed again.";k.dc++;}
+          else{hashes[h]="<code>"+esc(path)+"</code>";dec+=' Fetched: hash <code>'+h+'</code>.';}
+        }
+      }
+      rows.push(['<code>'+esc(href)+'</code>',res,dec]);
+    });
+    $("nm-res").innerHTML=rows.map(function(r){return"<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td></tr>";}).join("");
+    function kpi(b,s){return'<div class="kpi"><b>'+b+'</b><span>'+s+'</span></div>';}
+    $("nm-kpis").innerHTML=kpi(k.q,"Queued")+kpi(k.du,"Duplicate URLs")+kpi(k.dc,"Duplicate content")+kpi(k.out,"Out of scope")+kpi(k.sk,"Skipped");
+    var m=[
+      "Three spellings of <code>/programs/computing</code> collapse into one URL, and <code>/news#latest</code> is <code>/news</code>. The print view <code>?print=1</code> is a <i>different</i> URL, so only the content hash catches it. Untick the <code>utm_*</code> rule and the newsletter link becomes a separate URL to fetch.",
+      "Slide 8's case. On a base with <b>no</b> trailing slash, both <code>/computing</code> and plain <code>computing</code> resolve to <code>https://example.edu/computing</code>, so the second is a duplicate. To land on <code>/programs/computing</code> you need the full path, or a base ending in <code>/programs/</code> (try adding the slash).",
+      "Every month is a <b>new</b> URL, so the seen set never stops the calendar. The only duplicate it catches is the second <code>?month=2026-12</code> link, once <code>utm_campaign</code> is dropped. A depth limit or fetch budget is what actually ends this trap."
+    ];
+    $("nm-msg").innerHTML=m[cur]||"";
+  }
+  function load(i){cur=i;$("nm-base").value=P[i][0];ta.value=P[i][1].join("\n");document.querySelectorAll("[data-nm]").forEach(function(b){b.classList.toggle("on",+b.dataset.nm===i);});run();}
+  document.querySelectorAll("[data-nm]").forEach(function(b){b.addEventListener("click",function(){load(+b.dataset.nm);});});
+  ["nm-base","nm-links"].forEach(function(id){$(id).addEventListener("input",function(){cur=-1;document.querySelectorAll("[data-nm]").forEach(function(b){b.classList.remove("on");});run();});});
+  ["nm-utm","nm-scope","nm-hash"].forEach(function(id){$(id).addEventListener("change",run);});
+  load(0);
+})();
+
+/* ---------- 6.10–6.13: degrees, reachability, components ---------- */
+(function(){
+  var svg=$("gr-svg");if(!svg)return;
+  var sel="Home",cov=7,BUDGET5={Home:1,News:1,Programs:1,Computing:1,AI:1};
+  function edges(){
+    var E=[];Object.keys(WG.LINKS).forEach(function(a){WG.LINKS[a].forEach(function(b){E.push([a,b,0]);});});
+    document.querySelectorAll("[data-xe]").forEach(function(c){if(c.checked){var p=c.dataset.xe.split(">");E.push([p[0],p[1],1]);}});
+    return E;
+  }
+  function fetchedSet(){if(cov===7){var all={};WG.NODES.forEach(function(n){all[n]=1;});return all;}return BUDGET5;}
+  function reach(start,adj){var s={},q=[start];s[start]=1;while(q.length){var u=q.shift();(adj[u]||[]).forEach(function(v){if(!s[v]){s[v]=1;q.push(v);}});}delete s[start];return Object.keys(s);}
+  function sccs(adj){ /* Tarjan */
+    var idx=0,st=[],on={},I={},low={},out=[];
+    function go(v){I[v]=low[v]=idx++;st.push(v);on[v]=1;(adj[v]||[]).forEach(function(w){if(!(w in I)){go(w);low[v]=Math.min(low[v],low[w]);}else if(on[w])low[v]=Math.min(low[v],I[w]);});
+      if(low[v]===I[v]){var c=[],w;do{w=st.pop();on[w]=0;c.push(w);}while(w!==v);out.push(c);}}
+    WG.NODES.forEach(function(v){if(!(v in I))go(v);});return out;
+  }
+  function weak(E){var p={};WG.NODES.forEach(function(n){p[n]=n;});function f(x){while(p[x]!==x)x=p[x]=p[p[x]];return x;}E.forEach(function(e){p[f(e[0])]=f(e[1]);});var r={};WG.NODES.forEach(function(n){r[f(n)]=1;});return Object.keys(r).length;}
+  function draw(){
+    var F=fetchedSet(),all=edges(),E=all.filter(function(e){return F[e[0]];}),hidden=all.length-E.length;
+    var adj={},radj={},indeg={},outdeg={};WG.NODES.forEach(function(n){adj[n]=[];radj[n]=[];indeg[n]=0;outdeg[n]=0;});
+    E.forEach(function(e){adj[e[0]].push(e[1]);radj[e[1]].push(e[0]);indeg[e[1]]++;outdeg[e[0]]++;});
+    var R=reach(sel,adj),RB=reach(sel,radj),Rs={};R.forEach(function(x){Rs[x]=1;});
+    var comps=sccs(adj),cid={},L="ABCDEFG",li=0;comps.sort(function(a,b){return b.length-a.length;}).forEach(function(c){var lab=c.length>1?L[li++]:"alone";c.forEach(function(n){cid[n]=lab;});});
+    var h=WG.defs("ah-gr");
+    E.forEach(function(e){h+=WG.edge(e[0],e[1],(e[0]===sel?"hot ":"")+(e[2]?"x":""),"ah-gr");});
+    WG.NODES.forEach(function(n){h+=WG.node(n,(n===sel?"n-done":Rs[n]?"n-reach":"")+(F[n]?"":" n-unf"),cid[n]!=="alone"?"SCC "+cid[n]:"",false);});
+    svg.innerHTML=h;
+    svg.querySelectorAll(".nd").forEach(function(g){g.setAttribute("tabindex","0");g.setAttribute("role","button");g.setAttribute("aria-label","Select "+g.dataset.n);});
+    var od=function(n){return F[n]?outdeg[n]:"?";};
+    $("gr-deg").innerHTML=WG.NODES.map(function(n){return'<tr'+(n===sel?' style="font-weight:700"':'')+'><td>'+n+(F[n]?"":' <span class="small muted">(not fetched)</span>')+'</td><td class="num">'+indeg[n]+'</td><td class="num">'+od(n)+'</td><td>'+(cid[n]==="alone"?'<span class="muted">alone</span>':"SCC "+cid[n])+'</td></tr>';}).join("")+
+      '<tr><td><b>Total</b></td><td class="num"><b>'+E.length+'</b></td><td class="num"><b>'+E.length+'</b></td><td></td></tr>';
+    var dang=WG.NODES.filter(function(n){return F[n]&&outdeg[n]===0;}),unk=WG.NODES.filter(function(n){return !F[n];});
+    function kpi(b,s){return'<div class="kpi"><b>'+b+'</b><span>'+s+'</span></div>';}
+    $("gr-kpis").innerHTML=kpi(E.length,"Edges")+kpi(weak(E),"Weak comps")+kpi(comps.length,"Strong comps")+kpi(dang.length+(unk.length?" + "+unk.length+"?":""),"Out-degree 0");
+    var msg="<b>"+sel+"</b>: in-degree "+indeg[sel]+(radj[sel].length?" (from "+radj[sel].join(", ")+")":"")+", out-degree "+(F[sel]?outdeg[sel]+(adj[sel].length?" (to "+adj[sel].join(", ")+")":""):"<b>unknown</b>: never fetched")+". "+
+      "Reaches: "+(R.length?R.join(", "):"nothing")+". Reached from: "+(RB.length?RB.join(", "):"nothing")+". ";
+    var big=comps[0];
+    msg+=big.length>1?"Strong component "+cid[big[0]]+" = {"+big.join(", ")+"}: each of these reaches all the others.":"No cycles, so every page is alone in its strong component, while all 7 still form one weak component.";
+    if(unk.length)msg+=" With budget 5, "+unk.join(" and ")+" were discovered but never fetched: dangling for now, but their links are <b>unknown</b>"+(hidden?", which is why "+hidden+" ticked back-link"+(hidden>1?"s don't":" doesn't")+" show up":"")+". News also has out-degree 0, and for News that's a fact.";
+    $("gr-msg").innerHTML=msg;
+    /* histogram */
+    var maxd=0;WG.NODES.forEach(function(n){maxd=Math.max(maxd,indeg[n],F[n]?outdeg[n]:0);});
+    var cin=[],cout=[];for(var d=0;d<=maxd;d++){cin.push(0);cout.push(0);}
+    WG.NODES.forEach(function(n){cin[indeg[n]]++;if(F[n])cout[outdeg[n]]++;});
+    var top=Math.max.apply(null,cin.concat(cout)),gw=(260)/(maxd+1),bh=110,g='';
+    for(var y=0;y<=top;y++){var yy=140-y/top*bh;g+='<line x1="30" x2="290" y1="'+yy+'" y2="'+yy+'" class="grid"/><text x="24" y="'+(yy+4)+'" text-anchor="end" font-size="10">'+y+'</text>';}
+    for(d=0;d<=maxd;d++){var x0=30+d*gw+gw*.15,bw=gw*.33;
+      g+='<rect class="bin" x="'+x0+'" y="'+(140-cin[d]/top*bh)+'" width="'+bw+'" height="'+(cin[d]/top*bh)+'"><title>'+cin[d]+' page(s) with in-degree '+d+'</title></rect>';
+      g+='<rect class="bout" x="'+(x0+bw+2)+'" y="'+(140-cout[d]/top*bh)+'" width="'+bw+'" height="'+(cout[d]/top*bh)+'"><title>'+cout[d]+' page(s) with out-degree '+d+'</title></rect>';
+      g+='<text x="'+(30+d*gw+gw/2)+'" y="156" text-anchor="middle" font-size="11">'+d+'</text>';}
+    g+='<text x="160" y="169" text-anchor="middle" font-size="10">degree</text><rect class="bin" x="200" y="6" width="10" height="10"/><text x="214" y="15" font-size="10">in</text><rect class="bout" x="240" y="6" width="10" height="10"/><text x="254" y="15" font-size="10">out</text>';
+    $("gr-hist").innerHTML=g;
+  }
+  svg.addEventListener("click",function(e){var g=e.target.closest(".nd");if(g){sel=g.dataset.n;draw();}});
+  svg.addEventListener("keydown",function(e){var g=e.target.closest(".nd");if(g&&(e.key==="Enter"||e.key===" ")){e.preventDefault();sel=g.dataset.n;draw();var n=svg.querySelector('[data-n="'+sel+'"]');if(n)n.focus();}});
+  document.querySelectorAll("[data-xe]").forEach(function(c){c.addEventListener("change",draw);});
+  document.querySelectorAll("[data-cov]").forEach(function(b){b.addEventListener("click",function(){cov=+b.dataset.cov;document.querySelectorAll("[data-cov]").forEach(function(x){x.classList.toggle("on",x===b);});draw();});});
+  draw();
 })();
 
 /* ---------- Theme ---------- */
